@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+  SHIPPED
+  DELIVERED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  role      String   @default("USER")
+  phone     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+  cart      Cart?
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  price       Int
+  imageUrl    String?
+  gallery     String[] @default([])
+  category    String?
+  sizes       String[] @default([])
+  colors      String[] @default([])
+  stock       Int      @default(0)
+  isFeatured  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  items     Json
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id               String      @id @default(cuid())
+  txnid            String      @unique @db.VarChar(25) // PayU transaction ID (short unique)
+  userId           String
+  amount           Decimal     @db.Decimal(10, 2) // Accurate for currency operations
+  items            Json // Product details snapshot
+  status           OrderStatus @default(PENDING)
+  paymentGatewayId String?     @db.VarChar(64)
+  gatewayResponse  Json?
+  idempotencyKey   String?     @db.VarChar(100) // Prevents double-charges
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], name: "idx_order_user")
+  @@index([txnid], name: "idx_order_txnid")
+  @@index([status], name: "idx_order_status")
+  @@index([createdAt], name: "idx_order_created")
+}

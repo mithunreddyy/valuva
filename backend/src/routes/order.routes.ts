@@ -1,0 +1,227 @@
+// File: src/routes/order.routes.ts
+import { Router } from "express";
+import { orderController } from "../controllers/order.controller";
+import { authenticateJWT } from "../middlewares/auth.middleware";
+import { authorizeRoles } from "../middlewares/role.middleware";
+
+const router = Router();
+
+// User Endpoints
+router.post(
+  "/create",
+  authenticateJWT,
+  orderController.create.bind(orderController)
+);
+router.get(
+  "/my-orders",
+  authenticateJWT,
+  orderController.myOrders.bind(orderController)
+);
+router.get(
+  "/my-orders/:id",
+  authenticateJWT,
+  orderController.getOrder.bind(orderController)
+);
+router.get("/track/:id", orderController.track.bind(orderController));
+router.patch(
+  "/:id/cancel",
+  authenticateJWT,
+  orderController.cancel.bind(orderController)
+);
+router.post(
+  "/:id/return",
+  authenticateJWT,
+  orderController.requestReturn.bind(orderController)
+);
+router.get(
+  "/:id/return/status",
+  orderController.returnStatus.bind(orderController)
+);
+router.get("/:id/invoice", orderController.invoice.bind(orderController));
+router.post(
+  "/:id/reorder",
+  authenticateJWT,
+  orderController.reorder.bind(orderController)
+);
+router.post(
+  "/:id/rate",
+  authenticateJWT,
+  orderController.rate.bind(orderController)
+);
+router.post(
+  "/:id/issue",
+  authenticateJWT,
+  orderController.issue.bind(orderController)
+);
+
+// Payment Callbacks (public)
+router.post("/success", orderController.paySuccess.bind(orderController));
+router.post("/failure", orderController.payFailure.bind(orderController));
+router.post("/webhook/payu", orderController.webhookPayu.bind(orderController));
+
+router.get(
+  "/:id/payment/status",
+  orderController.paymentStatus.bind(orderController)
+);
+router.post(
+  "/:id/payment/retry",
+  orderController.paymentRetry.bind(orderController)
+);
+router.get(
+  "/:id/return/eligible",
+  orderController.returnEligible.bind(orderController)
+);
+
+// Admin Endpoints
+router.get(
+  "/",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.adminGetOrders.bind(orderController)
+);
+router.get(
+  "/:id",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.adminGetOrderById.bind(orderController)
+);
+router.patch(
+  "/:id",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.adminUpdateStatus.bind(orderController)
+);
+router.patch(
+  "/:id/tracking",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.adminUpdateTracking.bind(orderController)
+);
+router.post(
+  "/bulk-update",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.adminBulkUpdate.bind(orderController)
+);
+router.patch(
+  "/:id/assign-delivery",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.adminAssignDelivery.bind(orderController)
+);
+router.patch(
+  "/:id/return/process",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.adminProcessReturn.bind(orderController)
+);
+router.patch(
+  "/:id/return/approve",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.adminApproveReturn.bind(orderController)
+);
+router.patch(
+  "/:id/return/reject",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.adminRejectReturn.bind(orderController)
+);
+router.post(
+  "/:id/refund",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.adminRefund.bind(orderController)
+);
+router.delete(
+  "/:id",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.adminDelete.bind(orderController)
+);
+router.get(
+  "/analytics/stats",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.analyticsStats.bind(orderController)
+);
+router.get(
+  "/analytics/revenue",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.analyticsRevenue.bind(orderController)
+);
+router.get(
+  "/analytics/top-products",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.analyticsTopProducts.bind(orderController)
+);
+router.get(
+  "/export/csv",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.exportCsv.bind(orderController)
+);
+router.get(
+  "/analytics/pending-count",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.analyticsPendingCount.bind(orderController)
+);
+router.get(
+  "/analytics/failed-payments",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.analyticsFailedPayments.bind(orderController)
+);
+router.post(
+  "/:id/notify",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.notify.bind(orderController)
+);
+router.post(
+  "/:id/resend-confirmation",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.resendConfirmation.bind(orderController)
+);
+router.post(
+  "/bulk/invoices",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.bulkInvoices.bind(orderController)
+);
+router.post(
+  "/export/date-range",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.exportByDateRange.bind(orderController)
+);
+router.get(
+  "/search/query",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.searchOrders.bind(orderController)
+);
+router.get(
+  "/filter/status/:status",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.filterByStatus.bind(orderController)
+);
+router.get(
+  "/user/:userId",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.getOrdersByUser.bind(orderController)
+);
+router.get(
+  "/filter/date-range",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  orderController.filterByDateRange.bind(orderController)
+);
+
+export default router;
