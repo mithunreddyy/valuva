@@ -71,7 +71,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
-      <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white grain-bg" />
+      <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white" />
 
       <div className="relative glass rounded-lg p-8 max-w-md w-full">
         <div className="text-center mb-8">

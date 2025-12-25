@@ -19,7 +19,7 @@ export function CategoryShowcase() {
   if (isLoading || !data) return null;
 
   return (
-    <section className="container mx-auto px-4">
+    <section className="relative z-10 container mx-auto px-4 py-12">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold">Shop by Category</h2>
         <p className="text-neutral-600 mt-2">Explore our curated collections</p>

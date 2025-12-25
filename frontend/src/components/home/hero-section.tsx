@@ -6,8 +6,8 @@ import Link from "next/link";
 
 export function HeroSection() {
   return (
-    <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white grain-bg" />
+    <section className="relative z-10 h-[70vh] flex items-center justify-center overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white/90 backdrop-blur-sm" />
 
       <div className="container mx-auto px-4 relative z-10">
         <motion.div

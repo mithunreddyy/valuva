@@ -21,11 +21,11 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/logo.png"
+              src="/valuvaLogo.png"
               alt="Valuva"
               width={120}
-              height={40}
-              className="h-8 w-auto"
+              height={80}
+              className="h-16 w-auto"
             />
           </Link>
 

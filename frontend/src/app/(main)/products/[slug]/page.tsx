@@ -22,7 +22,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="relative z-10 container mx-auto px-4 py-12">
         <div className="grid lg:grid-cols-2 gap-12">
           <div>
             <Skeleton className="aspect-square rounded-lg" />
@@ -39,7 +39,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   if (!data?.data) {
     return (
-      <div className="container mx-auto px-4 py-12 text-center">
+      <div className="relative z-10 container mx-auto px-4 py-12 text-center">
         <h1 className="text-2xl font-bold">Product not found</h1>
       </div>
     );
@@ -60,7 +60,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const availableColors = [...new Set(product.variants.map((v) => v.color))];
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="relative z-10 container mx-auto px-4 py-12">
       {/* Product Details */}
       <div className="grid lg:grid-cols-2 gap-12 mb-20">
         {/* Images */}

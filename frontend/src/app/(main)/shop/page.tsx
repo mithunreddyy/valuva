@@ -43,7 +43,7 @@ export default function ShopPage() {
   const { data, isLoading, error } = useProducts(filters);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="relative z-10 container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold">Shop</h1>

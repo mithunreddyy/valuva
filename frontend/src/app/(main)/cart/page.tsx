@@ -19,7 +19,7 @@ export default function CartPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="relative z-10 container mx-auto px-4 py-12">
         <Skeleton className="h-8 w-48 mb-8" />
         <div className="space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -34,7 +34,7 @@ export default function CartPage() {
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="relative z-10 container mx-auto px-4 py-12">
         <div className="max-w-md mx-auto text-center">
           <ShoppingBag className="h-16 w-16 mx-auto mb-4 text-neutral-400" />
           <h1 className="text-2xl font-bold mb-2">Your cart is empty</h1>
@@ -48,7 +48,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="relative z-10 container mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
 
       <div className="grid lg:grid-cols-3 gap-8">

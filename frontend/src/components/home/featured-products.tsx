@@ -1,7 +1,7 @@
 "use client";
 
-import { ProductCard } from "@/components/products/products-card";
 import { ProductCardSkeleton } from "@/components/products/product-card-skeleton";
+import { ProductCard } from "@/components/products/products-card";
 import { Button } from "@/components/ui/button";
 import { useProducts } from "@/hooks/use-products";
 import Link from "next/link";
@@ -15,7 +15,7 @@ export function FeaturedProducts() {
   if (error) return null;
 
   return (
-    <section className="container mx-auto px-4">
+    <section className="relative z-10 container mx-auto px-4 py-12">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-3xl font-bold">Featured Products</h2>

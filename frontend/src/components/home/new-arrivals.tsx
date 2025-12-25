@@ -15,7 +15,7 @@ export function NewArrivals() {
   if (error) return null;
 
   return (
-    <section className="container mx-auto px-4">
+    <section className="relative z-10 container mx-auto px-4 py-12">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-3xl font-bold">New Arrivals</h2>
