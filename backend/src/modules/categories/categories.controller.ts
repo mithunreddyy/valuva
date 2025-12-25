@@ -9,7 +9,7 @@ export class CategoriesController {
     this.service = new CategoriesService();
   }
 
-  getCategories = async (req: Request, res: Response): Promise<Response> => {
+  getCategories = async (_req: Request, res: Response): Promise<Response> => {
     const categories = await this.service.getCategories();
     return ResponseUtil.success(res, categories);
   };

@@ -28,8 +28,11 @@ export class PaymentsController {
       raw: req.body,
     });
 
-    return ResponseUtil.success(res, { received: true }, undefined, HTTP_STATUS.OK);
+    return ResponseUtil.success(
+      res,
+      { received: true },
+      undefined,
+      HTTP_STATUS.OK
+    );
   };
 }
-
-

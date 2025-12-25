@@ -5,7 +5,7 @@ import { ForbiddenError } from "../utils/error.util";
 import { AuthRequest } from "./auth.middleware";
 
 export const authorize = (...roles: UserRole[]) => {
-  return (req: AuthRequest, res: Response, next: NextFunction): void => {
+  return (req: AuthRequest, _res: Response, next: NextFunction): void => {
     if (!req.user) {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
     }

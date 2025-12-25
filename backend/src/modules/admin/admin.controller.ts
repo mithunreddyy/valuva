@@ -18,7 +18,10 @@ export class AdminController {
     return ResponseUtil.success(res, result, SUCCESS_MESSAGES.LOGIN);
   };
 
-  getDashboard = async (req: AuthRequest, res: Response): Promise<Response> => {
+  getDashboard = async (
+    _req: AuthRequest,
+    res: Response
+  ): Promise<Response> => {
     const stats = await this.service.getDashboardStats();
     return ResponseUtil.success(res, stats);
   };

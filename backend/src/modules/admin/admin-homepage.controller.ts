@@ -12,7 +12,7 @@ export class AdminHomepageController {
   }
 
   getAllSections = async (
-    req: AuthRequest,
+    _req: AuthRequest,
     res: Response
   ): Promise<Response> => {
     const sections = await this.service.getAllSections();

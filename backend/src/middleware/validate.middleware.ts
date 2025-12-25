@@ -5,7 +5,7 @@ import { ValidationError } from "../utils/error.util";
 export const validate = (schema: ZodObject<any>) => {
   return async (
     req: Request,
-    res: Response,
+    _res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {

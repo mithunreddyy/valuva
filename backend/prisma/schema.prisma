@@ -450,3 +450,19 @@ model AuditLog {
   @@index([createdAt])
   @@map("audit_logs")
 }
+
+model OrderTrackingUpdate {
+  id          String   @id @default(uuid())
+  orderId     String
+  status      String
+  location    String
+  description String
+  timestamp   DateTime @default(now())
+  createdAt   DateTime @default(now())
+  
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  @@index([orderId])
+  @@index([timestamp])
+  @@map("order_tracking_updates")
+}

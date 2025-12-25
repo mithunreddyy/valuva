@@ -9,22 +9,22 @@ export class HomepageController {
     this.service = new HomepageService();
   }
 
-  getSections = async (req: Request, res: Response): Promise<Response> => {
+  getSections = async (_req: Request, res: Response): Promise<Response> => {
     const sections = await this.service.getSections();
     return ResponseUtil.success(res, sections);
   };
 
-  getFeatured = async (req: Request, res: Response): Promise<Response> => {
+  getFeatured = async (_req: Request, res: Response): Promise<Response> => {
     const products = await this.service.getFeatured();
     return ResponseUtil.success(res, products);
   };
 
-  getNewArrivals = async (req: Request, res: Response): Promise<Response> => {
+  getNewArrivals = async (_req: Request, res: Response): Promise<Response> => {
     const products = await this.service.getNewArrivals();
     return ResponseUtil.success(res, products);
   };
 
-  getBestSellers = async (req: Request, res: Response): Promise<Response> => {
+  getBestSellers = async (_req: Request, res: Response): Promise<Response> => {
     const products = await this.service.getBestSellers();
     return ResponseUtil.success(res, products);
   };

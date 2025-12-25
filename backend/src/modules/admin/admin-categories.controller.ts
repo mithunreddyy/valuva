@@ -12,7 +12,7 @@ export class AdminCategoriesController {
   }
 
   getAllCategories = async (
-    req: AuthRequest,
+    _req: AuthRequest,
     res: Response
   ): Promise<Response> => {
     const categories = await this.service.getAllCategories();

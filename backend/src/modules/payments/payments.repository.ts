@@ -18,10 +18,12 @@ export class PaymentsRepository {
       where: { orderId },
       data: {
         status,
-        ...(transactionId && { transactionId }),
-        ...(gatewayResponse && { paymentGatewayResponse: gatewayResponse as any }),
-        ...(status === "COMPLETED" && { paidAt: new Date() }),
-        ...(status === "REFUNDED" && { refundedAt: new Date() }),
+        ...(typeof transactionId === "string" ? { transactionId } : {}),
+        ...(typeof gatewayResponse !== "undefined"
+          ? { paymentGatewayResponse: gatewayResponse as any }
+          : {}),
+        ...(status === "COMPLETED" ? { paidAt: new Date() } : {}),
+        ...(status === "REFUNDED" ? { refundedAt: new Date() } : {}),
       },
     });
   }
@@ -35,12 +37,12 @@ export class PaymentsRepository {
       where: { transactionId },
       data: {
         status,
-        ...(gatewayResponse && { paymentGatewayResponse: gatewayResponse as any }),
-        ...(status === "COMPLETED" && { paidAt: new Date() }),
-        ...(status === "REFUNDED" && { refundedAt: new Date() }),
+        ...(typeof gatewayResponse !== "undefined"
+          ? { paymentGatewayResponse: gatewayResponse as any }
+          : {}),
+        ...(status === "COMPLETED" ? { paidAt: new Date() } : {}),
+        ...(status === "REFUNDED" ? { refundedAt: new Date() } : {}),
       },
     });
   }
 }
-
-

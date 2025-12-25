@@ -40,6 +40,12 @@ export class ConflictError extends AppError {
   }
 }
 
+export class TooManyRequestsError extends AppError {
+  constructor(message: string = "Too many requests") {
+    super(message, 429, true);
+  }
+}
+
 // src/utils/slug.util.ts
 export class SlugUtil {
   static generate(text: string): string {
