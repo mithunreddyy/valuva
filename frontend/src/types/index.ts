@@ -1,14 +1,94 @@
+export enum UserRole {
+  CUSTOMER = "CUSTOMER",
+  ADMIN = "ADMIN",
+  SUPER_ADMIN = "SUPER_ADMIN",
+}
+
+export enum OrderStatus {
+  PENDING = "PENDING",
+  PROCESSING = "PROCESSING",
+  SHIPPED = "SHIPPED",
+  DELIVERED = "DELIVERED",
+  CANCELLED = "CANCELLED",
+  REFUNDED = "REFUNDED",
+}
+
+export enum PaymentMethod {
+  CREDIT_CARD = "CREDIT_CARD",
+  DEBIT_CARD = "DEBIT_CARD",
+  UPI = "UPI",
+  NET_BANKING = "NET_BANKING",
+  WALLET = "WALLET",
+  COD = "COD",
+}
+
+export enum PaymentStatus {
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+  REFUNDED = "REFUNDED",
+}
+
 export interface User {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
   phone?: string;
-  role: "CUSTOMER" | "ADMIN" | "SUPER_ADMIN";
   isEmailVerified: boolean;
   isActive: boolean;
+  role: UserRole;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  isActive: boolean;
+  sortOrder: number;
+  subCategories?: SubCategory[];
+  _count?: { products: number };
+}
+
+export interface SubCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  isActive: boolean;
+  sortOrder: number;
+  categoryId: string;
+  category?: Category;
+}
+
+export interface ProductImage {
+  id: string;
+  url: string;
+  altText?: string;
+  isPrimary: boolean;
+  sortOrder: number;
+}
+
+export interface ProductVariant {
+  id: string;
+  sku: string;
+  size: string;
+  color: string;
+  colorHex?: string;
+  stock: number;
+  price: number;
+  isActive: boolean;
 }
 
 export interface Product {
@@ -26,58 +106,15 @@ export interface Product {
   isFeatured: boolean;
   isNewArrival: boolean;
   totalStock: number;
+  totalSold: number;
   categoryId: string;
+  category?: Category;
   subCategoryId?: string;
-  category: Category;
   subCategory?: SubCategory;
-  variants: ProductVariant[];
   images: ProductImage[];
-  averageRating: number;
-  reviewCount: number;
-}
-
-export interface ProductVariant {
-  id: string;
-  productId: string;
-  sku: string;
-  size: string;
-  color: string;
-  colorHex?: string;
-  stock: number;
-  price: number;
-  isActive: boolean;
-}
-
-export interface ProductImage {
-  id: string;
-  productId: string;
-  url: string;
-  altText?: string;
-  isPrimary: boolean;
-  sortOrder: number;
-}
-
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  image?: string;
-  isActive: boolean;
-  sortOrder: number;
-  subCategories?: SubCategory[];
-  productsCount: number;
-}
-
-export interface SubCategory {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  image?: string;
-  categoryId: string;
-  isActive: boolean;
-  sortOrder: number;
+  variants: ProductVariant[];
+  averageRating?: number;
+  reviewCount?: number;
 }
 
 export interface CartItem {
@@ -120,42 +157,43 @@ export interface Address {
   isDefault: boolean;
 }
 
+export interface OrderItem {
+  id: string;
+  variantId: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+  variant: {
+    size: string;
+    color: string;
+    product: {
+      name: string;
+      images: ProductImage[];
+    };
+  };
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
-  status:
-    | "PENDING"
-    | "PROCESSING"
-    | "SHIPPED"
-    | "DELIVERED"
-    | "CANCELLED"
-    | "REFUNDED";
+  status: OrderStatus;
   subtotal: number;
   discount: number;
   tax: number;
   shippingCost: number;
   total: number;
+  couponCode?: string;
+  trackingNumber?: string;
   items: OrderItem[];
   shippingAddress: Address;
-  payment: Payment;
+  billingAddress: Address;
+  payment?: {
+    status: PaymentStatus;
+    method: PaymentMethod;
+    paidAt?: string;
+  };
   createdAt: string;
-}
-
-export interface OrderItem {
-  id: string;
-  quantity: number;
-  price: number;
-  subtotal: number;
-  variant: ProductVariant & { product: Product };
-}
-
-export interface Payment {
-  id: string;
-  amount: number;
-  status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
-  method: string;
-  transactionId?: string;
-  paidAt?: string;
+  updatedAt: string;
 }
 
 export interface Review {
@@ -168,10 +206,27 @@ export interface Review {
   isVerified: boolean;
   isApproved: boolean;
   createdAt: string;
-  user: {
+  user?: {
     firstName: string;
     lastName: string;
   };
+  product?: {
+    name: string;
+    slug: string;
+  };
+}
+
+export interface WishlistItem {
+  id: string;
+  productId: string;
+  name: string;
+  slug: string;
+  basePrice: number;
+  compareAtPrice?: number;
+  image: string | null;
+  averageRating: number;
+  reviewCount: number;
+  addedAt: string;
 }
 
 export interface Coupon {
@@ -187,4 +242,32 @@ export interface Coupon {
   isActive: boolean;
   startsAt: string;
   expiresAt: string;
+}
+
+export interface HomepageSection {
+  id: string;
+  type: string;
+  title: string;
+  subtitle?: string;
+  isActive: boolean;
+  sortOrder: number;
+  config: Record<string, unknown>;
+}
+
+export interface PaginatedResponse<T> {
+  success: boolean;
+  data: T[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data?: T;
+  error?: string;
 }

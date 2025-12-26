@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/toast";
 import { ReactQueryProvider } from "@/lib/react-query";
+import { ReduxProvider } from "@/lib/redux-provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -12,7 +13,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Valuva",
-  description: "Discover premium fashion and lifestyle products",
+  description: "వలువ",
 };
 
 export default function RootLayout({
@@ -23,10 +24,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className={`${inter.className} antialiased`}>
-        <ReactQueryProvider>
-          {children}
-          <Toaster />
-        </ReactQueryProvider>
+        <ReduxProvider>
+          <ReactQueryProvider>
+            {children}
+            <Toaster />
+          </ReactQueryProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

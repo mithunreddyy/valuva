@@ -70,10 +70,10 @@ export function ProductCard({ product }: ProductCardProps) {
               </span>
             )}
           </div>
-          {product.reviewCount > 0 && (
+          {product.reviewCount && product.reviewCount > 0 && (
             <div className="flex items-center gap-1 text-sm text-neutral-600">
               <span>★</span>
-              <span>{product.averageRating.toFixed(1)}</span>
+              <span>{product.averageRating?.toFixed(1) ?? "0.0"}</span>
               <span>({product.reviewCount})</span>
             </div>
           )}

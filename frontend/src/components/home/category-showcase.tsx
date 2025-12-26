@@ -52,7 +52,7 @@ export function CategoryShowcase() {
                   {category.name}
                 </h3>
                 <p className="text-white/90 text-sm mt-1">
-                  {category.productsCount} products
+                  {category._count?.products ?? 0} products
                 </p>
               </div>
             </Link>

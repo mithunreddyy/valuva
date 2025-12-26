@@ -28,8 +28,7 @@ export function useCreateAddress() {
     onError: (error: any) => {
       toast({
         title: "Error",
-        description:
-          error.response?.data?.message || "Failed to add address",
+        description: error.response?.data?.message || "Failed to add address",
         variant: "destructive",
       });
     },
@@ -40,8 +39,13 @@ export function useUpdateAddress() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Parameters<typeof addressesApi.updateAddress>[1] }) =>
-      addressesApi.updateAddress(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Parameters<typeof addressesApi.updateAddress>[1];
+    }) => addressesApi.updateAddress(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["addresses"] });
       toast({
@@ -84,4 +88,3 @@ export function useDeleteAddress() {
     },
   });
 }
-
