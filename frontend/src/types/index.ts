@@ -173,9 +173,26 @@ export interface OrderItem {
   };
 }
 
+export interface Payment {
+  id: string;
+  orderId: string;
+  amount: number;
+  status: PaymentStatus;
+  method: PaymentMethod;
+  transactionId?: string;
+  paymentGatewayResponse?: Record<string, unknown>;
+  refundAmount?: number;
+  refundReason?: string;
+  paidAt?: string;
+  refundedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
+  userId: string;
   status: OrderStatus;
   subtotal: number;
   discount: number;
@@ -184,13 +201,16 @@ export interface Order {
   total: number;
   couponCode?: string;
   trackingNumber?: string;
+  notes?: string;
   items: OrderItem[];
   shippingAddress: Address;
   billingAddress: Address;
-  payment?: {
-    status: PaymentStatus;
-    method: PaymentMethod;
-    paidAt?: string;
+  payment?: Payment;
+  user?: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
   };
   createdAt: string;
   updatedAt: string;

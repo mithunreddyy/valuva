@@ -58,6 +58,14 @@ export class AdminController {
     return ResponseUtil.paginated(res, result.users, page, limit, result.total);
   };
 
+  getOrderById = async (
+    req: AuthRequest,
+    res: Response
+  ): Promise<Response> => {
+    const order = await this.service.getOrderById(req.params.id);
+    return ResponseUtil.success(res, order);
+  };
+
   updateOrderStatus = async (
     req: AuthRequest,
     res: Response

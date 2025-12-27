@@ -1,12 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Skeleton } from "@/components/ui/skeleton";
 import { OrderTracking } from "@/components/orders/order-tracking";
-import { useOrder, useCancelOrder } from "@/hooks/use-orders";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCancelOrder, useOrder } from "@/hooks/use-orders";
 import { formatDate, formatPrice } from "@/lib/utils";
-import { Package, Truck, CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, Package, Truck, XCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -113,7 +112,9 @@ export default function OrderDetailPage() {
             <div className="flex items-center gap-4 mb-4">
               {getStatusIcon()}
               <div>
-                <h2 className="text-xl font-medium tracking-normal mb-2">Order Status</h2>
+                <h2 className="text-xl font-medium tracking-normal mb-2">
+                  Order Status
+                </h2>
                 <span
                   className={`inline-block px-3 py-1 text-xs font-medium tracking-normal rounded-[6px] ${
                     order.status === "DELIVERED"
@@ -132,25 +133,26 @@ export default function OrderDetailPage() {
             <p className="text-xs text-neutral-500 font-medium mb-4">
               Placed on {formatDate(order.createdAt)}
             </p>
-            {order.status !== "CANCELLED" &&
-              order.status !== "DELIVERED" && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="rounded-[10px]"
-                  onClick={handleCancel}
-                  disabled={cancelOrder.isPending}
-                >
-                  {cancelOrder.isPending ? "Cancelling..." : "Cancel Order"}
-                </Button>
-              )}
+            {order.status !== "CANCELLED" && order.status !== "DELIVERED" && (
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-[10px]"
+                onClick={handleCancel}
+                disabled={cancelOrder.isPending}
+              >
+                {cancelOrder.isPending ? "Cancelling..." : "Cancel Order"}
+              </Button>
+            )}
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Order Items */}
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-                <h2 className="text-xl font-medium tracking-normal mb-6">Order Items</h2>
+                <h2 className="text-xl font-medium tracking-normal mb-6">
+                  Order Items
+                </h2>
                 <div className="space-y-4">
                   {order.items.map((item) => (
                     <div
@@ -192,28 +194,40 @@ export default function OrderDetailPage() {
 
               {/* Shipping Address */}
               <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-                <h2 className="text-xl font-medium tracking-normal mb-6">Shipping Address</h2>
+                <h2 className="text-xl font-medium tracking-normal mb-6">
+                  Shipping Address
+                </h2>
                 <div className="text-sm space-y-2 font-medium">
                   <p className="text-sm font-medium text-[#0a0a0a] mb-2">
                     {order.shippingAddress.fullName}
                   </p>
-                  <p className="text-xs text-neutral-600">{order.shippingAddress.addressLine1}</p>
+                  <p className="text-xs text-neutral-600">
+                    {order.shippingAddress.addressLine1}
+                  </p>
                   {order.shippingAddress.addressLine2 && (
-                    <p className="text-xs text-neutral-600">{order.shippingAddress.addressLine2}</p>
+                    <p className="text-xs text-neutral-600">
+                      {order.shippingAddress.addressLine2}
+                    </p>
                   )}
                   <p className="text-xs text-neutral-600">
                     {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
                     {order.shippingAddress.postalCode}
                   </p>
-                  <p className="text-xs text-neutral-600">{order.shippingAddress.country}</p>
-                  <p className="text-xs text-neutral-600 mt-3">Phone: {order.shippingAddress.phone}</p>
+                  <p className="text-xs text-neutral-600">
+                    {order.shippingAddress.country}
+                  </p>
+                  <p className="text-xs text-neutral-600 mt-3">
+                    Phone: {order.shippingAddress.phone}
+                  </p>
                 </div>
               </div>
 
               {/* Order Tracking */}
               {order.status !== "CANCELLED" && (
                 <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-                  <h2 className="text-xl font-medium tracking-normal mb-6">Track Order</h2>
+                  <h2 className="text-xl font-medium tracking-normal mb-6">
+                    Track Order
+                  </h2>
                   <OrderTracking orderNumber={order.orderNumber} />
                 </div>
               )}
@@ -222,22 +236,32 @@ export default function OrderDetailPage() {
             {/* Order Summary */}
             <div className="lg:col-span-1">
               <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px] sticky top-24">
-                <h2 className="text-sm font-medium tracking-normal mb-6 border-b border-[#e5e5e5] pb-4">Order Summary</h2>
+                <h2 className="text-sm font-medium tracking-normal mb-6 border-b border-[#e5e5e5] pb-4">
+                  Order Summary
+                </h2>
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm">
-                    <span className="text-xs font-medium text-neutral-500">Subtotal</span>
-                    <span className="font-medium">{formatPrice(order.subtotal)}</span>
+                    <span className="text-xs font-medium text-neutral-500">
+                      Subtotal
+                    </span>
+                    <span className="font-medium">
+                      {formatPrice(order.subtotal)}
+                    </span>
                   </div>
                   {order.discount > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-xs font-medium text-neutral-500">Discount</span>
+                      <span className="text-xs font-medium text-neutral-500">
+                        Discount
+                      </span>
                       <span className="font-medium text-green-600">
                         -{formatPrice(order.discount)}
                       </span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
-                    <span className="text-xs font-medium text-neutral-500">Shipping</span>
+                    <span className="text-xs font-medium text-neutral-500">
+                      Shipping
+                    </span>
                     <span className="font-medium">
                       {order.shippingCost === 0
                         ? "Free"
@@ -246,8 +270,12 @@ export default function OrderDetailPage() {
                   </div>
                   {order.tax > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-xs font-medium text-neutral-500">Tax</span>
-                      <span className="font-medium">{formatPrice(order.tax)}</span>
+                      <span className="text-xs font-medium text-neutral-500">
+                        Tax
+                      </span>
+                      <span className="font-medium">
+                        {formatPrice(order.tax)}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -257,14 +285,22 @@ export default function OrderDetailPage() {
                 </div>
 
                 <div className="mt-6 pt-6 border-t border-[#e5e5e5]">
-                  <h3 className="text-sm font-medium tracking-normal mb-4">Payment</h3>
+                  <h3 className="text-sm font-medium tracking-normal mb-4">
+                    Payment
+                  </h3>
                   <div className="text-sm space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-xs font-medium text-neutral-500">Method</span>
-                      <span className="font-medium">{order.payment?.method || "N/A"}</span>
+                      <span className="text-xs font-medium text-neutral-500">
+                        Method
+                      </span>
+                      <span className="font-medium">
+                        {order.payment?.method || "N/A"}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-xs font-medium text-neutral-500">Status</span>
+                      <span className="text-xs font-medium text-neutral-500">
+                        Status
+                      </span>
                       <span
                         className={`font-medium ${
                           order.payment?.status === "COMPLETED"
@@ -279,7 +315,9 @@ export default function OrderDetailPage() {
                     </div>
                     {order.payment?.transactionId && (
                       <div className="flex justify-between">
-                        <span className="text-xs font-medium text-neutral-500">Transaction ID</span>
+                        <span className="text-xs font-medium text-neutral-500">
+                          Transaction ID
+                        </span>
                         <span className="font-mono text-xs font-medium">
                           {order.payment.transactionId}
                         </span>

@@ -100,11 +100,21 @@ export class AdminRepository {
             include: {
               variant: {
                 include: {
-                  product: true,
+                  product: {
+                    include: {
+                      images: {
+                        where: { isPrimary: true },
+                        take: 1,
+                      },
+                    },
+                  },
                 },
               },
             },
           },
+          shippingAddress: true,
+          billingAddress: true,
+          payment: true,
         },
         orderBy: { createdAt: "desc" },
         skip,
@@ -114,6 +124,37 @@ export class AdminRepository {
     ]);
 
     return { orders, total };
+  }
+
+  async getOrderById(orderId: string) {
+    return prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+        items: {
+          include: {
+            variant: {
+              include: {
+                product: {
+                  include: {
+                    images: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        shippingAddress: true,
+        billingAddress: true,
+        payment: true,
+      },
+    });
   }
 
   async getUsers(skip: number, take: number) {

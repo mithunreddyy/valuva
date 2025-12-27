@@ -233,7 +233,7 @@ export default function AboutPage() {
               </p>
               <p>
                 Today, we continue to evolve and grow, always keeping our customers
-                at the heart of everything we do. We're grateful for the trust you
+                at the heart of everything we do. We&apos;re grateful for the trust you
                 place in us and remain committed to exceeding your expectations.
               </p>
             </div>

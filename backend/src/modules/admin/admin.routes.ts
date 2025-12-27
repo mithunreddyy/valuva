@@ -15,6 +15,7 @@ router.use(authorize(UserRole.ADMIN, UserRole.SUPER_ADMIN));
 
 router.get("/dashboard", asyncHandler(controller.getDashboard));
 router.get("/orders", asyncHandler(controller.getOrders));
+router.get("/orders/:id", asyncHandler(controller.getOrderById));
 router.get("/users", asyncHandler(controller.getUsers));
 router.patch(
   "/orders/:orderId/status",

@@ -8,8 +8,11 @@ import { useAddToCart } from "@/hooks/use-cart";
 import { useProduct, useRelatedProducts } from "@/hooks/use-products";
 import { formatPrice } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { addToWishlist, removeFromWishlist } from "@/store/slices/wishlistSlice";
-import { Heart, ShoppingCart, Star, Minus, Plus } from "lucide-react";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "@/store/slices/wishlistSlice";
+import { Heart, Minus, Plus, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -129,12 +132,15 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                     </span>
                   )}
                 </div>
-                {product.reviewCount > 0 && (
+                {product.reviewCount && product.reviewCount! > 0 && (
                   <div className="flex items-center gap-2">
                     <Star className="h-4 w-4 fill-[#0a0a0a]" />
-                    <span className="text-sm font-medium">{product.averageRating}</span>
+                    <span className="text-sm font-medium">
+                      {product.averageRating}
+                    </span>
                     <span className="text-xs text-neutral-500 font-medium">
-                      ({product.reviewCount} {product.reviewCount === 1 ? "review" : "reviews"})
+                      ({product.reviewCount}{" "}
+                      {product.reviewCount === 1 ? "review" : "reviews"})
                     </span>
                   </div>
                 )}
@@ -178,7 +184,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {availableColors.map((color) => {
-                      const variant = product.variants.find((v) => v.color === color);
+                      const variant = product.variants.find(
+                        (v) => v.color === color
+                      );
                       return (
                         <button
                           key={color}
@@ -229,7 +237,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                       )
                     }
                     className="w-10 h-10 border border-[#e5e5e5] flex items-center justify-center hover:border-[#0a0a0a] transition-all rounded-[8px] disabled:opacity-50"
-                    disabled={quantity >= (selectedVariant?.stock || product.totalStock)}
+                    disabled={
+                      quantity >= (selectedVariant?.stock || product.totalStock)
+                    }
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -272,26 +282,24 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               <div className="border-t border-[#e5e5e5] pt-5 space-y-3">
                 {product.brand && (
                   <div className="flex gap-4">
-                    <span className="text-xs font-medium w-20">
-                      Brand:
-                    </span>
+                    <span className="text-xs font-medium w-20">Brand:</span>
                     <span className="text-sm font-medium">{product.brand}</span>
                   </div>
                 )}
                 {product.material && (
                   <div className="flex gap-4">
-                    <span className="text-xs font-medium w-20">
-                      Material:
+                    <span className="text-xs font-medium w-20">Material:</span>
+                    <span className="text-sm font-medium">
+                      {product.material}
                     </span>
-                    <span className="text-sm font-medium">{product.material}</span>
                   </div>
                 )}
                 {product.careInstructions && (
                   <div className="flex gap-4">
-                    <span className="text-xs font-medium w-20">
-                      Care:
+                    <span className="text-xs font-medium w-20">Care:</span>
+                    <span className="text-sm font-medium">
+                      {product.careInstructions}
                     </span>
-                    <span className="text-sm font-medium">{product.careInstructions}</span>
                   </div>
                 )}
               </div>

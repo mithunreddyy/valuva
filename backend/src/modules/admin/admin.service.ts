@@ -73,4 +73,8 @@ export class AdminService {
 
     return this.repository.getUsers(skip, limit);
   }
+
+  async getOrderById(orderId: string) {
+    return this.repository.getOrderById(orderId);
+  }
 }

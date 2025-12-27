@@ -55,7 +55,7 @@ export default function ContactPage() {
               Get in Touch
             </h1>
             <p className="text-base sm:text-lg text-neutral-600 font-medium leading-relaxed">
-              Have questions? We'd love to hear from you.
+              Have questions? We&apos;d love to hear from you.
             </p>
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function ContactPage() {
                 Send us a message
               </h2>
               <p className="text-sm text-neutral-600 font-medium">
-                Fill out the form below and we'll get back to you as soon as possible.
+                Fill out the form below and we&apos;ll get back to you as soon as possible.
               </p>
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

@@ -104,4 +104,81 @@ export const adminApi = {
     const response = await apiClient.get("/analytics/top-products", { params });
     return response.data;
   },
+
+  // Dashboard
+  getDashboard: async () => {
+    const response = await apiClient.get("/admin/dashboard");
+    return response.data;
+  },
+
+  // Orders
+  getOrders: async (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  }) => {
+    const response = await apiClient.get("/admin/orders", { params });
+    return response.data;
+  },
+
+  // Order Tracking
+  getActiveOrders: async () => {
+    const response = await apiClient.get("/order-tracking/admin/active-orders");
+    return response.data;
+  },
+
+  updateOrderTracking: async (
+    orderId: string,
+    status: string,
+    location: string,
+    description: string
+  ) => {
+    const response = await apiClient.patch(
+      `/order-tracking/admin/${orderId}/update`,
+      { status, location, description }
+    );
+    return response.data;
+  },
+
+  addTrackingUpdate: async (
+    orderId: string,
+    status: string,
+    location: string,
+    description: string,
+    timestamp?: string
+  ) => {
+    const response = await apiClient.post(
+      `/order-tracking/admin/${orderId}/tracking-update`,
+      { status, location, description, timestamp }
+    );
+    return response.data;
+  },
+
+  // Customer Analytics
+  getCustomerAnalytics: async (params?: {
+    startDate?: string;
+    endDate?: string;
+  }) => {
+    const response = await apiClient.get("/analytics/customer-analytics", {
+      params,
+    });
+    return response.data;
+  },
+
+  // Inventory Insights
+  getInventoryInsights: async () => {
+    const response = await apiClient.get("/analytics/inventory-insights");
+    return response.data;
+  },
+
+  // Category Performance
+  getCategoryPerformance: async (params?: {
+    startDate?: string;
+    endDate?: string;
+  }) => {
+    const response = await apiClient.get("/analytics/category-performance", {
+      params,
+    });
+    return response.data;
+  },
 };

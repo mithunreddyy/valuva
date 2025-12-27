@@ -2,12 +2,17 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useProfile, useUpdateProfile, useChangePassword, useUserStats } from "@/hooks/use-users";
-import { useAppSelector } from "@/store";
-import { User, Lock, Package, ShoppingBag, DollarSign } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import {
+  useChangePassword,
+  useProfile,
+  useUpdateProfile,
+  useUserStats,
+} from "@/hooks/use-users";
 import { formatPrice } from "@/lib/utils";
+import { useAppSelector } from "@/store";
+import { DollarSign, Lock, Package, ShoppingBag, User } from "lucide-react";
+import { useState } from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 export default function DashboardPage() {
   const { user: authUser } = useAppSelector((state) => state.auth);
@@ -38,11 +43,18 @@ export default function DashboardPage() {
     reset: resetPassword,
   } = useForm();
 
-  const onProfileSubmit = (data: any) => {
+  const onProfileSubmit = (data: {
+    firstName: string;
+    lastName: string;
+    phone: string;
+  }) => {
     updateProfile.mutate(data);
   };
 
-  const onPasswordSubmit = (data: any) => {
+  const onPasswordSubmit = (data: {
+    currentPassword: string;
+    newPassword: string;
+  }) => {
     changePassword.mutate({
       currentPassword: data.currentPassword,
       newPassword: data.newPassword,
@@ -92,28 +104,38 @@ export default function DashboardPage() {
               <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
                 <div className="flex items-center gap-3 mb-2">
                   <Package className="h-5 w-5 text-neutral-500" />
-                  <span className="text-xs text-neutral-500 font-medium">Total Orders</span>
+                  <span className="text-xs text-neutral-500 font-medium">
+                    Total Orders
+                  </span>
                 </div>
                 <p className="text-2xl font-medium">{stats.totalOrders}</p>
               </div>
               <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
                 <div className="flex items-center gap-3 mb-2">
                   <ShoppingBag className="h-5 w-5 text-neutral-500" />
-                  <span className="text-xs text-neutral-500 font-medium">Pending</span>
+                  <span className="text-xs text-neutral-500 font-medium">
+                    Pending
+                  </span>
                 </div>
                 <p className="text-2xl font-medium">{stats.pendingOrders}</p>
               </div>
               <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
                 <div className="flex items-center gap-3 mb-2">
                   <DollarSign className="h-5 w-5 text-neutral-500" />
-                  <span className="text-xs text-neutral-500 font-medium">Total Spent</span>
+                  <span className="text-xs text-neutral-500 font-medium">
+                    Total Spent
+                  </span>
                 </div>
-                <p className="text-2xl font-medium">{formatPrice(stats.totalSpent)}</p>
+                <p className="text-2xl font-medium">
+                  {formatPrice(stats.totalSpent)}
+                </p>
               </div>
               <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
                 <div className="flex items-center gap-3 mb-2">
                   <Package className="h-5 w-5 text-neutral-500" />
-                  <span className="text-xs text-neutral-500 font-medium">Completed</span>
+                  <span className="text-xs text-neutral-500 font-medium">
+                    Completed
+                  </span>
                 </div>
                 <p className="text-2xl font-medium">{stats.completedOrders}</p>
               </div>
@@ -133,14 +155,19 @@ export default function DashboardPage() {
                 Profile Information
               </h2>
             </div>
-            <form onSubmit={handleProfileSubmit(onProfileSubmit)} className="space-y-5">
+            <form
+              onSubmit={handleProfileSubmit(onProfileSubmit)}
+              className="space-y-5"
+            >
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     First Name
                   </label>
                   <Input
-                    {...registerProfile("firstName", { required: "First name is required" })}
+                    {...registerProfile("firstName", {
+                      required: "First name is required",
+                    })}
                     className="rounded-[10px]"
                   />
                   {profileErrors.firstName && (
@@ -154,7 +181,9 @@ export default function DashboardPage() {
                     Last Name
                   </label>
                   <Input
-                    {...registerProfile("lastName", { required: "Last name is required" })}
+                    {...registerProfile("lastName", {
+                      required: "Last name is required",
+                    })}
                     className="rounded-[10px]"
                   />
                   {profileErrors.lastName && (
@@ -219,7 +248,12 @@ export default function DashboardPage() {
                 </Button>
               </div>
             ) : (
-              <form onSubmit={handlePasswordSubmit(onPasswordSubmit)} className="space-y-5">
+              <form
+                onSubmit={handlePasswordSubmit(
+                  onPasswordSubmit as SubmitHandler<FieldValues>
+                )}
+                className="space-y-5"
+              >
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Current Password
@@ -286,7 +320,9 @@ export default function DashboardPage() {
                     disabled={changePassword.isPending}
                     className="flex-1 rounded-[10px]"
                   >
-                    {changePassword.isPending ? "Updating..." : "Update Password"}
+                    {changePassword.isPending
+                      ? "Updating..."
+                      : "Update Password"}
                   </Button>
                   <Button
                     type="button"
