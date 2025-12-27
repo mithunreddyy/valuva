@@ -1,9 +1,10 @@
-import { PaymentMethod } from "@prisma/client";
+import { PaymentMethod, OrderStatus } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { ERROR_MESSAGES } from "../../config/constants";
 import { NotFoundError, ValidationError } from "../../utils/error.util";
 import { OrderUtil } from "../../utils/order.util";
 import { OrdersRepository } from "./orders.repository";
+import { prisma } from "../../config/database";
 
 const TAX_RATE = 0.18;
 const SHIPPING_COST = new Decimal(50);
@@ -126,6 +127,16 @@ export class OrdersService {
 
     await this.repository.clearCart(cart.id);
 
+    // Create initial tracking update
+    await prisma.orderTrackingUpdate.create({
+      data: {
+        orderId: order.id,
+        status: OrderStatus.PENDING,
+        location: "Order Placed",
+        description: "Your order has been placed and is being processed.",
+      },
+    });
+
     return order;
   }
 
@@ -163,5 +174,44 @@ export class OrdersService {
       throw new NotFoundError("Order not found");
     }
     return order;
+  }
+
+  async cancelOrder(orderId: string, userId: string) {
+    const order = await this.repository.findOrderById(orderId, userId);
+    if (!order) {
+      throw new NotFoundError("Order not found");
+    }
+
+    if (order.status === OrderStatus.CANCELLED) {
+      throw new ValidationError("Order is already cancelled");
+    }
+
+    if (order.status === OrderStatus.DELIVERED) {
+      throw new ValidationError("Cannot cancel a delivered order");
+    }
+
+    if (order.status === OrderStatus.SHIPPED) {
+      throw new ValidationError(
+        "Cannot cancel a shipped order. Please contact support for returns."
+      );
+    }
+
+    // Update order status
+    await this.repository.updateOrderStatus(orderId, OrderStatus.CANCELLED);
+
+    // Restore inventory
+    await this.repository.restoreInventory(orderId);
+
+    // Create tracking update
+    await prisma.orderTrackingUpdate.create({
+      data: {
+        orderId: order.id,
+        status: OrderStatus.CANCELLED,
+        location: "Order Cancelled",
+        description: "Your order has been cancelled.",
+      },
+    });
+
+    return this.repository.findOrderById(orderId, userId);
   }
 }

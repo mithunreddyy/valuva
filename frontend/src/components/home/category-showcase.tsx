@@ -1,63 +1,71 @@
 "use client";
 
-import apiClient from "@/lib/axios";
-import { Category } from "@/types";
-import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { useCategories } from "@/hooks/use-categories";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export function CategoryShowcase() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const response = await apiClient.get("/categories");
-      return response.data.data;
-    },
-  });
+  const { data, isLoading } = useCategories();
 
-  if (isLoading || !data) return null;
+  if (isLoading || !data?.data || data.data.length === 0) return null;
 
   return (
-    <section className="relative z-10 container mx-auto px-4 py-12">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold">Shop by Category</h2>
-        <p className="text-neutral-600 mt-2">Explore our curated collections</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data.slice(0, 6).map((category: Category, index: number) => (
-          <motion.div
-            key={category.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            viewport={{ once: true }}
-          >
+    <section className="section-padding bg-white">
+      <div className="container-luxury">
+        <div className="space-y-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-normal">
+                Shop by Category
+              </h2>
+              <p className="text-sm text-neutral-500 font-medium">
+                Explore our curated collections
+              </p>
+            </div>
             <Link
-              href={`/shop?categoryId=${category.id}`}
-              className="group block relative aspect-[4/3] rounded-lg overflow-hidden"
+              href="/shop"
+              className="flex items-center gap-2 text-sm font-medium tracking-normal text-neutral-600 hover:text-[#0a0a0a] transition-colors group"
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
-              {category.image && (
-                <Image
-                  src={category.image}
-                  alt={category.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              )}
-              <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-                <h3 className="text-white text-2xl font-bold">
-                  {category.name}
-                </h3>
-                <p className="text-white/90 text-sm mt-1">
-                  {category._count?.products ?? 0} products
-                </p>
-              </div>
+              View All
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
-          </motion.div>
-        ))}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {data.data.slice(0, 6).map((category) => (
+              <Link
+                key={category.id}
+                href={`/shop?categoryId=${category.id}`}
+                className="group relative aspect-[4/3] overflow-hidden bg-[#fafafa] border border-[#e5e5e5] rounded-[12px] hover:border-[#0a0a0a] transition-all"
+              >
+                {category.image ? (
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-[#e5e5e5]">
+                    <span className="text-sm font-medium text-neutral-400">
+                      {category.name}
+                    </span>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="text-white text-xl font-medium tracking-normal mb-1">
+                    {category.name}
+                  </h3>
+                  <p className="text-white/90 text-xs font-medium">
+                    {category._count?.products ?? 0} products
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

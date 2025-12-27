@@ -21,5 +21,10 @@ router.get(
   validate(getOrderSchema),
   asyncHandler(controller.getOrderById)
 );
+router.patch(
+  "/:id/cancel",
+  validate(getOrderSchema),
+  asyncHandler(controller.cancelOrder)
+);
 
 export default router;

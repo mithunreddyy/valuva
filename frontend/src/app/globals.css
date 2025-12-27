@@ -4,26 +4,32 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* Minimal Luxury Color Palette */
+    --luxury-black: #0a0a0a;
+    --luxury-white: #fafafa;
+    --luxury-gray: #e5e5e5;
+    --luxury-accent: #1a1a1a;
+    
+    --background: 0 0% 98%;
+    --foreground: 0 0% 4%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 0 0% 4%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
+    --popover-foreground: 0 0% 4%;
+    --primary: 0 0% 4%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 4%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 4%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --radius: 0.5rem;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 4%;
+    --radius: 0;
   }
 
   * {
@@ -37,177 +43,181 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-[#fafafa] text-[#0a0a0a];
+    font-family: var(--font-manrope), "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-feature-settings: "liga" 1, "calt" 1;
+    font-weight: 500;
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Minimal Luxury Typography - Manrope for all text */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    font-family: var(--font-manrope), "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* Manrope for paragraphs and body text */
+  p {
+    font-family: var(--font-manrope), "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-weight: 500;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 500;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 500;
+  }
+
+  h3 {
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 500;
   }
 
   /* Selection colors */
   ::selection {
-    @apply bg-black text-white;
+    @apply bg-[#0a0a0a] text-[#fafafa];
+  }
+
+  /* Minimal borders */
+  .border-luxury {
+    border: 1px solid #e5e5e5;
+  }
+
+  .border-luxury-dark {
+    border: 1px solid #0a0a0a;
+  }
+
+  /* Container - Half Width with Responsive Design */
+  .container-luxury {
+    @apply w-full mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: 50%;
+  }
+
+  /* Responsive container widths */
+  @media (max-width: 1024px) {
+    .container-luxury {
+      max-width: 90%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .container-luxury {
+      max-width: 95%;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .container-luxury {
+      max-width: 100%;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+
+  /* Smooth transitions */
+  .transition-luxury {
+    @apply transition-all duration-300 ease-out;
   }
 }
 
 @layer utilities {
-  /* Glass morphism effect */
-  .glass {
-    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-sm;
+  /* Text utilities */
+  .text-luxury {
+    @apply text-[#0a0a0a];
   }
 
-  /* Smooth transitions */
-  .transition-smooth {
-    @apply transition-all duration-300 ease-in-out;
+  .text-luxury-muted {
+    @apply text-neutral-500;
   }
 
-  /* Container with max width */
-  .container-custom {
-    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  /* Spacing utilities */
+  .section-padding {
+    @apply py-8 sm:py-12 lg:py-16;
   }
 
-  /* Text gradient */
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-neutral-900 to-neutral-600;
+  /* Hover effects */
+  .hover-lift {
+    @apply transition-transform duration-300 ease-out hover:-translate-y-1;
   }
 
-  /* Shimmer effect for loading */
-  .shimmer {
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.4) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
-
-  @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
-    }
-  }
-
-  /* Hide scrollbar but keep functionality */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Custom scrollbar */
-  .scrollbar-custom {
-    scrollbar-width: thin;
-    scrollbar-color: #d4d4d4 transparent;
-  }
-
-  .scrollbar-custom::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .scrollbar-custom::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .scrollbar-custom::-webkit-scrollbar-thumb {
-    background: #d4d4d4;
-    border-radius: 3px;
-  }
-
-  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-    background: #a3a3a3;
+  .hover-opacity {
+    @apply transition-opacity duration-300 ease-out hover:opacity-70;
   }
 }
 
 @layer components {
-  /* Button variants */
-  .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  /* Minimal Button - Apple Style Rounded */
+  .btn-luxury {
+    @apply inline-flex items-center justify-center px-6 py-3 text-sm font-medium tracking-normal border border-[#0a0a0a] bg-transparent text-[#0a0a0a] transition-all duration-300 ease-out hover:bg-[#0a0a0a] hover:text-[#fafafa] disabled:opacity-50 disabled:cursor-not-allowed rounded-[10px];
+    font-family: var(--font-manrope), "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
-  .btn-primary {
-    @apply btn bg-black text-white hover:bg-black/90;
+  .btn-luxury-filled {
+    @apply btn-luxury bg-[#0a0a0a] text-[#fafafa] hover:bg-transparent hover:text-[#0a0a0a];
   }
 
-  .btn-secondary {
-    @apply btn border border-black bg-transparent hover:bg-black hover:text-white;
+  /* Minimal Input - Apple Style Rounded */
+  .input-luxury {
+    @apply w-full px-4 py-3 text-sm bg-transparent border border-[#e5e5e5] text-[#0a0a0a] placeholder:text-neutral-400 focus:outline-none focus:border-[#0a0a0a] transition-all duration-300 rounded-[10px];
+    font-family: var(--font-manrope), "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
-  /* Card styles */
-  .card {
-    @apply glass rounded-lg p-6;
+  /* Minimal Card */
+  .card-luxury {
+    @apply bg-white border border-[#e5e5e5] transition-all duration-300;
   }
 
-  .card-hover {
-    @apply card transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  .card-luxury-hover {
+    @apply card-luxury hover:border-[#0a0a0a] hover:shadow-sm;
   }
 
-  /* Badge styles */
-  .badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  /* Glass Morphism Header - Apple Style */
+  .header-glass {
+    background: rgba(250, 250, 250, 0.75);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 4px 16px 0 rgba(0, 0, 0, 0.08),
+      0 1px 0 0 rgba(255, 255, 255, 0.5) inset;
   }
 
-  .badge-success {
-    @apply badge bg-green-100 text-green-800;
+  /* Rounded Header Container */
+  .header-container {
+    border-radius: 20px;
+    margin: 12px 0;
   }
 
-  .badge-warning {
-    @apply badge bg-yellow-100 text-yellow-800;
+  @media (max-width: 1024px) {
+    .header-container {
+      border-radius: 18px;
+      margin: 10px 0;
+    }
   }
 
-  .badge-error {
-    @apply badge bg-red-100 text-red-800;
+  @media (max-width: 768px) {
+    .header-container {
+      border-radius: 16px;
+      margin: 8px 0;
+    }
   }
 
-  .badge-info {
-    @apply badge bg-blue-100 text-blue-800;
-  }
-
-  /* Input styles */
-  .input {
-    @apply flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
-  }
-
-  /* Link styles */
-  .link {
-    @apply text-neutral-600 hover:text-black transition-colors underline-offset-4 hover:underline;
-  }
-
-  /* Section spacing */
-  .section {
-    @apply py-12 md:py-16 lg:py-20;
-  }
-
-  /* Aspect ratios */
-  .aspect-product {
-    @apply aspect-[3/4];
-  }
-
-  .aspect-banner {
-    @apply aspect-[21/9];
-  }
-}
-
-/* Print styles */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-
-  body {
-    background: white;
-  }
-
-  .glass {
-    background: white;
-    backdrop-filter: none;
-    border: 1px solid #e5e5e5;
+  @media (max-width: 640px) {
+    .header-container {
+      border-radius: 14px;
+      margin: 6px 0;
+    }
   }
 }

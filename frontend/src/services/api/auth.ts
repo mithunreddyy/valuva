@@ -45,4 +45,28 @@ export const authApi = {
   resetPassword: async (token: string, newPassword: string): Promise<void> => {
     await apiClient.post("/auth/reset-password", { token, newPassword });
   },
+
+  getProfile: async (): Promise<{ success: boolean; data: User }> => {
+    const response = await apiClient.get<{ success: boolean; data: User }>(
+      "/users/profile"
+    );
+    return response.data;
+  },
+
+  updateProfile: async (
+    data: Partial<User>
+  ): Promise<{ success: boolean; data: User }> => {
+    const response = await apiClient.put<{ success: boolean; data: User }>(
+      "/users/profile",
+      data
+    );
+    return response.data;
+  },
+
+  changePassword: async (data: {
+    currentPassword: string;
+    newPassword: string;
+  }): Promise<void> => {
+    await apiClient.post("/users/change-password", data);
+  },
 };

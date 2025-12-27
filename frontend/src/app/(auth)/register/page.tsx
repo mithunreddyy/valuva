@@ -54,7 +54,7 @@ export default function RegisterPage() {
       if (error instanceof AxiosError) {
         toast({
           title: "Error",
-          description: error.response?.data?.message,
+          description: error.response?.data?.message || "Registration failed",
           variant: "destructive",
         });
       } else {
@@ -70,91 +70,115 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12">
-      <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white" />
+    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-6 py-24">
+      <div className="w-full max-w-md">
+        <div className="bg-white border border-[#e5e5e5] p-8 sm:p-12 rounded-[12px]">
+          <div className="text-center mb-8 space-y-2">
+            <h1 className="text-3xl sm:text-4xl font-medium tracking-normal">
+              Create Account
+            </h1>
+            <p className="text-sm text-neutral-500 font-medium">
+              Join us today
+            </p>
+          </div>
 
-      <div className="relative glass rounded-lg p-8 max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold">Create Account</h1>
-          <p className="text-neutral-600 mt-2">Join us today</p>
-        </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  First Name
+                </label>
+                <Input
+                  {...register("firstName")}
+                  placeholder="John"
+                  className="rounded-[10px]"
+                />
+                {errors.firstName && (
+                  <p className="text-red-600 text-xs mt-1 font-medium">
+                    {errors.firstName.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Last Name
+                </label>
+                <Input
+                  {...register("lastName")}
+                  placeholder="Doe"
+                  className="rounded-[10px]"
+                />
+                {errors.lastName && (
+                  <p className="text-red-600 text-xs mt-1 font-medium">
+                    {errors.lastName.message}
+                  </p>
+                )}
+              </div>
+            </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">
-                First Name
-              </label>
-              <Input {...register("firstName")} placeholder="John" />
-              {errors.firstName && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.firstName.message}
+              <label className="block text-sm font-medium mb-2">Email</label>
+              <Input
+                type="email"
+                {...register("email")}
+                placeholder="your@email.com"
+                className="rounded-[10px]"
+              />
+              {errors.email && (
+                <p className="text-red-600 text-xs mt-1 font-medium">
+                  {errors.email.message}
                 </p>
               )}
             </div>
+
             <div>
               <label className="block text-sm font-medium mb-2">
-                Last Name
+                Phone (Optional)
               </label>
-              <Input {...register("lastName")} placeholder="Doe" />
-              {errors.lastName && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.lastName.message}
+              <Input
+                {...register("phone")}
+                placeholder="+91 1234567890"
+                className="rounded-[10px]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Password</label>
+              <Input
+                type="password"
+                {...register("password")}
+                placeholder="••••••••"
+                className="rounded-[10px]"
+              />
+              {errors.password && (
+                <p className="text-red-600 text-xs mt-1 font-medium">
+                  {errors.password.message}
                 </p>
               )}
             </div>
+
+            <Button
+              type="submit"
+              size="lg"
+              variant="filled"
+              className="w-full rounded-[10px]"
+              disabled={isLoading}
+            >
+              {isLoading ? "Creating account..." : "Create Account"}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center text-sm">
+            <span className="text-neutral-600 font-medium">
+              Already have an account?{" "}
+            </span>
+            <Link
+              href="/login"
+              className="text-[#0a0a0a] hover:underline font-medium"
+            >
+              Sign In
+            </Link>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
-            <Input
-              type="email"
-              {...register("email")}
-              placeholder="your@email.com"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Phone (Optional)
-            </label>
-            <Input {...register("phone")} placeholder="+91 1234567890" />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Password</label>
-            <Input
-              type="password"
-              {...register("password")}
-              placeholder="••••••••"
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-
-          <Button
-            type="submit"
-            size="lg"
-            className="w-full"
-            disabled={isLoading}
-          >
-            {isLoading ? "Creating account..." : "Create Account"}
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center text-sm">
-          <span className="text-neutral-600">Already have an account? </span>
-          <Link href="/login" className="font-medium hover:underline">
-            Sign in
-          </Link>
         </div>
       </div>
     </div>

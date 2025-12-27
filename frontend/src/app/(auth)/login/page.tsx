@@ -8,7 +8,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -22,6 +22,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setAuth } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -46,12 +47,13 @@ export default function LoginPage() {
         title: "Success",
         description: "Logged in successfully",
       });
-      router.push("/dashboard");
+      const redirect = searchParams.get("redirect") || "/dashboard";
+      router.push(redirect);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         toast({
           title: "Error",
-          description: error.response?.data?.message,
+          description: error.response?.data?.message || "Login failed",
           variant: "destructive",
         });
       } else {
@@ -67,68 +69,80 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white" />
-
-      <div className="relative glass rounded-lg p-8 max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold">Welcome Back</h1>
-          <p className="text-neutral-600 mt-2">Sign in to your account</p>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
-            <Input
-              type="email"
-              {...register("email")}
-              placeholder="your@email.com"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </p>
-            )}
+    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-6 py-24">
+      <div className="w-full max-w-md">
+        <div className="bg-white border border-[#e5e5e5] p-8 sm:p-12 rounded-[12px]">
+          <div className="text-center mb-8 space-y-2">
+            <h1 className="text-3xl sm:text-4xl font-medium tracking-normal">
+              Welcome Back
+            </h1>
+            <p className="text-sm text-neutral-500 font-medium">
+              Sign in to your account
+            </p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Password</label>
-            <Input
-              type="password"
-              {...register("password")}
-              placeholder="••••••••"
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium mb-2">Email</label>
+              <Input
+                type="email"
+                {...register("email")}
+                placeholder="your@email.com"
+                className="rounded-[10px]"
+              />
+              {errors.email && (
+                <p className="text-red-600 text-xs mt-1 font-medium">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-          <div className="flex justify-end">
-            <Link
-              href="/forgot-password"
-              className="text-sm text-neutral-600 hover:text-black"
+            <div>
+              <label className="block text-sm font-medium mb-2">Password</label>
+              <Input
+                type="password"
+                {...register("password")}
+                placeholder="••••••••"
+                className="rounded-[10px]"
+              />
+              {errors.password && (
+                <p className="text-red-600 text-xs mt-1 font-medium">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <div className="flex justify-end">
+              <Link
+                href="/forgot-password"
+                className="text-xs text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <Button
+              type="submit"
+              size="lg"
+              variant="filled"
+              className="w-full rounded-[10px]"
+              disabled={isLoading}
             >
-              Forgot password?
+              {isLoading ? "Signing in..." : "Sign In"}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center text-sm">
+            <span className="text-neutral-600 font-medium">
+              Don't have an account?{" "}
+            </span>
+            <Link
+              href="/register"
+              className="text-[#0a0a0a] hover:underline font-medium"
+            >
+              Sign Up
             </Link>
           </div>
-
-          <Button
-            type="submit"
-            size="lg"
-            className="w-full"
-            disabled={isLoading}
-          >
-            {isLoading ? "Signing in..." : "Sign In"}
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center text-sm">
-          <span className="text-neutral-600">Don&apos;t have an account? </span>
-          <Link href="/register" className="font-medium hover:underline">
-            Sign up
-          </Link>
         </div>
       </div>
     </div>

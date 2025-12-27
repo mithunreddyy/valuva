@@ -1,10 +1,12 @@
-import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
+import * as React from "react";
 
 interface EmptyStateProps {
-  icon?: ReactNode;
+  icon?: React.ReactNode;
   title: string;
   description?: string;
-  action?: ReactNode;
+  action?: React.ReactNode;
+  className?: string;
 }
 
 export function EmptyState({
@@ -12,13 +14,23 @@ export function EmptyState({
   title,
   description,
   action,
+  className,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
-      {icon && <div className="mb-4 text-neutral-400">{icon}</div>}
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center text-center py-16",
+        className
+      )}
+    >
+      {icon && <div className="mb-6">{icon}</div>}
+      <h2 className="text-2xl md:text-4xl font-medium tracking-normal mb-4">
+        {title}
+      </h2>
       {description && (
-        <p className="text-neutral-600 mb-6 max-w-md">{description}</p>
+        <p className="text-sm font-medium tracking-normal text-neutral-600 mb-8 max-w-md">
+          {description}
+        </p>
       )}
       {action && <div>{action}</div>}
     </div>

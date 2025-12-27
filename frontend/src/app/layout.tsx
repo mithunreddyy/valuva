@@ -2,18 +2,19 @@ import { Toaster } from "@/components/ui/toast";
 import { ReactQueryProvider } from "@/lib/react-query";
 import { ReduxProvider } from "@/lib/redux-provider";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const manrope = Manrope({
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-manrope",
   display: "swap",
-  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: "Valuva",
-  description: "వలువ",
+  title: "VALUVA | Minimal Luxury Clothing",
+  description: "Premium minimal clothing with terminal-inspired design",
 };
 
 export default function RootLayout({
@@ -22,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className={`${inter.className} antialiased`}>
+    <html lang="en" className={manrope.variable}>
+      <body className={`${manrope.className} antialiased`}>
         <ReduxProvider>
           <ReactQueryProvider>
             {children}

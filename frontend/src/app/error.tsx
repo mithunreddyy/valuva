@@ -15,13 +15,22 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="text-center">
-        <h2 className="text-2xl font-semibold mb-2">Something went wrong!</h2>
-        <p className="text-neutral-600 mb-8">
+    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
+      <div className="container-luxury text-center space-y-6">
+        <h2 className="text-2xl sm:text-3xl font-medium tracking-normal">
+          Something went wrong!
+        </h2>
+        <p className="text-sm text-neutral-600 font-medium max-w-md mx-auto">
           We encountered an error. Please try again.
         </p>
-        <Button onClick={reset}>Try again</Button>
+        <Button
+          onClick={reset}
+          size="lg"
+          variant="filled"
+          className="rounded-[10px]"
+        >
+          Try again
+        </Button>
       </div>
     </div>
   );

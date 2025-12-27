@@ -3,7 +3,16 @@ import { Router } from "express";
 import { asyncHandler } from "../../middleware/async.middleware";
 import { authenticate } from "../../middleware/auth.middleware";
 import { authorize } from "../../middleware/rbac.middleware";
+import { validate } from "../../middleware/validate.middleware";
 import { AnalyticsController } from "./analytics.controller";
+import {
+  getCategoryPerformanceSchema,
+  getCustomerAnalyticsSchema,
+  getInventoryInsightsSchema,
+  getRevenueTrendsSchema,
+  getSalesMetricsSchema,
+  getTopProductsSchema,
+} from "./analytics.validation";
 
 const router = Router();
 const controller = new AnalyticsController();
@@ -12,19 +21,34 @@ const controller = new AnalyticsController();
 router.use(authenticate);
 router.use(authorize(UserRole.ADMIN, UserRole.SUPER_ADMIN));
 
-router.get("/sales-metrics", asyncHandler(controller.getSalesMetrics));
-router.get("/top-products", asyncHandler(controller.getTopProducts));
-router.get("/revenue-trends", asyncHandler(controller.getRevenueTrends));
+router.get(
+  "/sales-metrics",
+  validate(getSalesMetricsSchema),
+  asyncHandler(controller.getSalesMetrics)
+);
+router.get(
+  "/top-products",
+  validate(getTopProductsSchema),
+  asyncHandler(controller.getTopProducts)
+);
+router.get(
+  "/revenue-trends",
+  validate(getRevenueTrendsSchema),
+  asyncHandler(controller.getRevenueTrends)
+);
 router.get(
   "/customer-analytics",
+  validate(getCustomerAnalyticsSchema),
   asyncHandler(controller.getCustomerAnalytics)
 );
 router.get(
   "/inventory-insights",
+  validate(getInventoryInsightsSchema),
   asyncHandler(controller.getInventoryInsights)
 );
 router.get(
   "/category-performance",
+  validate(getCategoryPerformanceSchema),
   asyncHandler(controller.getCategoryPerformance)
 );
 

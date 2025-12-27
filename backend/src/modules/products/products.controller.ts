@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { PaginationUtil } from "../../utils/pagination.util";
+import { ProductUtil } from "../../utils/product.util";
 import { ResponseUtil } from "../../utils/response.util";
 import { ProductsService } from "./products.service";
 
@@ -54,6 +55,10 @@ export class ProductsController {
     res: Response
   ): Promise<Response> => {
     const product = await this.service.getProductById(req.params.id);
+    // Increment view count asynchronously (non-blocking)
+    ProductUtil.incrementViewCount(req.params.id).catch(() => {
+      // Silently fail - view count is not critical
+    });
     return ResponseUtil.success(res, product);
   };
 

@@ -1,95 +1,140 @@
-import { Button } from "@/components/ui/button";
+"use client";
+
 import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="relative z-10 border-t mt-20 bg-white/50 backdrop-blur-sm">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="w-full bg-white border-t border-[#e5e5e5] mt-16">
+      <div className="container-luxury section-padding">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          {/* Brand */}
           <div>
-            <h3 className="font-semibold mb-4">Shop</h3>
-            <div className="flex flex-col gap-2">
+            <h3 className="text-sm font-medium tracking-normal mb-4">
+              VALUVA
+            </h3>
+            <p className="text-sm text-neutral-600 leading-relaxed mb-6 max-w-xs font-medium">
+              Minimal luxury clothing with timeless design. Crafted for the
+              modern minimalist.
+            </p>
+            <div className="space-y-2">
+              <a
+                href="mailto:support@valuva.com"
+                className="block text-xs text-neutral-600 hover:text-[#0a0a0a] transition-colors"
+              >
+                support@valuva.com
+              </a>
+              <a
+                href="tel:+911234567890"
+                className="block text-xs text-neutral-600 hover:text-[#0a0a0a] transition-colors"
+              >
+                +91 123 456 7890
+              </a>
+            </div>
+          </div>
+
+          {/* Shop Links */}
+          <div>
+            <h3 className="text-xs font-medium tracking-normal mb-4">
+              Shop
+            </h3>
+            <div className="space-y-2">
               <Link
                 href="/shop"
-                className="text-sm text-neutral-600 hover:text-black"
+                className="block text-xs text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
               >
                 All Products
               </Link>
               <Link
                 href="/shop?isFeatured=true"
-                className="text-sm text-neutral-600 hover:text-black"
+                className="block text-xs text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
               >
                 Featured
               </Link>
               <Link
                 href="/shop?isNewArrival=true"
-                className="text-sm text-neutral-600 hover:text-black"
+                className="block text-xs text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
               >
                 New Arrivals
               </Link>
             </div>
           </div>
 
+          {/* Service Links */}
           <div>
-            <h3 className="font-semibold mb-4">Customer Service</h3>
-            <div className="flex flex-col gap-2">
+            <h3 className="text-xs font-medium tracking-normal mb-4">
+              Service
+            </h3>
+            <div className="space-y-2">
               <Link
                 href="/contact"
-                className="text-sm text-neutral-600 hover:text-black"
+                className="block text-xs text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
               >
-                Contact Us
+                Contact
               </Link>
               <Link
                 href="/shipping"
-                className="text-sm text-neutral-600 hover:text-black"
+                className="block text-xs text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
               >
-                Shipping Info
+                Shipping
               </Link>
               <Link
                 href="/returns"
-                className="text-sm text-neutral-600 hover:text-black"
+                className="block text-xs text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
               >
                 Returns
               </Link>
             </div>
           </div>
+        </div>
 
-          <div>
-            <h3 className="font-semibold mb-4">About</h3>
-            <div className="flex flex-col gap-2">
+        {/* Newsletter */}
+        <div className="border-t border-[#e5e5e5] pt-6 mb-8">
+          <h3 className="text-xs font-medium tracking-normal mb-3">
+            Newsletter
+          </h3>
+          <p className="text-sm text-neutral-600 mb-4 max-w-md font-medium">
+            Stay updated with our latest products and exclusive offers.
+          </p>
+          <form className="flex flex-col sm:flex-row gap-3 max-w-md">
+            <input
+              type="email"
+              placeholder="Email"
+              className="input-luxury flex-1"
+            />
+            <button type="submit" className="btn-luxury whitespace-nowrap">
+              Subscribe
+            </button>
+          </form>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-[#e5e5e5] pt-5">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <p className="text-xs text-neutral-500 font-medium tracking-normal">
+              © {new Date().getFullYear()} VALUVA. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6 text-xs font-medium tracking-normal">
               <Link
-                href="/about"
-                className="text-sm text-neutral-600 hover:text-black"
+                href="/privacy"
+                className="text-neutral-600 hover:text-[#0a0a0a] transition-colors"
               >
-                Our Story
+                Privacy
               </Link>
               <Link
-                href="/sustainability"
-                className="text-sm text-neutral-600 hover:text-black"
+                href="/terms"
+                className="text-neutral-600 hover:text-[#0a0a0a] transition-colors"
               >
-                Sustainability
+                Terms
+              </Link>
+              <Link
+                href="/cookies"
+                className="text-neutral-600 hover:text-[#0a0a0a] transition-colors"
+              >
+                Cookies
               </Link>
             </div>
           </div>
-
-          <div>
-            <h3 className="font-semibold mb-4">Newsletter</h3>
-            <p className="text-sm text-neutral-600 mb-4">
-              Subscribe to get special offers and updates.
-            </p>
-            <form className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Email"
-                className="flex-1 px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-              />
-              <Button size="sm">Subscribe</Button>
-            </form>
-          </div>
-        </div>
-
-        <div className="border-t mt-12 pt-8 text-center text-sm text-neutral-600">
-          <p>© {new Date().getFullYear()} Valuva. All rights reserved.</p>
         </div>
       </div>
     </footer>

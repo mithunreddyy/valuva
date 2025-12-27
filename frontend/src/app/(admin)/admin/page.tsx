@@ -57,117 +57,121 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-neutral-600 mt-2">
-          Welcome back! Here&apos;s what&apos;s happening today.
-        </p>
-      </div>
+    <div className="py-32 md:py-40">
+      <div className="container-poster-dashboard">
+        <div className="mb-20 border-b-2 border-black pb-8">
+          <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-[-0.05em] uppercase mb-4 leading-[0.9]">
+            DASHBOARD
+          </h1>
+          <p className="text-xs uppercase tracking-[0.3em] font-black text-neutral-500">
+            Welcome back! Here&apos;s what&apos;s happening today.
+          </p>
+        </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <div key={index} className="bg-white rounded-lg p-6 border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-neutral-600">{stat.title}</p>
-                <p className="text-2xl font-bold mt-2">{stat.value}</p>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {stats.map((stat, index) => (
+            <div key={index} className="border-2 border-black p-8 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] font-black text-neutral-500 mb-2">{stat.title}</p>
+                  <p className="text-3xl md:text-4xl font-black">{stat.value}</p>
+                </div>
+                <div className="p-4 border-2 border-black">
+                  <stat.icon className="h-6 w-6" />
+                </div>
               </div>
-              <div className="p-3 bg-neutral-100 rounded-full">
-                <stat.icon className="h-6 w-6" />
-              </div>
+              <p className="text-xs uppercase tracking-[0.2em] font-black text-neutral-500">
+                {stat.change} from last month
+              </p>
             </div>
-            <p className="text-sm text-green-600 mt-4">
-              {stat.change} from last month
-            </p>
+          ))}
+        </div>
+
+        {/* Recent Orders */}
+        <div className="border-2 border-black mb-12">
+          <div className="p-8 border-b-2 border-black">
+            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-[-0.05em] leading-[0.9]">RECENT ORDERS</h2>
           </div>
-        ))}
-      </div>
+          <div className="p-8">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b-2 border-black">
+                  <th className="text-left py-4 px-4 text-xs uppercase tracking-[0.3em] font-black">ORDER ID</th>
+                  <th className="text-left py-4 px-4 text-xs uppercase tracking-[0.3em] font-black">CUSTOMER</th>
+                  <th className="text-left py-4 px-4 text-xs uppercase tracking-[0.3em] font-black">STATUS</th>
+                  <th className="text-left py-4 px-4 text-xs uppercase tracking-[0.3em] font-black">TOTAL</th>
+                  <th className="text-left py-4 px-4 text-xs uppercase tracking-[0.3em] font-black">DATE</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data?.recentOrders?.map(
+                  (order: Order & { user: { email: string } }) => (
+                    <tr key={order.id} className="border-b border-black hover:bg-black hover:text-white transition-all">
+                      <td className="py-4 px-4 font-mono text-sm font-black">
+                        {order.orderNumber}
+                      </td>
+                      <td className="py-4 px-4 text-sm">{order.user.email}</td>
+                      <td className="py-4 px-4">
+                        <span
+                          className={`px-3 py-1 border-2 border-black text-xs uppercase tracking-[0.2em] font-black ${
+                            order.status === "DELIVERED"
+                              ? "bg-black text-white"
+                              : order.status === "SHIPPED"
+                              ? "bg-white text-black"
+                              : "bg-white text-black"
+                          }`}
+                        >
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 font-black">{formatPrice(order.total)}</td>
+                      <td className="py-4 px-4 text-sm">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-      {/* Recent Orders */}
-      <div className="bg-white rounded-lg border">
-        <div className="p-6 border-b">
-          <h2 className="text-xl font-semibold">Recent Orders</h2>
-        </div>
-        <div className="p-6">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-3 px-4">Order ID</th>
-                <th className="text-left py-3 px-4">Customer</th>
-                <th className="text-left py-3 px-4">Status</th>
-                <th className="text-left py-3 px-4">Total</th>
-                <th className="text-left py-3 px-4">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.recentOrders?.map(
-                (order: Order & { user: { email: string } }) => (
-                  <tr key={order.id} className="border-b hover:bg-neutral-50">
-                    <td className="py-3 px-4 font-mono text-sm">
-                      {order.orderNumber}
-                    </td>
-                    <td className="py-3 px-4">{order.user.email}</td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          order.status === "DELIVERED"
-                            ? "bg-green-100 text-green-800"
-                            : order.status === "SHIPPED"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">{formatPrice(order.total)}</td>
-                    <td className="py-3 px-4">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Top Products */}
-      <div className="bg-white rounded-lg border">
-        <div className="p-6 border-b">
-          <h2 className="text-xl font-semibold">Top Products</h2>
-        </div>
-        <div className="p-6">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-3 px-4">Product</th>
-                <th className="text-left py-3 px-4">Sold</th>
-                <th className="text-left py-3 px-4">Price</th>
-                <th className="text-left py-3 px-4">Revenue</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.topProducts?.map(
-                (product: Product & { totalSold: number }) => (
-                  <tr key={product.id} className="border-b hover:bg-neutral-50">
-                    <td className="py-3 px-4">{product.name}</td>
-                    <td className="py-3 px-4">{product.totalSold}</td>
-                    <td className="py-3 px-4">
-                      {formatPrice(product.basePrice)}
-                    </td>
-                    <td className="py-3 px-4">
-                      {formatPrice(
-                        product.totalSold * Number(product.basePrice)
-                      )}
-                    </td>
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
+        {/* Top Products */}
+        <div className="border-2 border-black">
+          <div className="p-8 border-b-2 border-black">
+            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-[-0.05em] leading-[0.9]">TOP PRODUCTS</h2>
+          </div>
+          <div className="p-8">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b-2 border-black">
+                  <th className="text-left py-4 px-4 text-xs uppercase tracking-[0.3em] font-black">PRODUCT</th>
+                  <th className="text-left py-4 px-4 text-xs uppercase tracking-[0.3em] font-black">SOLD</th>
+                  <th className="text-left py-4 px-4 text-xs uppercase tracking-[0.3em] font-black">PRICE</th>
+                  <th className="text-left py-4 px-4 text-xs uppercase tracking-[0.3em] font-black">REVENUE</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data?.topProducts?.map(
+                  (product: Product & { totalSold: number }) => (
+                    <tr key={product.id} className="border-b border-black hover:bg-black hover:text-white transition-all">
+                      <td className="py-4 px-4 font-black">{product.name}</td>
+                      <td className="py-4 px-4 font-black">{product.totalSold}</td>
+                      <td className="py-4 px-4 font-black">
+                        {formatPrice(product.basePrice)}
+                      </td>
+                      <td className="py-4 px-4 font-black">
+                        {formatPrice(
+                          product.totalSold * Number(product.basePrice)
+                        )}
+                      </td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useAuthStore } from "@/store/auth-store";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { logout } from "@/store/slices/authSlice";
 import {
   BarChart,
   Home,
@@ -20,7 +21,8 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isAuthenticated, clearAuth } = useAuthStore();
+  const dispatch = useAppDispatch();
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const router = useRouter();
 
   useEffect(() => {
@@ -41,8 +43,8 @@ export default function AdminLayout({
     return null;
   }
 
-  const handleLogout = () => {
-    clearAuth();
+  const handleLogout = async () => {
+    await dispatch(logout());
     router.push("/");
   };
 

@@ -1,36 +1,32 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
 export function HeroSection() {
   return (
-    <section className="relative z-10 h-[70vh] flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 to-white/90 backdrop-blur-sm" />
-
-      <div className="container mx-auto px-4 relative z-10">
+    <section className="w-full min-h-[75vh] sm:min-h-[80vh] flex items-center justify-center relative overflow-hidden bg-[#fafafa]">
+      <div className="container-luxury py-12 sm:py-16 lg:py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center max-w-3xl mx-auto"
+          className="max-w-4xl mx-auto text-center space-y-6"
         >
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-            Timeless
-            <br />
-            <span className="text-neutral-600">Elegance</span>
-          </h1>
-          <p className="text-lg md:text-xl text-neutral-600 mb-8">
-            Discover curated collections that define modern sophistication
+          <p className="text-sm font-medium tracking-normal text-neutral-500">
+            SS/2024
           </p>
-          <div className="flex gap-4 justify-center">
-            <Button size="lg">
-              <Link href="/shop">Explore Collection</Link>
-            </Button>
-            <Button size="lg" variant="outline">
-              <Link href="/shop?isNewArrival=true">New Arrivals</Link>
-            </Button>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-medium tracking-tight">
+            VALUVA
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed font-medium">
+            Minimal luxury clothing with timeless design. Crafted for the modern
+            minimalist.
+          </p>
+          <div className="pt-2">
+            <Link href="/shop" className="btn-luxury inline-block">
+              Shop Collection
+            </Link>
           </div>
         </motion.div>
       </div>

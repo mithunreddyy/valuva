@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductCardSkeleton } from "@/components/products/product-card-skeleton";
-import { ProductCard } from "@/components/products/products-card";
+import { ProductCard } from "@/components/products/ProductCard";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { Product } from "@/types";

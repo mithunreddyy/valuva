@@ -72,4 +72,12 @@ export class OrdersController {
     );
     return ResponseUtil.success(res, order);
   };
+
+  cancelOrder = async (req: AuthRequest, res: Response): Promise<Response> => {
+    const order = await this.service.cancelOrder(
+      req.params.id,
+      req.user!.userId
+    );
+    return ResponseUtil.success(res, order, "Order cancelled successfully");
+  };
 }

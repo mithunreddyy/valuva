@@ -29,6 +29,7 @@ import wishlistRoutes from "./modules/wishlist/wishlist.routes";
 
 // New routes
 import analyticsRoutes from "./modules/analytics/analytics.routes";
+import orderTrackingRoutes from "./modules/order-tracking/tracking.routes";
 
 export const createApp = (): Application => {
   const app = express();
@@ -112,6 +113,9 @@ export const createApp = (): Application => {
 
   // Payment routes
   app.use(`${API_PREFIX}/payments`, paymentsRoutes);
+
+  // Order tracking routes (public and authenticated)
+  app.use(`${API_PREFIX}/order-tracking`, orderTrackingRoutes);
 
   // Admin routes (with admin rate limiting)
   app.use(`${API_PREFIX}/admin`, rateLimiters.admin.middleware(), adminRoutes);

@@ -1,10 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import addressesReducer from "./slices/addressesSlice";
 import authReducer from "./slices/authSlice";
 import cartReducer from "./slices/cartSlice";
 import categoriesReducer from "./slices/categoriesSlice";
+import filtersReducer from "./slices/filtersSlice";
 import ordersReducer from "./slices/ordersSlice";
 import productsReducer from "./slices/productsSlice";
+import reviewsReducer from "./slices/reviewsSlice";
+import uiReducer from "./slices/uiSlice";
 import wishlistReducer from "./slices/wishlistSlice";
 
 export const store = configureStore({
@@ -15,6 +19,10 @@ export const store = configureStore({
     wishlist: wishlistReducer,
     orders: ordersReducer,
     categories: categoriesReducer,
+    addresses: addressesReducer,
+    reviews: reviewsReducer,
+    ui: uiReducer,
+    filters: filtersReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

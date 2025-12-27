@@ -7,15 +7,13 @@ import { Header } from "@/components/layout/header";
 
 export default function HomePage() {
   return (
-    <div className="relative z-10 min-h-screen flex flex-col">
+    <div className="relative z-10 min-h-screen flex flex-col bg-[#fafafa]">
       <Header />
-      <main className="relative z-10 flex-1">
-        <div className="space-y-20">
-          <HeroSection />
-          <FeaturedProducts />
-          <CategoryShowcase />
-          <NewArrivals />
-        </div>
+      <main className="relative z-10 flex-1 w-full">
+        <HeroSection />
+        <FeaturedProducts />
+        <CategoryShowcase />
+        <NewArrivals />
       </main>
       <Footer />
     </div>

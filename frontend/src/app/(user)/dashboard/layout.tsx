@@ -1,9 +1,10 @@
 "use client";
 
-import { useAuthStore } from "@/store/auth-store";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { logout } from "@/store/slices/authSlice";
 import { Heart, LogOut, MapPin, Package, User } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 export default function DashboardLayout({
@@ -11,8 +12,10 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, clearAuth } = useAuthStore();
+  const dispatch = useAppDispatch();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -20,8 +23,8 @@ export default function DashboardLayout({
     }
   }, [isAuthenticated, router]);
 
-  const handleLogout = () => {
-    clearAuth();
+  const handleLogout = async () => {
+    await dispatch(logout());
     router.push("/");
   };
 
@@ -29,55 +32,52 @@ export default function DashboardLayout({
     return null;
   }
 
+  const navItems = [
+    { href: "/dashboard", label: "Profile", icon: User },
+    { href: "/dashboard/orders", label: "Orders", icon: Package },
+    { href: "/dashboard/addresses", label: "Addresses", icon: MapPin },
+    { href: "/wishlist", label: "Wishlist", icon: Heart },
+  ];
+
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-4 gap-8">
+    <div className="min-h-screen bg-[#fafafa]">
+      <div className="container-luxury py-8 sm:py-12">
+        <div className="grid lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Sidebar */}
-          <aside className="lg:col-span-1">
-            <div className="glass rounded-lg p-6 sticky top-24">
+          <aside className="lg:col-span-3">
+            <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px] sticky top-24">
               <nav className="space-y-2">
-                <Link
-                  href="/dashboard"
-                  className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-black/5 transition-colors"
-                >
-                  <User className="h-5 w-5" />
-                  <span>Profile</span>
-                </Link>
-                <Link
-                  href="/dashboard/orders"
-                  className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-black/5 transition-colors"
-                >
-                  <Package className="h-5 w-5" />
-                  <span>Orders</span>
-                </Link>
-                <Link
-                  href="/dashboard/addresses"
-                  className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-black/5 transition-colors"
-                >
-                  <MapPin className="h-5 w-5" />
-                  <span>Addresses</span>
-                </Link>
-                <Link
-                  href="/wishlist"
-                  className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-black/5 transition-colors"
-                >
-                  <Heart className="h-5 w-5" />
-                  <span>Wishlist</span>
-                </Link>
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-[10px] transition-all font-medium ${
+                        isActive
+                          ? "bg-[#0a0a0a] text-[#fafafa]"
+                          : "hover:bg-[#fafafa] text-[#0a0a0a]"
+                      }`}
+                    >
+                      <Icon className="h-5 w-5" />
+                      <span className="text-sm tracking-normal">{item.label}</span>
+                    </Link>
+                  );
+                })}
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-md hover:bg-red-50 text-red-600 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-[10px] hover:bg-red-50 text-red-600 transition-all font-medium"
                 >
                   <LogOut className="h-5 w-5" />
-                  <span>Logout</span>
+                  <span className="text-sm tracking-normal">Logout</span>
                 </button>
               </nav>
             </div>
           </aside>
 
           {/* Main Content */}
-          <div className="lg:col-span-3">{children}</div>
+          <div className="lg:col-span-9">{children}</div>
         </div>
       </div>
     </div>

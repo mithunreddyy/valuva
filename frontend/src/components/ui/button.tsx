@@ -3,21 +3,25 @@ import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center px-6 py-3 text-sm font-medium tracking-normal border transition-all duration-300 ease-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 rounded-[10px]",
   {
     variants: {
       variant: {
-        default: "bg-black text-white hover:bg-black/90",
+        default:
+          "border-[#0a0a0a] bg-transparent text-[#0a0a0a] hover:bg-[#0a0a0a] hover:text-[#fafafa]",
         outline:
-          "border border-black bg-transparent hover:bg-black hover:text-white",
-        ghost: "hover:bg-black/10",
-        link: "text-black underline-offset-4 hover:underline",
+          "border-[#e5e5e5] bg-transparent text-[#0a0a0a] hover:border-[#0a0a0a]",
+        filled:
+          "border-[#0a0a0a] bg-[#0a0a0a] text-[#fafafa] hover:bg-transparent hover:text-[#0a0a0a]",
+        ghost:
+          "border-transparent bg-transparent text-[#0a0a0a] hover:border-[#e5e5e5]",
+        link: "border-0 text-[#0a0a0a] underline-offset-4 hover:underline tracking-normal rounded-none",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        default: "h-11 px-6 py-3",
+        sm: "h-9 px-4 text-xs rounded-[8px]",
+        lg: "h-14 px-10 text-base rounded-[12px]",
+        icon: "h-11 w-11 p-0 rounded-[10px]",
       },
     },
     defaultVariants: {

@@ -75,6 +75,15 @@ export class OrdersRepository {
       });
 
       for (const item of data.items) {
+        const variant = await tx.productVariant.findUnique({
+          where: { id: item.variantId },
+          include: { product: true },
+        });
+
+        if (!variant) {
+          throw new Error(`Variant ${item.variantId} not found`);
+        }
+
         await tx.productVariant.update({
           where: { id: item.variantId },
           data: {
@@ -83,7 +92,7 @@ export class OrdersRepository {
         });
 
         await tx.product.update({
-          where: { id: item.variantId },
+          where: { id: variant.productId },
           data: {
             totalStock: { decrement: item.quantity },
             totalSold: { increment: item.quantity },
@@ -211,5 +220,49 @@ export class OrdersRepository {
     await prisma.cartItem.deleteMany({
       where: { cartId },
     });
+  }
+
+  async restoreInventory(orderId: string) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          include: {
+            variant: {
+              include: {
+                product: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    await prisma.$transaction(
+      order.items.map((item) =>
+        prisma.productVariant.update({
+          where: { id: item.variantId },
+          data: {
+            stock: { increment: item.quantity },
+          },
+        })
+      )
+    );
+
+    await prisma.$transaction(
+      order.items.map((item) =>
+        prisma.product.update({
+          where: { id: item.variant.productId },
+          data: {
+            totalStock: { increment: item.quantity },
+            totalSold: { decrement: item.quantity },
+          },
+        })
+      )
+    );
   }
 }

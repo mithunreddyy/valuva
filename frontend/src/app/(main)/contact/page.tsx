@@ -2,9 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { MapPin, Phone, Mail } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -45,39 +46,63 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="relative z-10 container mx-auto px-4 py-12">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Get in Touch</h1>
-          <p className="text-xl text-neutral-600">
-            Have questions? We&apos;d love to hear from you.
-          </p>
+    <div className="min-h-screen bg-[#fafafa]">
+      {/* Header Section */}
+      <section className="bg-white border-b border-[#e5e5e5]">
+        <div className="container-luxury py-8 sm:py-12">
+          <div className="max-w-3xl mx-auto text-center space-y-3">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-normal">
+              Get in Touch
+            </h1>
+            <p className="text-base sm:text-lg text-neutral-600 font-medium leading-relaxed">
+              Have questions? We'd love to hear from you.
+            </p>
+          </div>
         </div>
+      </section>
 
-        <div className="grid md:grid-cols-2 gap-8">
+      {/* Main Content */}
+      <section className="container-luxury py-8 sm:py-12">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
           {/* Contact Form */}
-          <div className="glass rounded-lg p-8">
-            <h2 className="text-2xl font-bold mb-6">Send us a message</h2>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-medium tracking-normal">
+                Send us a message
+              </h2>
+              <p className="text-sm text-neutral-600 font-medium">
+                Fill out the form below and we'll get back to you as soon as possible.
+              </p>
+            </div>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium mb-2">Name</label>
-                <Input {...register("name")} placeholder="Your name" />
+                <label className="block text-sm font-medium mb-2">
+                  Name
+                </label>
+                <Input
+                  {...register("name")}
+                  placeholder="Your name"
+                  className="rounded-[10px]"
+                />
                 {errors.name && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-red-600 text-xs mt-1 font-medium">
                     {errors.name.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Email</label>
+                <label className="block text-sm font-medium mb-2">
+                  Email
+                </label>
                 <Input
                   type="email"
                   {...register("email")}
                   placeholder="your@email.com"
+                  className="rounded-[10px]"
                 />
                 {errors.email && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-red-600 text-xs mt-1 font-medium">
                     {errors.email.message}
                   </p>
                 )}
@@ -90,9 +115,10 @@ export default function ContactPage() {
                 <Input
                   {...register("subject")}
                   placeholder="How can we help?"
+                  className="rounded-[10px]"
                 />
                 {errors.subject && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-red-600 text-xs mt-1 font-medium">
                     {errors.subject.message}
                   </p>
                 )}
@@ -102,13 +128,13 @@ export default function ContactPage() {
                 <label className="block text-sm font-medium mb-2">
                   Message
                 </label>
-                <textarea
+                <Textarea
                   {...register("message")}
-                  className="w-full border rounded-md p-3 min-h-[150px] focus:outline-none focus:ring-2 focus:ring-black"
+                  className="min-h-[150px] rounded-[10px]"
                   placeholder="Your message..."
                 />
                 {errors.message && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-red-600 text-xs mt-1 font-medium">
                     {errors.message.message}
                   </p>
                 )}
@@ -117,7 +143,8 @@ export default function ContactPage() {
               <Button
                 type="submit"
                 size="lg"
-                className="w-full"
+                variant="filled"
+                className="w-full rounded-[10px]"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Sending..." : "Send Message"}
@@ -127,77 +154,92 @@ export default function ContactPage() {
 
           {/* Contact Information */}
           <div className="space-y-6">
-            <div className="glass rounded-lg p-8">
-              <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-black text-white rounded-lg">
-                    <Mail className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="font-medium mb-1">Email</p>
-                    <a
-                      href="mailto:support@valuva.com"
-                      className="text-neutral-600 hover:text-black"
-                    >
-                      support@valuva.com
-                    </a>
-                  </div>
-                </div>
+            <div className="space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-medium tracking-normal">
+                Contact Information
+              </h2>
+              <p className="text-sm text-neutral-600 font-medium">
+                Reach out to us through any of these channels.
+              </p>
+            </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-black text-white rounded-lg">
-                    <Phone className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="font-medium mb-1">Phone</p>
-                    <a
-                      href="tel:+911234567890"
-                      className="text-neutral-600 hover:text-black"
-                    >
-                      +91 123 456 7890
-                    </a>
-                  </div>
+            <div className="space-y-4">
+              <div className="flex items-start gap-4 p-5 bg-white border border-[#e5e5e5] rounded-[12px] hover:border-[#0a0a0a] transition-all">
+                <div className="p-3 bg-[#0a0a0a] text-white rounded-[10px] flex-shrink-0">
+                  <Mail className="h-5 w-5" />
                 </div>
+                <div>
+                  <p className="text-sm font-medium mb-1">
+                    Email
+                  </p>
+                  <a
+                    href="mailto:support@valuva.com"
+                    className="text-sm text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
+                  >
+                    support@valuva.com
+                  </a>
+                </div>
+              </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-black text-white rounded-lg">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="font-medium mb-1">Address</p>
-                    <p className="text-neutral-600">
-                      123 Fashion Street
-                      <br />
-                      Mumbai, Maharashtra 400001
-                      <br />
-                      India
-                    </p>
-                  </div>
+              <div className="flex items-start gap-4 p-5 bg-white border border-[#e5e5e5] rounded-[12px] hover:border-[#0a0a0a] transition-all">
+                <div className="p-3 bg-[#0a0a0a] text-white rounded-[10px] flex-shrink-0">
+                  <Phone className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium mb-1">
+                    Phone
+                  </p>
+                  <a
+                    href="tel:+911234567890"
+                    className="text-sm text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
+                  >
+                    +91 123 456 7890
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 p-5 bg-white border border-[#e5e5e5] rounded-[12px] hover:border-[#0a0a0a] transition-all">
+                <div className="p-3 bg-[#0a0a0a] text-white rounded-[10px] flex-shrink-0">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium mb-1">
+                    Address
+                  </p>
+                  <p className="text-sm text-neutral-600 font-medium">
+                    123 Fashion Street
+                    <br />
+                    Mumbai, Maharashtra 400001
+                    <br />
+                    India
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="glass rounded-lg p-8">
-              <h3 className="text-xl font-bold mb-4">Business Hours</h3>
-              <div className="space-y-2 text-neutral-600">
-                <div className="flex justify-between">
-                  <span>Monday - Friday</span>
-                  <span className="font-medium">9:00 AM - 6:00 PM</span>
+            {/* Business Hours */}
+            <div className="p-5 bg-white border border-[#e5e5e5] rounded-[12px]">
+              <h3 className="text-lg font-medium tracking-normal mb-5">
+                Business Hours
+              </h3>
+              <div className="space-y-2 text-sm font-medium">
+                <div className="flex justify-between border-b border-[#e5e5e5] pb-3">
+                  <span className="text-neutral-600">Monday - Friday</span>
+                  <span className="text-[#0a0a0a]">9:00 AM - 6:00 PM</span>
+                </div>
+                <div className="flex justify-between border-b border-[#e5e5e5] pb-3">
+                  <span className="text-neutral-600">Saturday</span>
+                  <span className="text-[#0a0a0a]">10:00 AM - 4:00 PM</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Saturday</span>
-                  <span className="font-medium">10:00 AM - 4:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Sunday</span>
-                  <span className="font-medium">Closed</span>
+                  <span className="text-neutral-600">Sunday</span>
+                  <span className="text-[#0a0a0a]">Closed</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
