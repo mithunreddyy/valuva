@@ -58,12 +58,12 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-5">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="bg-white border border-[#e5e5e5] p-6 rounded-[12px] animate-pulse">
-            <div className="h-4 bg-[#e5e5e5] w-1/4 rounded mb-2"></div>
-            <div className="h-4 bg-[#e5e5e5] w-1/2 rounded mb-4"></div>
-            <div className="h-20 bg-[#e5e5e5] rounded"></div>
+          <div key={i} className="bg-white border border-[#e5e5e5] p-6 lg:p-8 rounded-[20px] animate-pulse">
+            <div className="h-4 bg-[#e5e5e5] w-1/4 rounded-[8px] mb-2"></div>
+            <div className="h-4 bg-[#e5e5e5] w-1/2 rounded-[8px] mb-4"></div>
+            <div className="h-20 bg-[#e5e5e5] rounded-[12px]"></div>
           </div>
         ))}
       </div>
@@ -109,7 +109,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
           <Button
             variant="outline"
             onClick={() => setShowForm(true)}
-            className="rounded-[10px]"
+            className="rounded-[16px]"
           >
             Write a Review
           </Button>
@@ -118,25 +118,25 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
       {/* Review Form */}
       {isAuthenticated && showForm && (
-        <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-          <h4 className="text-lg font-medium tracking-normal mb-4">
+        <div className="bg-white border border-[#e5e5e5] p-6 lg:p-8 rounded-[20px]">
+          <h4 className="text-lg font-medium tracking-normal mb-6 text-[#0a0a0a]">
             Write a Review
           </h4>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium mb-3 text-[#0a0a0a]">
                 Rating
               </label>
-              <div className="flex gap-1">
+              <div className="flex gap-2">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <button
                     key={i}
                     type="button"
                     onClick={() => setRating(i + 1)}
-                    className="focus:outline-none"
+                    className="focus:outline-none transition-transform hover:scale-110"
                   >
                     <Star
-                      className={`h-6 w-6 transition-colors ${
+                      className={`h-7 w-7 transition-colors ${
                         i < rating
                           ? "fill-[#0a0a0a] text-[#0a0a0a]"
                           : "text-neutral-300"
@@ -147,18 +147,18 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium mb-3 text-[#0a0a0a]">
                 Title (optional)
               </label>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Review title"
-                className="rounded-[10px]"
+                className="rounded-[16px]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium mb-3 text-[#0a0a0a]">
                 Review
               </label>
               <Textarea
@@ -166,7 +166,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Share your thoughts about this product..."
                 rows={4}
-                className="rounded-[10px]"
+                className="rounded-[16px]"
                 required
               />
             </div>
@@ -175,7 +175,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                 type="submit"
                 variant="filled"
                 disabled={createReview.isPending}
-                className="rounded-[10px]"
+                className="rounded-[16px]"
               >
                 {createReview.isPending ? "Submitting..." : "Submit Review"}
               </Button>
@@ -188,7 +188,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                   setComment("");
                   setRating(5);
                 }}
-                className="rounded-[10px]"
+                className="rounded-[16px]"
               >
                 Cancel
               </Button>
@@ -199,33 +199,33 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
       {/* Reviews List */}
       {reviews.length === 0 ? (
-        <div className="text-center py-12 bg-white border border-[#e5e5e5] rounded-[12px]">
+        <div className="text-center py-12 bg-white border border-[#e5e5e5] rounded-[20px]">
           <p className="text-sm text-neutral-500 font-medium">
             No reviews yet. Be the first to review this product!
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {reviews.map((review) => (
             <div
               key={review.id}
-              className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]"
+              className="bg-white border border-[#e5e5e5] p-6 lg:p-8 rounded-[20px] transition-all hover:shadow-md"
             >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#0a0a0a] text-[#fafafa] flex items-center justify-center">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-[16px] bg-[#0a0a0a] text-[#fafafa] flex items-center justify-center">
                     <User className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium tracking-normal">
+                    <p className="text-sm font-medium tracking-normal text-[#0a0a0a]">
                       {review.user?.firstName || "Anonymous"}
                     </p>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2.5 mt-1.5">
                       <div className="flex items-center">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star
                             key={i}
-                            className={`h-3 w-3 ${
+                            className={`h-3.5 w-3.5 ${
                               i < review.rating
                                 ? "fill-[#0a0a0a] text-[#0a0a0a]"
                                 : "text-neutral-300"
@@ -241,7 +241,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                 </div>
               </div>
               {review.title && (
-                <h5 className="text-sm font-medium tracking-normal mb-2">
+                <h5 className="text-sm font-medium tracking-normal mb-3 text-[#0a0a0a]">
                   {review.title}
                 </h5>
               )}

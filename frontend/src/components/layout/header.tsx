@@ -2,7 +2,6 @@
 
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/slices/authSlice";
-import { openCart } from "@/store/slices/cartSlice";
 import { fetchWishlist } from "@/store/slices/wishlistSlice";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -73,17 +72,17 @@ export function Header() {
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-3 hover-opacity transition-opacity"
+              className="flex items-center gap-1 hover-opacity transition-opacity"
             >
               <Image
                 src="/valuvaLogo.png"
                 alt="VALUVA"
-                width={32}
-                height={32}
-                className="object-contain w-7 h-7 sm:w-8 sm:h-8"
+                width={50}
+                height={50}
+                className="object-contain w-10 h-10 sm:w-12 sm:h-12"
               />
-              <span className="hidden sm:block text-base sm:text-lg font-medium tracking-normal">
-                VALUVA
+              <span className="hidden sm:block text-base sm:text-medium font-large tracking-tight">
+                <span className="text-luxury-black">valuva</span>
               </span>
             </Link>
 
@@ -127,10 +126,9 @@ export function Header() {
                 )}
               </Link>
 
-              <button
+              <Link
+                href="/cart"
                 className="relative p-2 hover-opacity transition-opacity rounded-[10px]"
-                onClick={() => dispatch(openCart())}
-                aria-label="Shopping cart"
               >
                 <ShoppingCart className="h-5 w-5" />
                 {cartItemCount > 0 && (
@@ -138,7 +136,7 @@ export function Header() {
                     {cartItemCount > 9 ? "9+" : cartItemCount}
                   </span>
                 )}
-              </button>
+              </Link>
 
               {isAuthenticated ? (
                 <div className="relative" ref={userMenuRef}>

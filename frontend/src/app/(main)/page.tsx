@@ -63,13 +63,13 @@ export default function HomePage() {
 
             {/* Products Grid */}
             {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <ProductCardSkeleton key={i} />
                 ))}
               </div>
             ) : data?.data && data.data.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
                 {data.data.slice(0, 4).map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

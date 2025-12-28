@@ -13,8 +13,17 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "VALUVA | Minimal Luxury Clothing",
-  description: "Premium minimal clothing with terminal-inspired design",
+  title: "valuva",
+  description: "premium minimal fashion",
+  icons: {
+    icon: "/favicon/favicon.ico",
+    shortcut: "/favicon/favicon.ico",
+    apple: "/favicon/favicon.ico",
+    other: {
+      rel: "icon",
+      url: "/favicon/favicon.ico",
+    },
+  },
 };
 
 export default function RootLayout({

@@ -16,10 +16,10 @@ export function HeroSection() {
           <p className="text-sm font-medium tracking-normal text-neutral-500">
             SS/2024
           </p>
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-medium tracking-tight">
-            VALUVA
+          <h1 className="text-8xl sm:text-9xl md:text-10xl lg:text-11xl font-large tracking-tight">
+            వలువ
           </h1>
-          <p className="text-base sm:text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed font-medium">
+          <p className="text-base sm:text-xl md:text-2xl text-neutral-600 max-w-4xl mx-auto leading-relaxed font-medium">
             Minimal luxury clothing with timeless design. Crafted for the modern
             minimalist.
           </p>

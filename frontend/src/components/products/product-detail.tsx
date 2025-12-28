@@ -94,10 +94,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
     "/placeholder.png";
 
   return (
-    <div className="grid lg:grid-cols-2 gap-12">
+    <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
       {/* Image Gallery */}
       <div>
-        <div className="relative aspect-square rounded-lg overflow-hidden bg-neutral-100 mb-4">
+        <div className="relative aspect-square rounded-[20px] overflow-hidden bg-[#fafafa] border border-[#e5e5e5] mb-6">
           <Image
             src={product.images[selectedImageIndex]?.url || primaryImage}
             alt={product.name}
@@ -106,26 +106,26 @@ export function ProductDetail({ product }: ProductDetailProps) {
             priority
           />
           {discount > 0 && (
-            <Badge variant="destructive" className="absolute top-4 left-4">
+            <Badge variant="destructive" className="absolute top-5 left-5 rounded-[12px] px-3 py-1.5">
               {discount}% OFF
             </Badge>
           )}
           {product.isNewArrival && (
-            <Badge className="absolute top-4 right-4">New</Badge>
+            <Badge className="absolute top-5 right-5 rounded-[12px] px-3 py-1.5 bg-[#0a0a0a] text-[#fafafa]">New</Badge>
           )}
         </div>
 
         {/* Thumbnail Gallery */}
         {product.images.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto">
+          <div className="flex gap-3 overflow-x-auto pb-2">
             {product.images.map((image, index) => (
               <button
                 key={image.id}
                 onClick={() => setSelectedImageIndex(index)}
-                className={`relative flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition ${
+                className={`relative flex-shrink-0 w-20 h-20 rounded-[16px] overflow-hidden border-2 transition-all ${
                   selectedImageIndex === index
-                    ? "border-black"
-                    : "border-transparent"
+                    ? "border-[#0a0a0a] scale-105"
+                    : "border-[#e5e5e5] hover:border-[#0a0a0a]"
                 }`}
               >
                 <Image
@@ -199,18 +199,18 @@ export function ProductDetail({ product }: ProductDetailProps) {
         {/* Variants */}
         {availableSizes.length > 0 && (
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium mb-3 text-[#0a0a0a]">
               Size: {selectedSize || "Select a size"}
             </label>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2.5 flex-wrap">
               {availableSizes.map((size) => (
                 <button
                   key={size}
                   onClick={() => setSelectedSize(size)}
-                  className={`px-4 py-2 border rounded-md transition ${
+                  className={`px-5 py-2.5 border rounded-[16px] transition-all font-medium text-sm ${
                     selectedSize === size
-                      ? "border-black bg-black text-white"
-                      : "border-neutral-200 hover:border-black"
+                      ? "border-[#0a0a0a] bg-[#0a0a0a] text-[#fafafa]"
+                      : "border-[#e5e5e5] hover:border-[#0a0a0a] text-[#0a0a0a]"
                   }`}
                 >
                   {size}
@@ -222,25 +222,25 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
         {availableColors.length > 0 && (
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium mb-3 text-[#0a0a0a]">
               Color: {selectedColor || "Select a color"}
             </label>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2.5 flex-wrap">
               {availableColors.map((color) => {
                 const variant = product.variants.find((v) => v.color === color);
                 return (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
-                    className={`px-4 py-2 border rounded-md transition flex items-center gap-2 ${
+                    className={`px-5 py-2.5 border rounded-[16px] transition-all flex items-center gap-2.5 font-medium text-sm ${
                       selectedColor === color
-                        ? "border-black bg-black text-white"
-                        : "border-neutral-200 hover:border-black"
+                        ? "border-[#0a0a0a] bg-[#0a0a0a] text-[#fafafa]"
+                        : "border-[#e5e5e5] hover:border-[#0a0a0a] text-[#0a0a0a]"
                     }`}
                   >
                     {variant?.colorHex && (
                       <span
-                        className="w-4 h-4 rounded-full border"
+                        className="w-5 h-5 rounded-full border border-[#e5e5e5]"
                         style={{ backgroundColor: variant.colorHex }}
                       />
                     )}
@@ -267,18 +267,18 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
         {/* Quantity */}
         <div>
-          <label className="block text-sm font-medium mb-2">Quantity</label>
+          <label className="block text-sm font-medium mb-3 text-[#0a0a0a]">Quantity</label>
           <div className="flex items-center gap-4">
-            <div className="flex items-center border rounded-md">
+            <div className="flex items-center border border-[#e5e5e5] rounded-[16px] overflow-hidden">
               <button
                 type="button"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="p-2 hover:bg-neutral-100"
+                className="p-3 hover:bg-[#fafafa] transition-colors disabled:opacity-50"
                 disabled={quantity <= 1}
               >
                 <Minus className="h-4 w-4" />
               </button>
-              <span className="px-4 py-2 min-w-[60px] text-center">
+              <span className="px-5 py-2.5 min-w-[60px] text-center font-medium text-[#0a0a0a]">
                 {quantity}
               </span>
               <button
@@ -291,7 +291,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     )
                   )
                 }
-                className="p-2 hover:bg-neutral-100"
+                className="p-3 hover:bg-[#fafafa] transition-colors disabled:opacity-50"
                 disabled={
                   quantity >= (selectedVariant?.stock || product.totalStock)
                 }
@@ -312,7 +312,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
               !selectedVariant ||
               (selectedVariant?.stock || 0) === 0
             }
-            className="flex-1"
+            className="flex-1 rounded-[16px]"
           >
             {isAddingToCart ? (
               "Adding..."
@@ -330,6 +330,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             aria-label={
               isInWishlist ? "Remove from wishlist" : "Add to wishlist"
             }
+            className="rounded-[16px]"
           >
             <Heart
               className={`h-5 w-5 ${
