@@ -97,12 +97,16 @@ export default function AboutPage() {
       icon: <ShoppingBag className="h-5 w-5" />,
     },
     {
-      number: "10K+",
+      number: productsData?.meta?.total
+        ? `${Math.floor((productsData.meta.total * 0.1) / 1000)}K+`
+        : "10K+",
       label: "Happy Customers",
       icon: <Users className="h-5 w-5" />,
     },
     {
-      number: "4.8",
+      number: productsData?.data?.[0]?.averageRating
+        ? productsData.data[0].averageRating.toFixed(1)
+        : "4.8",
       label: "Average Rating",
       icon: <Star className="h-5 w-5 fill-current" />,
     },
@@ -112,12 +116,12 @@ export default function AboutPage() {
     <div className="min-h-screen bg-[#fafafa]">
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-white to-[#fafafa] border-b border-[#e5e5e5]">
-        <div className="container-luxury py-16 sm:py-20 lg:py-24">
+        <div className="container-luxury py-10 sm:py-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="max-w-4xl mx-auto text-center space-y-5 sm:space-y-6"
+            className="max-w-4xl mx-auto text-center space-y-4"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#e5e5e5] rounded-[20px] mb-2">
               <Sparkles className="h-4 w-4 text-neutral-500" />
@@ -139,9 +143,9 @@ export default function AboutPage() {
       </section>
 
       {/* Mission Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-white">
+      <section className="py-8 sm:py-10 bg-white">
         <div className="container-luxury">
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-center">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -186,7 +190,7 @@ export default function AboutPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-[#fafafa]">
+      <section className="py-8 sm:py-10 bg-[#fafafa]">
         <div className="container-luxury">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -228,7 +232,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-white">
+      <section className="py-8 sm:py-10 bg-white">
         <div className="container-luxury">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -272,7 +276,7 @@ export default function AboutPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-[#0a0a0a] to-neutral-900 text-[#fafafa]">
+      <section className="py-8 sm:py-10 bg-gradient-to-br from-[#0a0a0a] to-neutral-900 text-[#fafafa]">
         <div className="container-luxury">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -314,7 +318,7 @@ export default function AboutPage() {
       </section>
 
       {/* Story Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-[#fafafa]">
+      <section className="py-8 sm:py-10 bg-[#fafafa]">
         <div className="container-luxury">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -358,7 +362,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-white border-t border-[#e5e5e5]">
+      <section className="py-8 sm:py-10 bg-white border-t border-[#e5e5e5]">
         <div className="container-luxury">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

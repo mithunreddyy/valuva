@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { HTTP_STATUS } from "../config/constants";
+import { captureException } from "../config/sentry";
 import { AppError } from "../utils/error.util";
 import { logger } from "../utils/logger.util";
 
@@ -83,6 +84,16 @@ export const errorHandler = (
     stack: err.stack,
     path: req.path,
     method: req.method,
+  });
+
+  // Send to Sentry for production error tracking
+  captureException(err, {
+    requestId,
+    path: req.path,
+    method: req.method,
+    body: req.body,
+    query: req.query,
+    params: req.params,
   });
 
   res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({

@@ -4,6 +4,7 @@ import addressesReducer from "./slices/addressesSlice";
 import authReducer from "./slices/authSlice";
 import cartReducer from "./slices/cartSlice";
 import categoriesReducer from "./slices/categoriesSlice";
+import comparisonReducer from "./slices/comparisonSlice";
 import filtersReducer from "./slices/filtersSlice";
 import ordersReducer from "./slices/ordersSlice";
 import productsReducer from "./slices/productsSlice";
@@ -23,6 +24,7 @@ export const store = configureStore({
     reviews: reviewsReducer,
     ui: uiReducer,
     filters: filtersReducer,
+    comparison: comparisonReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

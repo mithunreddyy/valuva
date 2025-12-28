@@ -143,6 +143,71 @@ export class ProductsRepository {
     return product;
   }
 
+  async findProductBySlug(slug: string) {
+    const product = await prisma.product.findUnique({
+      where: { slug, isActive: true },
+      include: {
+        category: true,
+        subCategory: true,
+        images: {
+          orderBy: { sortOrder: "asc" },
+        },
+        variants: {
+          where: { isActive: true },
+        },
+        reviews: {
+          where: { isApproved: true },
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+        },
+      },
+    });
+
+    if (product) {
+      await prisma.product.update({
+        where: { id: product.id },
+        data: { viewCount: { increment: 1 } },
+      });
+    }
+
+    return product;
+  }
+
+  async searchProducts(query: string, limit: number = 20) {
+    const products = await prisma.product.findMany({
+      where: {
+        isActive: true,
+        OR: [
+          { name: { contains: query, mode: "insensitive" } },
+          { description: { contains: query, mode: "insensitive" } },
+          { brand: { contains: query, mode: "insensitive" } },
+          { sku: { contains: query, mode: "insensitive" } },
+        ],
+      },
+      include: {
+        images: {
+          where: { isPrimary: true },
+          take: 1,
+        },
+        category: true,
+      },
+      take: limit,
+      orderBy: [
+        { totalSold: "desc" },
+        { viewCount: "desc" },
+      ],
+    });
+
+    return { products, total: products.length };
+  }
+
   async findRelatedProducts(
     productId: string,
     categoryId: string,

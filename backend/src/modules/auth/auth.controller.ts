@@ -12,7 +12,17 @@ export class AuthController {
   }
 
   register = async (req: AuthRequest, res: Response): Promise<Response> => {
-    const result = await this.service.register(req.body);
+    const ipAddress =
+      (req.headers["x-forwarded-for"] as string)?.split(",")[0] ||
+      req.socket.remoteAddress ||
+      req.ip;
+    const userAgent = req.headers["user-agent"] || "";
+
+    const result = await this.service.register(
+      req.body,
+      ipAddress,
+      userAgent
+    );
     return ResponseUtil.success(
       res,
       result,
@@ -61,6 +71,24 @@ export class AuthController {
       res,
       null,
       SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS
+    );
+  };
+
+  verifyEmail = async (req: AuthRequest, res: Response): Promise<Response> => {
+    const { token } = req.query;
+    await this.service.verifyEmail(token as string);
+    return ResponseUtil.success(res, null, "Email verified successfully");
+  };
+
+  resendVerification = async (
+    req: AuthRequest,
+    res: Response
+  ): Promise<Response> => {
+    await this.service.resendVerificationEmail(req.user!.userId);
+    return ResponseUtil.success(
+      res,
+      null,
+      "Verification email sent successfully"
     );
   };
 }

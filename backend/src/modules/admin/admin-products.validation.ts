@@ -6,12 +6,49 @@ export const createProductSchema = z.object({
     description: z
       .string()
       .min(10, "Description must be at least 10 characters"),
+    shortDescription: z.string().optional(),
+    longDescription: z.string().optional(),
     basePrice: z.number().positive("Price must be positive"),
     compareAtPrice: z.number().positive().optional(),
     sku: z.string().min(1, "SKU is required"),
     brand: z.string().optional(),
     material: z.string().optional(),
     careInstructions: z.string().optional(),
+    washCareInstructions: z.string().optional(),
+    specifications: z
+      .array(
+        z.object({
+          key: z.string(),
+          value: z.union([z.string(), z.number()]),
+        })
+      )
+      .optional(),
+    sizeGuide: z
+      .object({
+        title: z.string().optional(),
+        measurements: z
+          .array(
+            z.object({
+              size: z.string(),
+              chest: z.string().optional(),
+              waist: z.string().optional(),
+              length: z.string().optional(),
+              sleeve: z.string().optional(),
+            })
+          )
+          .optional(),
+        notes: z.string().optional(),
+      })
+      .optional(),
+    shippingInfo: z
+      .object({
+        processingTime: z.string().optional(),
+        shippingTime: z.string().optional(),
+        freeShipping: z.boolean().optional(),
+        returnable: z.boolean().optional(),
+        exchangeable: z.boolean().optional(),
+      })
+      .optional(),
     categoryId: z.string().uuid("Invalid category ID"),
     subCategoryId: z.string().uuid().optional(),
     isFeatured: z.boolean().optional(),
@@ -26,11 +63,48 @@ export const updateProductSchema = z.object({
   body: z.object({
     name: z.string().min(1).optional(),
     description: z.string().min(10).optional(),
+    shortDescription: z.string().optional(),
+    longDescription: z.string().optional(),
     basePrice: z.number().positive().optional(),
     compareAtPrice: z.number().positive().optional(),
     brand: z.string().optional(),
     material: z.string().optional(),
     careInstructions: z.string().optional(),
+    washCareInstructions: z.string().optional(),
+    specifications: z
+      .array(
+        z.object({
+          key: z.string(),
+          value: z.union([z.string(), z.number()]),
+        })
+      )
+      .optional(),
+    sizeGuide: z
+      .object({
+        title: z.string().optional(),
+        measurements: z
+          .array(
+            z.object({
+              size: z.string(),
+              chest: z.string().optional(),
+              waist: z.string().optional(),
+              length: z.string().optional(),
+              sleeve: z.string().optional(),
+            })
+          )
+          .optional(),
+        notes: z.string().optional(),
+      })
+      .optional(),
+    shippingInfo: z
+      .object({
+        processingTime: z.string().optional(),
+        shippingTime: z.string().optional(),
+        freeShipping: z.boolean().optional(),
+        returnable: z.boolean().optional(),
+        exchangeable: z.boolean().optional(),
+      })
+      .optional(),
     categoryId: z.string().uuid().optional(),
     subCategoryId: z.string().uuid().optional(),
     isFeatured: z.boolean().optional(),

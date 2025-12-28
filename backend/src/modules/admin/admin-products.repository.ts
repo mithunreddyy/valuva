@@ -170,7 +170,10 @@ export class AdminProductsRepository {
         },
       });
 
-      return updatedVariant;
+      return {
+        variant: updatedVariant,
+        productId: variant.productId,
+      };
     });
   }
 

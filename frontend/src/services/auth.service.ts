@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api-client";
+import { removeStorageItem } from "@/lib/storage";
 import { ApiResponse, AuthResponse, User } from "@/types";
 
 export interface RegisterData {
@@ -33,8 +34,8 @@ export const authService = {
 
   logout: async (): Promise<void> => {
     await apiClient.post("/auth/logout");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+    removeStorageItem("accessToken");
+    removeStorageItem("refreshToken");
   },
 
   refreshToken: async (refreshToken: string): Promise<AuthResponse> => {

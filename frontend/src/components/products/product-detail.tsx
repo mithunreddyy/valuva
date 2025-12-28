@@ -91,7 +91,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const primaryImage =
     product.images.find((img) => img.isPrimary)?.url ||
     product.images[0]?.url ||
-    "/placeholder.png";
+    null;
 
   return (
     <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">

@@ -21,13 +21,21 @@ export class OrdersController {
       notes,
     } = req.body;
 
+    const ipAddress =
+      (req.headers["x-forwarded-for"] as string)?.split(",")[0] ||
+      req.socket.remoteAddress ||
+      req.ip;
+    const userAgent = req.headers["user-agent"] || "";
+
     const order = await this.service.createOrder(
       req.user!.userId,
       shippingAddressId,
       billingAddressId,
       paymentMethod,
       couponCode,
-      notes
+      notes,
+      ipAddress,
+      userAgent
     );
 
     return ResponseUtil.success(

@@ -1,4 +1,5 @@
 import { ERROR_MESSAGES } from "../../config/constants";
+import { AnalyticsEventType, AnalyticsUtil } from "../../utils/analytics.util";
 import { NotFoundError, ValidationError } from "../../utils/error.util";
 import { CartRepository } from "./cart.repository";
 
@@ -64,6 +65,16 @@ export class CartService {
     const cart = await this.repository.findOrCreateCart(userId);
     await this.repository.addCartItem(cart.id, variantId, quantity);
 
+    // Track analytics
+    AnalyticsUtil.trackAddToCart(
+      variant.productId,
+      variantId,
+      quantity,
+      Number(variant.price)
+    ).catch(() => {
+      // Silently fail - analytics shouldn't break the flow
+    });
+
     return this.getCart(userId);
   }
 
@@ -92,7 +103,24 @@ export class CartService {
       throw new NotFoundError("Cart item not found in your cart");
     }
 
+    const item = cart.items.find((i) => i.id === itemId);
     await this.repository.removeCartItem(itemId);
+
+    // Track analytics
+    if (item) {
+      AnalyticsUtil.trackEvent({
+        userId,
+        eventType: AnalyticsEventType.REMOVE_FROM_CART,
+        properties: {
+          productId: item.variant.productId,
+          variantId: item.variantId,
+          quantity: item.quantity,
+        },
+      }).catch(() => {
+        // Silently fail
+      });
+    }
+
     return this.getCart(userId);
   }
 

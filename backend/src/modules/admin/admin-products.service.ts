@@ -1,4 +1,5 @@
 import { NotFoundError } from "../../utils/error.util";
+import { CacheInvalidationUtil } from "../../utils/cache-invalidation.util";
 import { SlugUtil } from "../../utils/slug.util";
 import { AdminProductsRepository } from "./admin-products.repository";
 
@@ -11,7 +12,13 @@ export class AdminProductsService {
 
   async createProduct(data: any) {
     const slug = SlugUtil.generate(data.name);
-    return this.repository.createProduct({ ...data, slug });
+    const product = await this.repository.createProduct({ ...data, slug });
+    
+    // Invalidate cache
+    await CacheInvalidationUtil.invalidateProductCache(product.id, product.slug);
+    await CacheInvalidationUtil.invalidateAllProductCaches();
+    
+    return product;
   }
 
   async updateProduct(id: string, data: any) {
@@ -24,7 +31,13 @@ export class AdminProductsService {
       data.slug = SlugUtil.generate(data.name);
     }
 
-    return this.repository.updateProduct(id, data);
+    const updatedProduct = await this.repository.updateProduct(id, data);
+    
+    // Invalidate cache
+    await CacheInvalidationUtil.invalidateProductCache(id, updatedProduct.slug);
+    await CacheInvalidationUtil.invalidateAllProductCaches();
+    
+    return updatedProduct;
   }
 
   async deleteProduct(id: string) {
@@ -34,6 +47,10 @@ export class AdminProductsService {
     }
 
     await this.repository.deleteProduct(id);
+    
+    // Invalidate cache
+    await CacheInvalidationUtil.invalidateProductCache(id, product.slug);
+    await CacheInvalidationUtil.invalidateAllProductCaches();
   }
 
   async getProductById(id: string) {
@@ -73,7 +90,15 @@ export class AdminProductsService {
     reason: string,
     notes?: string
   ) {
-    return this.repository.updateInventory(variantId, change, reason, notes);
+    const result = await this.repository.updateInventory(variantId, change, reason, notes);
+    
+    // If stock was added (change > 0), check stock alerts
+    if (change > 0 && result?.variant?.productId) {
+      const { addStockAlertJob } = await import("../../jobs/stock-alerts.job");
+      addStockAlertJob(result.variant.productId, 0);
+    }
+    
+    return result;
   }
 
   async addProductImage(

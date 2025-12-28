@@ -11,22 +11,33 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Starting database seed...");
 
-  const hashedPassword = await bcrypt.hash("Admin@123", 12);
+  // Get admin credentials from environment variables
+  const adminEmail = process.env.ADMIN_EMAIL || "admin@valuva.com";
+  const adminPassword = process.env.ADMIN_PASSWORD || "Admin@123";
+  const adminFirstName = process.env.ADMIN_FIRST_NAME || "Admin";
+  const adminLastName = process.env.ADMIN_LAST_NAME || "User";
+
+  if (process.env.NODE_ENV === "production" && adminPassword === "Admin@123") {
+    console.warn("⚠️  WARNING: Using default admin password in production!");
+    console.warn("⚠️  Please set ADMIN_PASSWORD environment variable!");
+  }
+
+  const hashedPassword = await bcrypt.hash(adminPassword, 12);
 
   await prisma.admin.upsert({
-    where: { email: "admin@valuva.com" },
+    where: { email: adminEmail },
     update: {
       password: hashedPassword,
-      firstName: "Admin",
-      lastName: "User",
+      firstName: adminFirstName,
+      lastName: adminLastName,
       role: UserRole.SUPER_ADMIN,
       isActive: true,
     },
     create: {
-      email: "admin@valuva.com",
+      email: adminEmail,
       password: hashedPassword,
-      firstName: "Admin",
-      lastName: "User",
+      firstName: adminFirstName,
+      lastName: adminLastName,
       role: UserRole.SUPER_ADMIN,
     },
   });
@@ -369,9 +380,13 @@ async function main() {
   console.log("✅ Homepage sections created/updated");
 
   console.log("\n🎉 Database seeded successfully!");
-  console.log("\n📧 Admin Credentials:");
-  console.log("   Email: admin@valuva.com");
-  console.log("   Password: Admin@123\n");
+  if (process.env.NODE_ENV !== "production") {
+    console.log("\n📧 Admin Credentials:");
+    console.log(`   Email: ${adminEmail}`);
+    console.log(`   Password: ${adminPassword}\n`);
+  } else {
+    console.log("\n✅ Admin account created with environment variables\n");
+  }
 }
 
 main()

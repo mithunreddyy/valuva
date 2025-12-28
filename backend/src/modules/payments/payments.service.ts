@@ -1,6 +1,8 @@
 import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { prisma } from "../../config/database";
+import { circuitBreakers } from "../../utils/circuit-breaker.util";
+import { retry } from "../../utils/retry.util";
 import { NotFoundError, ValidationError } from "../../utils/error.util";
 import { PaymentsRepository } from "./payments.repository";
 import { ShopifyPaymentService } from "./shopify-payment.service";
@@ -93,9 +95,25 @@ export class PaymentsService {
       throw new NotFoundError("Order not found");
     }
 
-    // Verify payment with Shopify
-    const paymentVerification = await this.shopifyService.verifyPayment(
-      checkoutToken
+    // Verify payment with Shopify (with circuit breaker and retry)
+    const paymentVerification = await circuitBreakers.shopify.execute(
+      async () => {
+        return await retry(
+          async () => {
+            return await this.shopifyService.verifyPayment(checkoutToken);
+          },
+          {
+            maxAttempts: 3,
+            delay: 1000,
+            backoff: "exponential",
+          }
+        );
+      },
+      async () => {
+        throw new ValidationError(
+          "Payment verification service is temporarily unavailable. Please try again later."
+        );
+      }
     );
 
     const payment = paymentVerification.payment;

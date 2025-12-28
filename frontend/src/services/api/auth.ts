@@ -69,4 +69,12 @@ export const authApi = {
   }): Promise<void> => {
     await apiClient.post("/users/change-password", data);
   },
+
+  verifyEmail: async (token: string): Promise<void> => {
+    await apiClient.get("/auth/verify-email", { params: { token } });
+  },
+
+  resendVerification: async (): Promise<void> => {
+    await apiClient.post("/auth/resend-verification");
+  },
 };

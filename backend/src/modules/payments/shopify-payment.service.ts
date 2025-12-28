@@ -1,6 +1,9 @@
 import { Decimal } from "@prisma/client/runtime/library";
 import axios, { AxiosInstance } from "axios";
 import { env } from "../../config/env";
+import { circuitBreakers } from "../../utils/circuit-breaker.util";
+import { retry } from "../../utils/retry.util";
+import { logger } from "../../utils/logger.util";
 
 interface ShopifyPaymentSession {
   id: string;
@@ -99,7 +102,10 @@ export class ShopifyPaymentService {
         currency: checkout.currency,
       };
     } catch (error) {
-      console.error("Shopify payment session creation failed:", error);
+      logger.error("Shopify payment session creation failed", {
+        error: error instanceof Error ? error.message : String(error),
+        orderId: data.orderId,
+      });
       throw new Error("Failed to create payment session");
     }
   }
@@ -138,7 +144,10 @@ export class ShopifyPaymentService {
         },
       };
     } catch (error) {
-      console.error("Payment verification failed:", error);
+      logger.error("Payment verification failed", {
+        error: error instanceof Error ? error.message : String(error),
+        paymentId,
+      });
       throw new Error("Failed to verify payment");
     }
   }
@@ -206,7 +215,11 @@ export class ShopifyPaymentService {
         refund_id: refundResponse.data.refund.id,
       };
     } catch (error) {
-      console.error("Refund failed:", error);
+      logger.error("Refund failed", {
+        error: error instanceof Error ? error.message : String(error),
+        paymentId,
+        amount,
+      });
       throw new Error("Failed to process refund");
     }
   }
@@ -234,7 +247,9 @@ export class ShopifyPaymentService {
         .filter((gateway: any) => gateway.enabled)
         .map((gateway: any) => gateway.name);
     } catch (error) {
-      console.error("Failed to fetch payment methods:", error);
+      logger.error("Failed to fetch payment methods", {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return [];
     }
   }
@@ -277,7 +292,10 @@ export class ShopifyPaymentService {
         status: draftOrder.status,
       };
     } catch (error) {
-      console.error("Draft order creation failed:", error);
+      logger.error("Draft order creation failed", {
+        error: error instanceof Error ? error.message : String(error),
+        orderData: data,
+      });
       throw new Error("Failed to create draft order");
     }
   }

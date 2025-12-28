@@ -1,3 +1,4 @@
+import { removeStorageItem, setStorageItem } from "@/lib/storage";
 import { authApi } from "@/services/api/auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -28,8 +29,8 @@ export function useLogin() {
     onSuccess: (data) => {
       // Store tokens
       if (data.data?.accessToken && data.data?.refreshToken) {
-        localStorage.setItem("accessToken", data.data.accessToken);
-        localStorage.setItem("refreshToken", data.data.refreshToken);
+        setStorageItem("accessToken", data.data.accessToken);
+        setStorageItem("refreshToken", data.data.refreshToken);
       }
       // Invalidate profile query to refetch user data
       queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -57,8 +58,8 @@ export function useRegister() {
     onSuccess: (data) => {
       // Store tokens
       if (data.data?.accessToken && data.data?.refreshToken) {
-        localStorage.setItem("accessToken", data.data.accessToken);
-        localStorage.setItem("refreshToken", data.data.refreshToken);
+        setStorageItem("accessToken", data.data.accessToken);
+        setStorageItem("refreshToken", data.data.refreshToken);
       }
       // Invalidate profile query to refetch user data
       queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -79,8 +80,8 @@ export function useLogout() {
     mutationFn: () => authApi.logout(),
     onSuccess: () => {
       // Clear tokens
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      removeStorageItem("accessToken");
+      removeStorageItem("refreshToken");
       // Clear all queries
       queryClient.clear();
       router.push("/");

@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { logger } from "../utils/logger.util";
 
 interface PerformanceMetrics {
   startTime: number;
@@ -35,16 +36,22 @@ export const performanceMiddleware = (
 
     // Log slow requests (over 1 second)
     if (metrics.duration > 1000) {
-      console.warn(
-        `[PERFORMANCE] Slow request detected: ${metrics.method} ${metrics.path} - ${metrics.duration}ms`
-      );
+      logger.warn("Slow request detected", {
+        method: metrics.method,
+        path: metrics.path,
+        duration: metrics.duration,
+        statusCode: metrics.statusCode,
+      });
     }
 
     // Log in development
     if (process.env.NODE_ENV === "development") {
-      console.log(
-        `[PERFORMANCE] ${metrics.method} ${metrics.path} - ${metrics.duration}ms - ${metrics.statusCode}`
-      );
+      logger.debug("Request performance", {
+        method: metrics.method,
+        path: metrics.path,
+        duration: metrics.duration,
+        statusCode: metrics.statusCode,
+      });
     }
   });
 

@@ -96,12 +96,35 @@ export interface Product {
   name: string;
   slug: string;
   description: string;
+  shortDescription?: string;
+  longDescription?: string;
   basePrice: number;
   compareAtPrice?: number;
   sku: string;
   brand?: string;
   material?: string;
   careInstructions?: string;
+  washCareInstructions?: string;
+  specifications?: Record<string, string | number>;
+  sizeGuide?: {
+    title?: string;
+    measurements?: Array<{
+      size: string;
+      chest?: string;
+      waist?: string;
+      length?: string;
+      sleeve?: string;
+      [key: string]: string | undefined;
+    }>;
+    notes?: string;
+  };
+  shippingInfo?: {
+    processingTime?: string;
+    shippingTime?: string;
+    freeShipping?: boolean;
+    returnable?: boolean;
+    exchangeable?: boolean;
+  };
   isActive: boolean;
   isFeatured: boolean;
   isNewArrival: boolean;

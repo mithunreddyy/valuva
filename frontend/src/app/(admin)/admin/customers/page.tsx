@@ -60,20 +60,20 @@ export default function AdminCustomersPage() {
   const totalPages = data?.meta?.totalPages || 1;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] py-8 sm:py-12 lg:py-16">
+    <div className="min-h-screen bg-[#fafafa] py-6 sm:py-8">
       <div className="container-luxury">
         {/* Header */}
-        <div className="mb-8 border-b border-[#e5e5e5] pb-6">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-normal mb-3">
+        <div className="mb-6 border-b border-[#e5e5e5] pb-5">
+          <h1 className="text-2xl sm:text-3xl font-medium tracking-normal mb-1.5">
             Customers Management
           </h1>
-          <p className="text-sm text-neutral-500 font-medium tracking-normal">
+          <p className="text-xs text-neutral-500 font-medium">
             Manage all customer accounts
           </p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px] mb-6">
+        <div className="bg-white border border-[#e5e5e5] p-4 rounded-[12px] mb-5">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
@@ -82,11 +82,11 @@ export default function AdminCustomersPage() {
                 placeholder="Search customers..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 rounded-[10px]"
+                className="pl-10 rounded-[10px] h-10 text-sm"
               />
             </div>
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full rounded-[10px]">
+              <SelectTrigger className="w-full rounded-[10px] h-10 text-sm">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
@@ -98,7 +98,7 @@ export default function AdminCustomersPage() {
                 <SelectItem value="email_desc">Email Z-A</SelectItem>
               </SelectContent>
             </Select>
-            <div className="text-sm text-neutral-500 font-medium flex items-center">
+            <div className="text-xs text-neutral-500 font-medium flex items-center">
               Total: {data?.meta?.total || 0} customers
             </div>
           </div>
@@ -125,22 +125,22 @@ export default function AdminCustomersPage() {
                 <table className="w-full">
                   <thead className="bg-[#fafafa] border-b border-[#e5e5e5]">
                     <tr>
-                      <th className="text-left py-4 px-6 text-xs font-medium tracking-normal">
+                      <th className="text-left py-3 px-4 text-xs font-medium tracking-normal">
                         Name
                       </th>
-                      <th className="text-left py-4 px-6 text-xs font-medium tracking-normal">
+                      <th className="text-left py-3 px-4 text-xs font-medium tracking-normal">
                         Email
                       </th>
-                      <th className="text-left py-4 px-6 text-xs font-medium tracking-normal">
+                      <th className="text-left py-3 px-4 text-xs font-medium tracking-normal">
                         Phone
                       </th>
-                      <th className="text-left py-4 px-6 text-xs font-medium tracking-normal">
+                      <th className="text-left py-3 px-4 text-xs font-medium tracking-normal">
                         Status
                       </th>
-                      <th className="text-left py-4 px-6 text-xs font-medium tracking-normal">
+                      <th className="text-left py-3 px-4 text-xs font-medium tracking-normal">
                         Joined
                       </th>
-                      <th className="text-left py-4 px-6 text-xs font-medium tracking-normal">
+                      <th className="text-left py-3 px-4 text-xs font-medium tracking-normal">
                         Actions
                       </th>
                     </tr>
@@ -151,39 +151,39 @@ export default function AdminCustomersPage() {
                         key={user.id}
                         className="border-b border-[#e5e5e5] hover:bg-[#fafafa] transition-colors"
                       >
-                        <td className="py-4 px-6">
+                        <td className="py-3 px-4">
                           <p className="text-sm font-medium tracking-normal">
                             {user.firstName} {user.lastName}
                           </p>
                         </td>
-                        <td className="py-4 px-6 text-sm text-neutral-600">
+                        <td className="py-3 px-4 text-sm text-neutral-600 font-medium">
                           {user.email}
                         </td>
-                        <td className="py-4 px-6 text-sm text-neutral-600">
+                        <td className="py-3 px-4 text-xs text-neutral-600 font-medium">
                           {user.phone || "N/A"}
                         </td>
-                        <td className="py-4 px-6">
+                        <td className="py-3 px-4">
                           <span
-                            className={`px-3 py-1 text-xs font-medium tracking-normal rounded-[6px] ${
+                            className={`px-2.5 py-1 text-xs font-medium tracking-normal rounded-[6px] ${
                               user.isActive
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
                             }`}
                           >
                             {user.isActive ? "Active" : "Inactive"}
                           </span>
                         </td>
-                        <td className="py-4 px-6 text-sm text-neutral-600">
+                        <td className="py-3 px-4 text-xs text-neutral-600 font-medium">
                           {formatDate(user.createdAt)}
                         </td>
-                        <td className="py-4 px-6">
+                        <td className="py-3 px-4">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() =>
                               handleStatusUpdate(user.id, !user.isActive)
                             }
-                            className="rounded-[8px]"
+                            className="rounded-[8px] h-8 text-xs"
                             disabled={updateStatus.isPending}
                           >
                             {user.isActive ? "Deactivate" : "Activate"}

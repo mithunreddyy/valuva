@@ -1,105 +1,159 @@
+import { getRedis } from "../config/redis";
+import { logger } from "./logger.util";
+
 interface CacheEntry<T> {
   data: T;
   expiresAt: number;
 }
 
+/**
+ * Cache utility using Redis or in-memory fallback
+ * Production-ready caching with TTL support
+ */
 export class CacheUtil {
-  private static cache = new Map<string, CacheEntry<any>>();
-  private static defaultTTL = 5 * 60 * 1000; // 5 minutes
+  private static memoryCache = new Map<string, CacheEntry<any>>();
+  private static readonly DEFAULT_TTL = 3600; // 1 hour in seconds
 
   /**
-   * Get cached data
+   * Get value from cache
    */
-  static get<T>(key: string): T | null {
-    const entry = this.cache.get(key);
-    if (!entry) return null;
+  static async get<T>(key: string): Promise<T | null> {
+    const redis = getRedis();
 
-    if (Date.now() > entry.expiresAt) {
-      this.cache.delete(key);
-      return null;
+    if (redis) {
+      try {
+        const value = await redis.get(key);
+        if (value) {
+          return JSON.parse(value) as T;
+        }
+      } catch (error) {
+        logger.error("Redis get error", {
+          key,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
     }
 
-    return entry.data as T;
+    // Fallback to memory cache
+    const entry = this.memoryCache.get(key);
+    if (entry && entry.expiresAt > Date.now()) {
+      return entry.data as T;
+    }
+
+    if (entry) {
+      this.memoryCache.delete(key);
+    }
+
+    return null;
   }
 
   /**
-   * Set cached data
+   * Set value in cache
    */
-  static set<T>(key: string, data: T, ttl: number = this.defaultTTL): void {
-    this.cache.set(key, {
-      data,
-      expiresAt: Date.now() + ttl,
+  static async set<T>(key: string, value: T, ttl: number = this.DEFAULT_TTL): Promise<void> {
+    const redis = getRedis();
+
+    if (redis) {
+      try {
+        await redis.setex(key, ttl, JSON.stringify(value));
+        return;
+      } catch (error) {
+        logger.error("Redis set error", {
+          key,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    // Fallback to memory cache
+    this.memoryCache.set(key, {
+      data: value,
+      expiresAt: Date.now() + ttl * 1000,
     });
   }
 
   /**
-   * Delete cached data
+   * Delete value from cache
    */
-  static delete(key: string): void {
-    this.cache.delete(key);
+  static async delete(key: string): Promise<void> {
+    const redis = getRedis();
+
+    if (redis) {
+      try {
+        await redis.del(key);
+      } catch (error) {
+        logger.error("Redis delete error", {
+          key,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    this.memoryCache.delete(key);
+  }
+
+  /**
+   * Delete multiple keys matching pattern
+   */
+  static async deletePattern(pattern: string): Promise<void> {
+    const redis = getRedis();
+
+    if (redis) {
+      try {
+        const keys = await redis.keys(pattern);
+        if (keys.length > 0) {
+          await redis.del(...keys);
+        }
+      } catch (error) {
+        logger.error("Redis delete pattern error", {
+          pattern,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    // Fallback: delete from memory cache
+    for (const key of this.memoryCache.keys()) {
+      if (key.includes(pattern.replace("*", ""))) {
+        this.memoryCache.delete(key);
+      }
+    }
   }
 
   /**
    * Clear all cache
    */
-  static clear(): void {
-    this.cache.clear();
-  }
+  static async clear(): Promise<void> {
+    const redis = getRedis();
 
-  /**
-   * Generate cache key from parameters
-   */
-  static generateKey(prefix: string, ...params: (string | number | Date)[]): string {
-    const paramString = params
-      .map((p) => (p instanceof Date ? p.toISOString() : String(p)))
-      .join(":");
-    return `${prefix}:${paramString}`;
-  }
-
-  /**
-   * Clean expired entries (should be called periodically)
-   */
-  static cleanExpired(): void {
-    const now = Date.now();
-    const keysToDelete: string[] = [];
-    
-    this.cache.forEach((entry, key) => {
-      if (now > entry.expiresAt) {
-        keysToDelete.push(key);
+    if (redis) {
+      try {
+        await redis.flushdb();
+      } catch (error) {
+        logger.error("Redis clear error", {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
-    });
-    
-    keysToDelete.forEach((key) => this.cache.delete(key));
+    }
+
+    this.memoryCache.clear();
   }
 
   /**
-   * Get cache statistics
+   * Get or set with callback (cache-aside pattern)
    */
-  static getStats() {
-    const now = Date.now();
-    let expired = 0;
-    let active = 0;
+  static async getOrSet<T>(
+    key: string,
+    callback: () => Promise<T>,
+    ttl: number = this.DEFAULT_TTL
+  ): Promise<T> {
+    const cached = await this.get<T>(key);
+    if (cached !== null) {
+      return cached;
+    }
 
-    this.cache.forEach((entry) => {
-      if (now > entry.expiresAt) {
-        expired++;
-      } else {
-        active++;
-      }
-    });
-
-    return {
-      total: this.cache.size,
-      active,
-      expired,
-    };
+    const value = await callback();
+    await this.set(key, value, ttl);
+    return value;
   }
 }
-
-// Clean expired entries every 10 minutes
-if (typeof setInterval !== "undefined") {
-  setInterval(() => {
-    CacheUtil.cleanExpired();
-  }, 10 * 60 * 1000);
-}
-

@@ -157,6 +157,24 @@ export default function RegisterPage() {
               )}
             </div>
 
+            <p className="text-xs text-neutral-500 font-medium text-center leading-relaxed">
+              By creating an account, you agree to our{" "}
+              <Link
+                href="/terms-of-service"
+                className="text-[#0a0a0a] underline hover:no-underline"
+              >
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link
+                href="/privacy-policy"
+                className="text-[#0a0a0a] underline hover:no-underline"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </p>
+
             <Button
               type="submit"
               size="lg"

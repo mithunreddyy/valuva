@@ -1,5 +1,6 @@
 "use client";
 
+import { useAnalytics } from "@/hooks/use-analytics";
 import { formatPrice } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
@@ -21,6 +22,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const dispatch = useAppDispatch();
   const wishlist = useAppSelector((state) => state.wishlist.items);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const analytics = useAnalytics();
 
   const isInWishlist = wishlist.some((item) => item.productId === product.id);
   const primaryImage =
@@ -32,12 +34,21 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
     setIsAddingToCart(true);
     try {
+      const variant = product.variants[0];
       await dispatch(
         addToCart({
-          variantId: product.variants[0].id,
+          variantId: variant.id,
           quantity: 1,
         })
       ).unwrap();
+
+      // Track analytics
+      analytics.trackAddToCart(
+        product.id,
+        variant.id,
+        1,
+        Number(variant.price)
+      );
     } catch (error) {
       console.error("Failed to add to cart:", error);
     } finally {
@@ -49,8 +60,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     e.preventDefault();
     if (isInWishlist) {
       await dispatch(removeFromWishlist(product.id));
+      analytics.trackWishlistRemove(product.id);
     } else {
       await dispatch(addToWishlist(product.id));
+      analytics.trackWishlistAdd(product.id);
     }
   };
 

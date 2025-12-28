@@ -36,5 +36,11 @@ router.post(
   validate(resetPasswordSchema),
   asyncHandler(controller.resetPassword)
 );
+router.get("/verify-email", asyncHandler(controller.verifyEmail));
+router.post(
+  "/resend-verification",
+  authenticate,
+  asyncHandler(controller.resendVerification)
+);
 
 export default router;

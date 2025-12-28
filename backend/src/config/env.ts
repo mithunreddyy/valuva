@@ -35,12 +35,46 @@ const envSchema = z.object({
   SHOPIFY_ACCESS_TOKEN: z.string(),
   SHOPIFY_SHOP_DOMAIN: z.string(),
   SHOPIFY_WEBHOOK_SECRET: z.string(),
+
+  // Cloud Storage (AWS S3 or Cloudinary)
+  STORAGE_PROVIDER: z.enum(["s3", "cloudinary", "local"]).default("local"),
+  AWS_ACCESS_KEY_ID: z.string().optional(),
+  AWS_SECRET_ACCESS_KEY: z.string().optional(),
+  AWS_REGION: z.string().optional(),
+  AWS_S3_BUCKET: z.string().optional(),
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
+
+  // Shipping Carrier (optional - for production integration)
+  SHIPPING_CARRIER: z.enum(["shiprocket", "delhivery", "fedex", "ups", "none"]).default("none"),
+  SHIPROCKET_EMAIL: z.string().optional(),
+  SHIPROCKET_PASSWORD: z.string().optional(),
+  DELHIVERY_API_KEY: z.string().optional(),
+
+  // Redis (for caching and background jobs)
+  REDIS_URL: z.string().optional(),
+  REDIS_HOST: z.string().optional(),
+  REDIS_PORT: z.preprocess(
+    (val) => (typeof val === "string" ? Number(val) : val),
+    z.number().optional()
+  ),
+  REDIS_PASSWORD: z.string().optional(),
+
+  // Sentry (error tracking)
+  SENTRY_DSN: z.string().optional(),
+  SENTRY_ENVIRONMENT: z.string().default("development"),
+  SENTRY_TRACES_SAMPLE_RATE: z.preprocess(
+    (val) => (typeof val === "string" ? Number(val) : val),
+    z.number().default(1.0)
+  ),
 });
 
 const parseEnv = () => {
   try {
     return envSchema.parse(process.env);
   } catch (error) {
+    // Use console.error here as logger might not be initialized yet
     console.error("❌ Invalid environment variables:", error);
     process.exit(1);
   }

@@ -1,0 +1,40 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Deploy Backend
+        # TODO: Add deployment steps based on your hosting provider
+        # Examples: AWS, DigitalOcean, Railway, etc.
+        run: |
+          echo "Deploy backend to production"
+          # Add your deployment commands here
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Deploy Frontend
+        # TODO: Add deployment steps (e.g., Vercel, Netlify, etc.)
+        run: |
+          echo "Deploy frontend to production"
+          # Add your deployment commands here
+

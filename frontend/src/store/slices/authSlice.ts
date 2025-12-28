@@ -1,3 +1,8 @@
+import {
+  getStorageItem,
+  removeStorageItem,
+  setStorageItem,
+} from "@/lib/storage";
 import { LoginData, RegisterData, authService } from "@/services/auth.service";
 import { AuthResponse, User } from "@/types";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
@@ -11,22 +16,28 @@ interface AuthState {
   error: string | null;
 }
 
-const initialState: AuthState = {
-  user: null,
-  accessToken: localStorage.getItem("accessToken"),
-  refreshToken: localStorage.getItem("refreshToken"),
-  isAuthenticated: !!localStorage.getItem("accessToken"),
-  isLoading: false,
-  error: null,
+// Initialize state safely for SSR
+const getInitialState = (): AuthState => {
+  const accessToken = getStorageItem("accessToken");
+  return {
+    user: null,
+    accessToken,
+    refreshToken: getStorageItem("refreshToken"),
+    isAuthenticated: !!accessToken,
+    isLoading: false,
+    error: null,
+  };
 };
+
+const initialState: AuthState = getInitialState();
 
 export const register = createAsyncThunk(
   "auth/register",
   async (data: RegisterData, { rejectWithValue }) => {
     try {
       const response = await authService.register(data);
-      localStorage.setItem("accessToken", response.accessToken);
-      localStorage.setItem("refreshToken", response.refreshToken);
+      setStorageItem("accessToken", response.accessToken);
+      setStorageItem("refreshToken", response.refreshToken);
       return response;
     } catch (error: unknown) {
       return rejectWithValue((error as Error).message || "Registration failed");
@@ -39,8 +50,8 @@ export const login = createAsyncThunk(
   async (data: LoginData, { rejectWithValue }) => {
     try {
       const response = await authService.login(data);
-      localStorage.setItem("accessToken", response.accessToken);
-      localStorage.setItem("refreshToken", response.refreshToken);
+      setStorageItem("accessToken", response.accessToken);
+      setStorageItem("refreshToken", response.refreshToken);
       return response;
     } catch (error: unknown) {
       return rejectWithValue((error as Error).message || "Login failed");
@@ -97,6 +108,8 @@ const authSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
       state.isAuthenticated = true;
+      setStorageItem("accessToken", action.payload.accessToken);
+      setStorageItem("refreshToken", action.payload.refreshToken);
     },
   },
   extraReducers: (builder) => {
@@ -135,6 +148,8 @@ const authSlice = createSlice({
       })
       // Logout
       .addCase(logout.fulfilled, (state) => {
+        removeStorageItem("accessToken");
+        removeStorageItem("refreshToken");
         state.user = null;
         state.accessToken = null;
         state.refreshToken = null;

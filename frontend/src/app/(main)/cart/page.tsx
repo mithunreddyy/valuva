@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAnalytics } from "@/hooks/use-analytics";
 import {
   useCart,
   useRemoveCartItem,
@@ -16,6 +17,7 @@ export default function CartPage() {
   const { data, isLoading } = useCart();
   const updateItem = useUpdateCartItem();
   const removeItem = useRemoveCartItem();
+  const analytics = useAnalytics();
 
   if (isLoading) {
     return (
@@ -77,7 +79,7 @@ export default function CartPage() {
 
       {/* Main Content */}
       <section className="container-luxury py-6 sm:py-8 lg:py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
           {/* Cart Items */}
           <div className="lg:col-span-8 space-y-4">
             {cart.items.map((item) => (
@@ -140,7 +142,18 @@ export default function CartPage() {
                       </button>
                     </div>
                     <button
-                      onClick={() => removeItem.mutate(item.id)}
+                      onClick={() => {
+                        removeItem.mutate(item.id, {
+                          onSuccess: () => {
+                            // Track analytics
+                            analytics.trackRemoveFromCart(
+                              item.product.id,
+                              item.variantId,
+                              item.quantity
+                            );
+                          },
+                        });
+                      }}
                       className="ml-auto w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-neutral-400 hover:text-red-600 hover:bg-red-50 transition-all rounded-[16px]"
                       aria-label="Remove item"
                     >

@@ -74,6 +74,8 @@ export class OrdersRepository {
         },
       });
 
+      // Note: Inventory is already locked and decremented by InventoryLockUtil
+      // We only need to update totalSold here
       for (const item of data.items) {
         const variant = await tx.productVariant.findUnique({
           where: { id: item.variantId },
@@ -84,17 +86,10 @@ export class OrdersRepository {
           throw new Error(`Variant ${item.variantId} not found`);
         }
 
-        await tx.productVariant.update({
-          where: { id: item.variantId },
-          data: {
-            stock: { decrement: item.quantity },
-          },
-        });
-
+        // Only update totalSold - stock was already decremented by lock
         await tx.product.update({
           where: { id: variant.productId },
           data: {
-            totalStock: { decrement: item.quantity },
             totalSold: { increment: item.quantity },
           },
         });

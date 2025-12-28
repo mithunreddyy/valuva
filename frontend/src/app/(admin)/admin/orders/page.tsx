@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pagination } from "@/components/ui/pagination";
 import {
@@ -15,6 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import { formatDate, formatPrice } from "@/lib/utils";
 import { Order, OrderStatus } from "@/types";
 import { Package, Search } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function AdminOrdersPage() {
@@ -73,20 +75,20 @@ export default function AdminOrdersPage() {
   const totalPages = data?.meta?.totalPages || 1;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] py-8 sm:py-12 lg:py-16">
+    <div className="min-h-screen bg-[#fafafa] py-6 sm:py-8">
       <div className="container-luxury">
         {/* Header */}
-        <div className="mb-8 border-b border-[#e5e5e5] pb-6">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-normal mb-3">
+        <div className="mb-6 border-b border-[#e5e5e5] pb-5">
+          <h1 className="text-2xl sm:text-3xl font-medium tracking-normal mb-1.5">
             Orders Management
           </h1>
-          <p className="text-sm text-neutral-500 font-medium tracking-normal">
+          <p className="text-xs text-neutral-500 font-medium">
             Manage and track all orders
           </p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px] mb-6">
+        <div className="bg-white border border-[#e5e5e5] p-4 rounded-[12px] mb-5">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
@@ -95,11 +97,11 @@ export default function AdminOrdersPage() {
                 placeholder="Search orders..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 rounded-[10px]"
+                className="pl-10 rounded-[10px] h-10 text-sm"
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full rounded-[10px]">
+              <SelectTrigger className="w-full rounded-[10px] h-10 text-sm">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
@@ -113,7 +115,7 @@ export default function AdminOrdersPage() {
                 <SelectItem value={OrderStatus.CANCELLED}>Cancelled</SelectItem>
               </SelectContent>
             </Select>
-            <div className="text-sm text-neutral-500 font-medium flex items-center">
+            <div className="text-xs text-neutral-500 font-medium flex items-center">
               Total: {data?.meta?.total || 0} orders
             </div>
           </div>
@@ -140,22 +142,22 @@ export default function AdminOrdersPage() {
                 <table className="w-full">
                   <thead className="bg-[#fafafa] border-b border-[#e5e5e5]">
                     <tr>
-                      <th className="text-left py-4 px-6 text-xs font-medium tracking-normal">
+                      <th className="text-left py-3 px-4 text-xs font-medium tracking-normal">
                         Order Number
                       </th>
-                      <th className="text-left py-4 px-6 text-xs font-medium tracking-normal">
+                      <th className="text-left py-3 px-4 text-xs font-medium tracking-normal">
                         Customer
                       </th>
-                      <th className="text-left py-4 px-6 text-xs font-medium tracking-normal">
+                      <th className="text-left py-3 px-4 text-xs font-medium tracking-normal">
                         Status
                       </th>
-                      <th className="text-left py-4 px-6 text-xs font-medium tracking-normal">
+                      <th className="text-left py-3 px-4 text-xs font-medium tracking-normal">
                         Total
                       </th>
-                      <th className="text-left py-4 px-6 text-xs font-medium tracking-normal">
+                      <th className="text-left py-3 px-4 text-xs font-medium tracking-normal">
                         Date
                       </th>
-                      <th className="text-left py-4 px-6 text-xs font-medium tracking-normal">
+                      <th className="text-left py-3 px-4 text-xs font-medium tracking-normal">
                         Actions
                       </th>
                     </tr>
@@ -166,40 +168,43 @@ export default function AdminOrdersPage() {
                         key={order.id}
                         className="border-b border-[#e5e5e5] hover:bg-[#fafafa] transition-colors"
                       >
-                        <td className="py-4 px-6">
-                          <a
+                        <td className="py-3 px-4">
+                          <Link
                             href={`/admin/orders/${order.id}`}
                             className="text-sm font-medium text-[#0a0a0a] hover:underline"
                           >
                             {order.orderNumber}
-                          </a>
+                          </Link>
                         </td>
-                        <td className="py-4 px-6 text-sm text-neutral-600">
+                        <td className="py-3 px-4 text-sm text-neutral-600 font-medium">
                           {order.user?.email || "N/A"}
                         </td>
-                        <td className="py-4 px-6">
+                        <td className="py-3 px-4">
                           <span
-                            className={`px-3 py-1 text-xs font-medium tracking-normal rounded-[6px] ${getStatusColor(
+                            className={`px-2.5 py-1 text-xs font-medium tracking-normal rounded-[6px] ${getStatusColor(
                               order.status
                             )}`}
                           >
                             {order.status}
                           </span>
                         </td>
-                        <td className="py-4 px-6 text-sm font-medium">
+                        <td className="py-3 px-4 text-sm font-medium">
                           {formatPrice(order.total)}
                         </td>
-                        <td className="py-4 px-6 text-sm text-neutral-600">
+                        <td className="py-3 px-4 text-xs text-neutral-600 font-medium">
                           {formatDate(order.createdAt)}
                         </td>
-                        <td className="py-4 px-6">
+                        <td className="py-3 px-4">
                           <div className="flex items-center gap-2">
-                            <a
-                              href={`/admin/orders/${order.id}`}
-                              className="text-xs font-medium text-[#0a0a0a] hover:underline"
-                            >
-                              View
-                            </a>
+                            <Link href={`/admin/orders/${order.id}`}>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="rounded-[8px] h-8 text-xs"
+                              >
+                                View
+                              </Button>
+                            </Link>
                             {order.status !== OrderStatus.DELIVERED &&
                               order.status !== OrderStatus.CANCELLED && (
                                 <Select

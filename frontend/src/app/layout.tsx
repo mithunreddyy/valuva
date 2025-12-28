@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "@/components/error-boundary";
 import { Toaster } from "@/components/ui/toast";
 import { ReactQueryProvider } from "@/lib/react-query";
 import { ReduxProvider } from "@/lib/redux-provider";
@@ -34,12 +35,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={manrope.variable}>
       <body className={`${manrope.className} antialiased`}>
-        <ReduxProvider>
-          <ReactQueryProvider>
-            {children}
-            <Toaster />
-          </ReactQueryProvider>
-        </ReduxProvider>
+        <ErrorBoundary>
+          <ReduxProvider>
+            <ReactQueryProvider>
+              {children}
+              <Toaster />
+            </ReactQueryProvider>
+          </ReduxProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

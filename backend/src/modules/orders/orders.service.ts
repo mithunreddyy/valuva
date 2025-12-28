@@ -2,9 +2,14 @@ import { PaymentMethod, OrderStatus } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { ERROR_MESSAGES } from "../../config/constants";
 import { NotFoundError, ValidationError } from "../../utils/error.util";
+import { AnalyticsUtil, AnalyticsEventType } from "../../utils/analytics.util";
+import { AuditLogUtil, AuditAction } from "../../utils/audit-log.util";
+import { InventoryLockUtil } from "../../utils/inventory-lock.util";
+import { OrderStateMachine } from "../../utils/order-state-machine.util";
 import { OrderUtil } from "../../utils/order.util";
 import { OrdersRepository } from "./orders.repository";
 import { prisma } from "../../config/database";
+import { logger } from "../../utils/logger.util";
 
 const TAX_RATE = 0.18;
 const SHIPPING_COST = new Decimal(50);
@@ -23,7 +28,9 @@ export class OrdersService {
     billingAddressId: string,
     paymentMethod: PaymentMethod,
     couponCode?: string,
-    notes?: string
+    notes?: string,
+    ipAddress?: string,
+    userAgent?: string
   ) {
     const shippingAddress = await this.repository.getAddress(
       shippingAddressId,
@@ -46,17 +53,45 @@ export class OrdersService {
       throw new ValidationError(ERROR_MESSAGES.CART_EMPTY);
     }
 
-    for (const item of cart.items) {
-      if (!item.variant.isActive) {
-        throw new ValidationError(
-          `Product ${item.variant.sku} is no longer available`
+    // Lock and reserve inventory for all items (prevents race conditions)
+    const inventoryLocks: Array<{ variantId: string; quantity: number }> = [];
+    
+    try {
+      for (const item of cart.items) {
+        if (!item.variant.isActive) {
+          throw new ValidationError(
+            `Product ${item.variant.sku} is no longer available`
+          );
+        }
+
+        // Lock inventory atomically
+        const locked = await InventoryLockUtil.lockAndReserveInventory(
+          item.variantId,
+          item.quantity,
+          5000 // 5 second timeout
         );
+
+        if (!locked) {
+          // Release already locked inventory
+          for (const lock of inventoryLocks) {
+            await InventoryLockUtil.releaseInventory(lock.variantId, lock.quantity);
+          }
+          throw new ValidationError(
+            `Insufficient stock for ${item.variant.sku}. Please try again.`
+          );
+        }
+
+        inventoryLocks.push({
+          variantId: item.variantId,
+          quantity: item.quantity,
+        });
       }
-      if (item.variant.stock < item.quantity) {
-        throw new ValidationError(
-          `Insufficient stock for ${item.variant.sku}. Available: ${item.variant.stock}`
-        );
+    } catch (error) {
+      // Release all locks if order creation fails
+      for (const lock of inventoryLocks) {
+        await InventoryLockUtil.releaseInventory(lock.variantId, lock.quantity);
       }
+      throw error;
     }
 
     let subtotal = new Decimal(0);
@@ -137,6 +172,27 @@ export class OrdersService {
       },
     });
 
+    // Audit log
+    await AuditLogUtil.logOrder(
+      userId,
+      order.id,
+      AuditAction.CREATE,
+      {
+        orderNumber: order.orderNumber,
+        total: order.total.toString(),
+        itemCount: order.items.length,
+        paymentMethod,
+      },
+      ipAddress
+    );
+
+    logger.info("Order created successfully", {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      userId,
+      total: order.total.toString(),
+    });
+
     return order;
   }
 
@@ -176,25 +232,18 @@ export class OrdersService {
     return order;
   }
 
-  async cancelOrder(orderId: string, userId: string) {
+  async cancelOrder(orderId: string, userId: string, reason?: string) {
     const order = await this.repository.findOrderById(orderId, userId);
     if (!order) {
       throw new NotFoundError("Order not found");
     }
 
-    if (order.status === OrderStatus.CANCELLED) {
-      throw new ValidationError("Order is already cancelled");
-    }
-
-    if (order.status === OrderStatus.DELIVERED) {
-      throw new ValidationError("Cannot cancel a delivered order");
-    }
-
-    if (order.status === OrderStatus.SHIPPED) {
-      throw new ValidationError(
-        "Cannot cancel a shipped order. Please contact support for returns."
-      );
-    }
+    // Use state machine to validate transition
+    OrderStateMachine.validateTransition(
+      order.status,
+      OrderStatus.CANCELLED,
+      reason || "User requested cancellation"
+    );
 
     // Update order status
     await this.repository.updateOrderStatus(orderId, OrderStatus.CANCELLED);
@@ -208,9 +257,31 @@ export class OrdersService {
         orderId: order.id,
         status: OrderStatus.CANCELLED,
         location: "Order Cancelled",
-        description: "Your order has been cancelled.",
+        description: reason || "Your order has been cancelled.",
       },
     });
+
+    // Track analytics
+    await AnalyticsUtil.trackEvent({
+      userId,
+      eventType: AnalyticsEventType.ORDER_CANCELLED,
+      properties: {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        reason: reason || "User requested",
+      },
+    });
+
+    // Audit log
+    await AuditLogUtil.logOrder(
+      userId,
+      order.id,
+      AuditAction.UPDATE,
+      {
+        status: OrderStatus.CANCELLED,
+        reason: reason || "User requested cancellation",
+      }
+    );
 
     return this.repository.findOrderById(orderId, userId);
   }

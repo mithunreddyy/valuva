@@ -1,7 +1,7 @@
 "use client";
 
-import { ProductCardSkeleton } from "@/components/products/product-card-skeleton";
 import { ProductCard } from "@/components/products/ProductCard";
+import { ProductCardSkeleton } from "@/components/products/product-card-skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,46 +11,68 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAnalytics } from "@/hooks/use-analytics";
 import { useSearchProducts } from "@/hooks/use-products";
-import { Search as SearchIcon, X, ArrowUpDown, TrendingUp } from "lucide-react";
+import { InputSanitizer } from "@/lib/input-sanitizer";
+import { ArrowUpDown, Search as SearchIcon, TrendingUp, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function SearchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const analytics = useAnalytics();
   const initialQuery = searchParams.get("q") || "";
 
-  const [query, setQuery] = useState(initialQuery);
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  // Initialize state from URL params using lazy initializers
+  const [query, setQuery] = useState(() => initialQuery);
+  const [searchQuery, setSearchQuery] = useState(() => initialQuery);
   const [sortBy, setSortBy] = useState<string>("relevance");
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  // Initialize recent searches from localStorage using lazy initializer
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const saved = localStorage.getItem("recentSearches");
+      return saved ? (JSON.parse(saved) as string[]) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const { data, isLoading } = useSearchProducts(searchQuery);
 
+  // Sync query state with URL params when they change
   useEffect(() => {
-    setQuery(initialQuery);
-    setSearchQuery(initialQuery);
-    // Load recent searches from localStorage
-    const saved = localStorage.getItem("recentSearches");
-    if (saved) {
-      setRecentSearches(JSON.parse(saved));
+    if (initialQuery !== query) {
+      setQuery(initialQuery);
+      setSearchQuery(initialQuery);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialQuery]);
 
   const handleSearch = (e: React.FormEvent, searchTerm?: string) => {
     e.preventDefault();
-    const term = searchTerm || query;
-    if (!term.trim()) return;
+    const rawTerm = searchTerm || query;
+    if (!rawTerm.trim()) return;
+
+    // Sanitize search query
+    const term = InputSanitizer.sanitizeSearchQuery(rawTerm);
+    if (!term) return;
 
     setSearchQuery(term);
     router.push(`/search?q=${encodeURIComponent(term)}`);
+
+    // Track search analytics
+    analytics.trackSearch(term, data?.data?.length || 0);
 
     // Save to recent searches
     if (term && !recentSearches.includes(term)) {
       const updated = [term, ...recentSearches].slice(0, 5);
       setRecentSearches(updated);
-      localStorage.setItem("recentSearches", JSON.stringify(updated));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("recentSearches", JSON.stringify(updated));
+      }
     }
   };
 
@@ -62,12 +84,15 @@ export default function SearchPage() {
 
   const handleSort = (value: string) => {
     setSortBy(value);
-    // Apply sorting logic here if needed
+    // Track filter/sort analytics
+    analytics.trackFilterApplied({ sort: value });
   };
 
   const clearRecentSearches = () => {
     setRecentSearches([]);
-    localStorage.removeItem("recentSearches");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("recentSearches");
+    }
   };
 
   // Sort products based on selected option
@@ -89,7 +114,7 @@ export default function SearchPage() {
       {/* Header Section */}
       <section className="bg-white border-b border-[#e5e5e5]">
         <div className="container-luxury py-6 sm:py-8">
-          <div className="max-w-4xl mx-auto space-y-5 sm:space-y-6">
+          <div className="max-w-4xl mx-auto space-y-4">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-normal text-center text-[#0a0a0a]">
               Search
             </h1>
@@ -176,7 +201,10 @@ export default function SearchPage() {
               <p className="text-sm text-neutral-500 font-medium tracking-normal">
                 {data.data.length}{" "}
                 {data.data.length === 1 ? "result" : "results"} for &quot;
-                <span className="text-[#0a0a0a] font-medium">{searchQuery}</span>&quot;
+                <span className="text-[#0a0a0a] font-medium">
+                  {searchQuery}
+                </span>
+                &quot;
               </p>
               <div className="w-full sm:w-auto">
                 <Select value={sortBy} onValueChange={handleSort}>

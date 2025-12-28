@@ -4,23 +4,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { contactApi } from "@/services/api/contact";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MapPin, Phone, Mail } from "lucide-react";
+import { CheckCircle, Clock, Mail, Phone, Send } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const contactSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  subject: z.string().min(1, "Subject is required"),
+  phone: z.string().optional(),
+  subject: z.string().min(3, "Subject must be at least 3 characters"),
   message: z.string().min(10, "Message must be at least 10 characters"),
+  category: z
+    .enum(["general", "order", "return", "product", "other"])
+    .optional(),
 });
 
 type ContactForm = z.infer<typeof contactSchema>;
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const {
     register,
@@ -29,32 +35,62 @@ export default function ContactPage() {
     reset,
   } = useForm<ContactForm>({
     resolver: zodResolver(contactSchema),
+    defaultValues: {
+      category: "general",
+    },
   });
 
   const onSubmit = async (data: ContactForm) => {
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setIsSuccess(false);
 
-    toast({
-      title: "Message sent!",
-      description: "We'll get back to you as soon as possible.",
-    });
+    try {
+      await contactApi.submitContact({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        subject: data.subject,
+        message: data.message,
+        category: data.category || "general",
+      });
 
-    reset();
-    setIsSubmitting(false);
+      setIsSuccess(true);
+      toast({
+        title: "Message sent!",
+        description: "We'll get back to you as soon as possible.",
+      });
+
+      reset();
+
+      // Reset success state after 3 seconds
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 3000);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to send message. Please try again.";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      {/* Header Section */}
+      {/* Header */}
       <section className="bg-white border-b border-[#e5e5e5]">
-        <div className="container-luxury py-8 sm:py-12">
-          <div className="max-w-3xl mx-auto text-center space-y-3">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-normal">
+        <div className="container-luxury py-8 sm:py-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-3xl sm:text-4xl font-medium tracking-normal text-[#0a0a0a] mb-2">
               Get in Touch
             </h1>
-            <p className="text-base sm:text-lg text-neutral-600 font-medium leading-relaxed">
+            <p className="text-sm text-neutral-600 font-medium">
               Have questions? We&apos;d love to hear from you.
             </p>
           </div>
@@ -62,178 +98,195 @@ export default function ContactPage() {
       </section>
 
       {/* Main Content */}
-      <section className="container-luxury py-8 sm:py-12">
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
-          {/* Contact Form */}
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-medium tracking-normal">
-                Send us a message
-              </h2>
-              <p className="text-sm text-neutral-600 font-medium">
-                Fill out the form below and we&apos;ll get back to you as soon as possible.
-              </p>
+      <section className="container-luxury py-8 sm:py-10">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
+            {/* Contact Form */}
+            <div className="lg:col-span-2">
+              <div className="bg-white border border-[#e5e5e5] rounded-[16px] p-5 sm:p-6">
+                {isSuccess && (
+                  <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-[12px] flex items-center gap-2.5">
+                    <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                    <p className="text-xs font-medium text-green-900">
+                      Message sent successfully!
+                    </p>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-[#0a0a0a] mb-1.5">
+                        Name *
+                      </label>
+                      <Input
+                        {...register("name")}
+                        placeholder="Your name"
+                        className="rounded-[10px] border-[#e5e5e5] focus:border-[#0a0a0a] h-10 text-sm"
+                      />
+                      {errors.name && (
+                        <p className="text-red-600 text-xs mt-1 font-medium">
+                          {errors.name.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-[#0a0a0a] mb-1.5">
+                        Email *
+                      </label>
+                      <Input
+                        type="email"
+                        {...register("email")}
+                        placeholder="your@email.com"
+                        className="rounded-[10px] border-[#e5e5e5] focus:border-[#0a0a0a] h-10 text-sm"
+                      />
+                      {errors.email && (
+                        <p className="text-red-600 text-xs mt-1 font-medium">
+                          {errors.email.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-[#0a0a0a] mb-1.5">
+                      Phone (Optional)
+                    </label>
+                    <Input
+                      type="tel"
+                      {...register("phone")}
+                      placeholder="+91 123 456 7890"
+                      className="rounded-[10px] border-[#e5e5e5] focus:border-[#0a0a0a] h-10 text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-[#0a0a0a] mb-1.5">
+                      Subject *
+                    </label>
+                    <Input
+                      {...register("subject")}
+                      placeholder="How can we help?"
+                      className="rounded-[10px] border-[#e5e5e5] focus:border-[#0a0a0a] h-10 text-sm"
+                    />
+                    {errors.subject && (
+                      <p className="text-red-600 text-xs mt-1 font-medium">
+                        {errors.subject.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-[#0a0a0a] mb-1.5">
+                      Message *
+                    </label>
+                    <Textarea
+                      {...register("message")}
+                      className="min-h-[120px] rounded-[10px] border-[#e5e5e5] focus:border-[#0a0a0a] resize-none text-sm"
+                      placeholder="Tell us more about your inquiry..."
+                    />
+                    {errors.message && (
+                      <p className="text-red-600 text-xs mt-1 font-medium">
+                        {errors.message.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <Button
+                    type="submit"
+                    size="lg"
+                    variant="filled"
+                    className="w-full rounded-[10px] h-10 text-sm"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      "Sending..."
+                    ) : (
+                      <>
+                        <Send className="h-3.5 w-3.5 mr-2" />
+                        Send Message
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </div>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Name
-                </label>
-                <Input
-                  {...register("name")}
-                  placeholder="Your name"
-                  className="rounded-[10px]"
-                />
-                {errors.name && (
-                  <p className="text-red-600 text-xs mt-1 font-medium">
-                    {errors.name.message}
-                  </p>
-                )}
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Email
-                </label>
-                <Input
-                  type="email"
-                  {...register("email")}
-                  placeholder="your@email.com"
-                  className="rounded-[10px]"
-                />
-                {errors.email && (
-                  <p className="text-red-600 text-xs mt-1 font-medium">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Subject
-                </label>
-                <Input
-                  {...register("subject")}
-                  placeholder="How can we help?"
-                  className="rounded-[10px]"
-                />
-                {errors.subject && (
-                  <p className="text-red-600 text-xs mt-1 font-medium">
-                    {errors.subject.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Message
-                </label>
-                <Textarea
-                  {...register("message")}
-                  className="min-h-[150px] rounded-[10px]"
-                  placeholder="Your message..."
-                />
-                {errors.message && (
-                  <p className="text-red-600 text-xs mt-1 font-medium">
-                    {errors.message.message}
-                  </p>
-                )}
-              </div>
-
-              <Button
-                type="submit"
-                size="lg"
-                variant="filled"
-                className="w-full rounded-[10px]"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Sending..." : "Send Message"}
-              </Button>
-            </form>
-          </div>
-
-          {/* Contact Information */}
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-medium tracking-normal">
-                Contact Information
-              </h2>
-              <p className="text-sm text-neutral-600 font-medium">
-                Reach out to us through any of these channels.
-              </p>
-            </div>
-
+            {/* Contact Information */}
             <div className="space-y-4">
-              <div className="flex items-start gap-4 p-5 bg-white border border-[#e5e5e5] rounded-[12px] hover:border-[#0a0a0a] transition-all">
-                <div className="p-3 bg-[#0a0a0a] text-white rounded-[10px] flex-shrink-0">
-                  <Mail className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium mb-1">
-                    Email
-                  </p>
-                  <a
-                    href="mailto:support@valuva.com"
-                    className="text-sm text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
-                  >
-                    support@valuva.com
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 p-5 bg-white border border-[#e5e5e5] rounded-[12px] hover:border-[#0a0a0a] transition-all">
-                <div className="p-3 bg-[#0a0a0a] text-white rounded-[10px] flex-shrink-0">
-                  <Phone className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium mb-1">
-                    Phone
-                  </p>
-                  <a
-                    href="tel:+911234567890"
-                    className="text-sm text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
-                  >
-                    +91 123 456 7890
-                  </a>
+              <div className="bg-white border border-[#e5e5e5] rounded-[16px] p-4 hover:border-[#0a0a0a] transition-all">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 rounded-[10px] bg-[#0a0a0a] flex items-center justify-center flex-shrink-0">
+                    <Mail className="h-4 w-4 text-[#fafafa]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-neutral-500 mb-0.5">
+                      Email
+                    </p>
+                    <a
+                      href="mailto:support@valuva.in"
+                      className="text-xs text-[#0a0a0a] hover:underline font-medium break-all"
+                    >
+                      support@valuva.in
+                    </a>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 p-5 bg-white border border-[#e5e5e5] rounded-[12px] hover:border-[#0a0a0a] transition-all">
-                <div className="p-3 bg-[#0a0a0a] text-white rounded-[10px] flex-shrink-0">
-                  <MapPin className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium mb-1">
-                    Address
-                  </p>
-                  <p className="text-sm text-neutral-600 font-medium">
-                    123 Fashion Street
-                    <br />
-                    Mumbai, Maharashtra 400001
-                    <br />
-                    India
-                  </p>
+              <div className="bg-white border border-[#e5e5e5] rounded-[16px] p-4 hover:border-[#0a0a0a] transition-all">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 rounded-[10px] bg-[#0a0a0a] flex items-center justify-center flex-shrink-0">
+                    <Phone className="h-4 w-4 text-[#fafafa]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-neutral-500 mb-0.5">
+                      Phone
+                    </p>
+                    <a
+                      href="tel:+9118000000000"
+                      className="text-xs text-[#0a0a0a] hover:underline font-medium"
+                    >
+                      +91 1800 000 0000
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Business Hours */}
-            <div className="p-5 bg-white border border-[#e5e5e5] rounded-[12px]">
-              <h3 className="text-lg font-medium tracking-normal mb-5">
-                Business Hours
-              </h3>
-              <div className="space-y-2 text-sm font-medium">
-                <div className="flex justify-between border-b border-[#e5e5e5] pb-3">
-                  <span className="text-neutral-600">Monday - Friday</span>
-                  <span className="text-[#0a0a0a]">9:00 AM - 6:00 PM</span>
+              <div className="bg-white border border-[#e5e5e5] rounded-[16px] p-4">
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className="w-7 h-7 rounded-[8px] bg-[#0a0a0a] flex items-center justify-center">
+                    <Clock className="h-3.5 w-3.5 text-[#fafafa]" />
+                  </div>
+                  <h3 className="text-sm font-medium text-[#0a0a0a]">
+                    Business Hours
+                  </h3>
                 </div>
-                <div className="flex justify-between border-b border-[#e5e5e5] pb-3">
-                  <span className="text-neutral-600">Saturday</span>
-                  <span className="text-[#0a0a0a]">10:00 AM - 4:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-neutral-600">Sunday</span>
-                  <span className="text-[#0a0a0a]">Closed</span>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center pb-2 border-b border-[#e5e5e5]">
+                    <span className="text-xs text-neutral-600 font-medium">
+                      Mon - Fri
+                    </span>
+                    <span className="text-xs text-[#0a0a0a] font-medium">
+                      9 AM - 6 PM
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2 border-b border-[#e5e5e5]">
+                    <span className="text-xs text-neutral-600 font-medium">
+                      Saturday
+                    </span>
+                    <span className="text-xs text-[#0a0a0a] font-medium">
+                      10 AM - 4 PM
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-neutral-600 font-medium">
+                      Sunday
+                    </span>
+                    <span className="text-xs text-[#0a0a0a] font-medium">
+                      Closed
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

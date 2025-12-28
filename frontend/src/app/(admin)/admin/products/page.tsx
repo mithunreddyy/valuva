@@ -26,20 +26,24 @@ export default function AdminProductsPage() {
   const totalPages = data?.meta?.totalPages || 1;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] py-8 sm:py-12 lg:py-16">
+    <div className="min-h-screen bg-[#fafafa] py-6 sm:py-8">
       <div className="container-luxury">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8 border-b border-[#e5e5e5] pb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 border-b border-[#e5e5e5] pb-5">
           <div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-normal mb-3">
+            <h1 className="text-2xl sm:text-3xl font-medium tracking-normal mb-1.5">
               Products Management
             </h1>
-            <p className="text-sm text-neutral-500 font-medium tracking-normal">
+            <p className="text-xs text-neutral-500 font-medium">
               Manage all products in your store
             </p>
           </div>
           <Link href="/admin/products/new">
-            <Button size="lg" className="rounded-[10px]">
+            <Button
+              size="default"
+              variant="filled"
+              className="rounded-[10px] h-10"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Product
             </Button>
@@ -47,7 +51,7 @@ export default function AdminProductsPage() {
         </div>
 
         {/* Search */}
-        <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px] mb-6">
+        <div className="bg-white border border-[#e5e5e5] p-4 rounded-[12px] mb-5">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
             <Input
@@ -55,7 +59,7 @@ export default function AdminProductsPage() {
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 rounded-[10px]"
+              className="pl-10 rounded-[10px] h-10 text-sm"
             />
           </div>
         </div>
@@ -166,11 +170,14 @@ export default function AdminProductsPage() {
                           </span>
                         </td>
                         <td className="py-4 px-6">
-                          <Link
-                            href={`/admin/products/${product.id}`}
-                            className="text-xs font-medium text-[#0a0a0a] hover:underline"
-                          >
-                            Edit
+                          <Link href={`/admin/products/${product.id}`}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="rounded-[8px] h-8 text-xs"
+                            >
+                              Edit
+                            </Button>
                           </Link>
                         </td>
                       </tr>

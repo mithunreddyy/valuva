@@ -1,3 +1,4 @@
+import compression from "compression";
 import cors from "cors";
 import express, { Application } from "express";
 import helmet from "helmet";
@@ -12,6 +13,7 @@ import { requestIdMiddleware } from "./middleware/request-id.middleware";
 // Existing routes
 import addressesRoutes from "./modules/addresses/addresses.routes";
 import adminCategoriesRoutes from "./modules/admin/admin-categories.routes";
+import adminCouponsRoutes from "./modules/admin/admin-coupons.routes";
 import adminHomepageRoutes from "./modules/admin/admin-homepage.routes";
 import adminProductsRoutes from "./modules/admin/admin-products.routes";
 import adminRoutes from "./modules/admin/admin.routes";
@@ -29,7 +31,14 @@ import wishlistRoutes from "./modules/wishlist/wishlist.routes";
 
 // New routes
 import analyticsRoutes from "./modules/analytics/analytics.routes";
+import newsletterRoutes from "./modules/newsletter/newsletter.routes";
 import orderTrackingRoutes from "./modules/order-tracking/tracking.routes";
+import recommendationsRoutes from "./modules/recommendations/recommendations.routes";
+import returnsRoutes from "./modules/returns/returns.routes";
+import shippingRoutes from "./modules/shipping/shipping.routes";
+import stockAlertsRoutes from "./modules/stock-alerts/stock-alerts.routes";
+import supportRoutes from "./modules/support/support.routes";
+import uploadRoutes from "./modules/uploads/upload.routes";
 
 export const createApp = (): Application => {
   const app = express();
@@ -53,6 +62,9 @@ export const createApp = (): Application => {
 
   // Rate limiting middleware
   app.use(rateLimiters.general.middleware());
+
+  // Compression middleware (reduces response size)
+  app.use(compression());
 
   // Body parsing middleware
   app.use(express.json({ limit: "10mb" }));
@@ -79,12 +91,23 @@ export const createApp = (): Application => {
     });
   });
 
+  // Health Check Endpoints (before authentication)
+  const {
+    healthCheck,
+    readinessCheck,
+    livenessCheck,
+  } = require("./middleware/health.middleware");
+  app.get("/health", healthCheck);
+  app.get("/ready", readinessCheck);
+  app.get("/live", livenessCheck);
+
   // API Documentation
   app.get("/", (_req, res) => {
     res.json({
       message: "Valuva E-Commerce API",
       version: "2.0.0",
       documentation: "/api/v1/docs",
+      health: "/health",
       features: [
         "Shopify Payment Integration",
         "Advanced Analytics",
@@ -92,9 +115,22 @@ export const createApp = (): Application => {
         "Product Management",
         "Order Processing",
         "User Management",
+        "Cloud Storage (S3/Cloudinary)",
+        "Image Optimization",
+        "Background Jobs",
+        "Redis Caching",
+        "Error Tracking (Sentry)",
+        "Inventory Locking",
+        "Circuit Breakers",
+        "Retry Logic",
+        "Audit Logging",
       ],
     });
   });
+
+  // Swagger API Documentation
+  const { setupSwagger } = require("./config/swagger");
+  setupSwagger(app);
 
   // Public routes
   app.use(`${API_PREFIX}/auth`, rateLimiters.auth.middleware(), authRoutes);
@@ -119,12 +155,34 @@ export const createApp = (): Application => {
 
   // Admin routes (with admin rate limiting)
   app.use(`${API_PREFIX}/admin`, rateLimiters.admin.middleware(), adminRoutes);
-  app.use(`${API_PREFIX}/admin`, adminProductsRoutes);
-  app.use(`${API_PREFIX}/admin`, adminCategoriesRoutes);
-  app.use(`${API_PREFIX}/admin`, adminHomepageRoutes);
+  app.use(`${API_PREFIX}/admin/products`, adminProductsRoutes);
+  app.use(`${API_PREFIX}/admin/categories`, adminCategoriesRoutes);
+  app.use(`${API_PREFIX}/admin/coupons`, adminCouponsRoutes);
+  app.use(`${API_PREFIX}/admin/homepage`, adminHomepageRoutes);
 
   // Analytics routes (admin only)
   app.use(`${API_PREFIX}/analytics`, analyticsRoutes);
+
+  // Recommendations routes
+  app.use(`${API_PREFIX}/recommendations`, recommendationsRoutes);
+
+  // Stock alerts routes
+  app.use(`${API_PREFIX}/stock-alerts`, stockAlertsRoutes);
+
+  // Upload routes (admin only)
+  app.use(`${API_PREFIX}/uploads`, uploadRoutes);
+
+  // Newsletter routes
+  app.use(`${API_PREFIX}/newsletter`, newsletterRoutes);
+
+  // Returns routes
+  app.use(`${API_PREFIX}/returns`, returnsRoutes);
+
+  // Shipping routes
+  app.use(`${API_PREFIX}/shipping`, shippingRoutes);
+
+  // Support routes
+  app.use(`${API_PREFIX}/support`, supportRoutes);
 
   // Error handling
   app.use(notFoundHandler);

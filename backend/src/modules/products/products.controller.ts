@@ -1,5 +1,7 @@
 import { Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
+import { AnalyticsUtil } from "../../utils/analytics.util";
+import { InputSanitizer } from "../../utils/input-sanitizer.util";
 import { PaginationUtil } from "../../utils/pagination.util";
 import { ProductUtil } from "../../utils/product.util";
 import { ResponseUtil } from "../../utils/response.util";
@@ -74,10 +76,94 @@ export class ProductsController {
     req: AuthRequest,
     res: Response
   ): Promise<Response> => {
-    const query = req.query.q as string;
+    const rawQuery = req.query.q as string;
+    const query = InputSanitizer.sanitizeSearchQuery(rawQuery);
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
 
+    if (!query || query.trim().length === 0) {
+      return ResponseUtil.success(res, []);
+    }
+
     const products = await this.service.searchProducts(query, limit);
+
+    // Track search analytics
+    const sessionId = req.headers["x-session-id"] as string;
+    AnalyticsUtil.trackSearch(
+      query,
+      products.length,
+      req.user?.userId,
+      sessionId
+    ).catch(() => {
+      // Silently fail - analytics shouldn't break the flow
+    });
+
+    return ResponseUtil.success(res, products);
+  };
+
+  getProductBySlug = async (
+    req: AuthRequest,
+    res: Response
+  ): Promise<Response> => {
+    const slug = InputSanitizer.sanitizeString(req.params.slug, {
+      maxLength: 200,
+    });
+    const product = await this.service.getProductBySlug(slug);
+
+    const ipAddress =
+      (req.headers["x-forwarded-for"] as string)?.split(",")[0] ||
+      req.socket.remoteAddress ||
+      req.ip;
+    const userAgent = req.headers["user-agent"] || "";
+    const sessionId = req.headers["x-session-id"] as string;
+
+    // Track product view for recommendations
+    if (req.user?.userId) {
+      // Track view asynchronously (non-blocking)
+      import("../../modules/recommendations/recommendations.service")
+        .then(({ RecommendationsService }) => {
+          const recommendationsService = new RecommendationsService();
+          recommendationsService.trackProductView(
+            product.id,
+            req.user!.userId,
+            ipAddress,
+            userAgent
+          ).catch(() => {
+            // Silently fail - tracking is not critical
+          });
+        })
+        .catch(() => {
+          // Silently fail
+        });
+    }
+
+    // Track analytics
+    AnalyticsUtil.trackProductView(
+      product.id,
+      req.user?.userId,
+      sessionId,
+      ipAddress
+    ).catch(() => {
+      // Silently fail
+    });
+
+    return ResponseUtil.success(res, product);
+  };
+
+  getFeaturedProducts = async (
+    req: AuthRequest,
+    res: Response
+  ): Promise<Response> => {
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 12;
+    const products = await this.service.getFeaturedProducts(limit);
+    return ResponseUtil.success(res, products);
+  };
+
+  getNewArrivals = async (
+    req: AuthRequest,
+    res: Response
+  ): Promise<Response> => {
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 12;
+    const products = await this.service.getNewArrivals(limit);
     return ResponseUtil.success(res, products);
   };
 }

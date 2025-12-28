@@ -95,12 +95,22 @@ export const CartDrawer = () => {
                   >
                     {/* Image */}
                     <div className="relative w-16 h-16 sm:w-20 sm:h-20 border border-[#e5e5e5] rounded-[16px] overflow-hidden bg-[#fafafa] flex-shrink-0">
-                      <Image
-                        src={item.product.image || "/placeholder.png"}
-                        alt={item.product.name}
-                        fill
-                        className="object-cover"
-                      />
+                      {item.product.image ? (
+                        <Image
+                          src={item.product.image}
+                          alt={item.product.name}
+                          fill
+                          className="object-cover"
+                          onError={(e) => {
+                            // Fallback to a default product icon or empty state
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-neutral-100">
+                          <span className="text-neutral-400 text-xs">No Image</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Details */}

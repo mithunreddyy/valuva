@@ -3,15 +3,16 @@ import {
   ERROR_MESSAGES,
   PASSWORD_RESET_TOKEN_EXPIRY_HOURS,
 } from "../../config/constants";
+import { AnalyticsUtil, AnalyticsEventType } from "../../utils/analytics.util";
+import { AuditLogUtil, AuditAction } from "../../utils/audit-log.util";
+import { ConflictError, NotFoundError, UnauthorizedError, ValidationError } from "../../utils/error.util";
+import { InputSanitizer } from "../../utils/input-sanitizer.util";
 import { EmailUtil } from "../../utils/email.util";
-import {
-  ConflictError,
-  NotFoundError,
-  UnauthorizedError,
-} from "../../utils/error.util";
+import { WelcomeEmail } from "../../utils/email-templates";
 import { JWTUtil } from "../../utils/jwt.util";
 import { PasswordUtil } from "../../utils/password.util";
 import { AuthRepository } from "./auth.repository";
+import { env } from "../../config/env";
 
 export class AuthService {
   private repository: AuthRepository;
@@ -20,25 +21,46 @@ export class AuthService {
     this.repository = new AuthRepository();
   }
 
-  async register(data: {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    phone?: string;
-  }): Promise<{
+  async register(
+    data: {
+      email: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+      phone?: string;
+    },
+    ipAddress?: string,
+    userAgent?: string
+  ): Promise<{
     user: Omit<User, "password">;
     accessToken: string;
     refreshToken: string;
   }> {
-    const existingUser = await this.repository.findUserByEmail(data.email);
+    // Sanitize input
+    const sanitizedData = {
+      email: InputSanitizer.sanitizeEmail(data.email),
+      password: data.password, // Don't sanitize password
+      firstName: InputSanitizer.sanitizeString(data.firstName, { maxLength: 100 }),
+      lastName: InputSanitizer.sanitizeString(data.lastName, { maxLength: 100 }),
+      phone: data.phone ? InputSanitizer.sanitizePhone(data.phone) : undefined,
+    };
+
+    // Validate password strength
+    const passwordValidation = InputSanitizer.validatePasswordStrength(sanitizedData.password);
+    if (!passwordValidation.isValid) {
+      throw new ValidationError(
+        `Password validation failed: ${passwordValidation.errors.join(", ")}`
+      );
+    }
+
+    const existingUser = await this.repository.findUserByEmail(sanitizedData.email);
     if (existingUser) {
       throw new ConflictError(ERROR_MESSAGES.EMAIL_EXISTS);
     }
 
-    const hashedPassword = await PasswordUtil.hash(data.password);
+    const hashedPassword = await PasswordUtil.hash(sanitizedData.password);
     const user = await this.repository.createUser({
-      ...data,
+      ...sanitizedData,
       password: hashedPassword,
     });
 
@@ -55,6 +77,49 @@ export class AuthService {
     });
 
     await this.repository.updateRefreshToken(user.id, refreshToken);
+
+    // Send welcome email with template
+    try {
+      await EmailUtil.sendEmail({
+        to: user.email,
+        subject: "Welcome to Valuva!",
+        template: WelcomeEmail({
+          name: `${user.firstName} ${user.lastName}`,
+          dashboardUrl: `${env.FRONTEND_URL || "http://localhost:3000"}/dashboard`,
+        }),
+      });
+    } catch (error) {
+      // Don't fail registration if email fails
+      logger.warn("Failed to send welcome email", {
+        userId: user.id,
+        email: user.email,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+
+    // Track analytics
+    AnalyticsUtil.trackEvent({
+      userId: user.id,
+      eventType: AnalyticsEventType.PAGE_VIEW,
+      properties: { page: "registration" },
+      ipAddress,
+      userAgent,
+    }).catch(() => {
+      // Silently fail
+    });
+
+    // Audit log
+    AuditLogUtil.logUserAction(
+      user.id,
+      AuditAction.CREATE,
+      "User",
+      user.id,
+      { email: user.email },
+      ipAddress,
+      userAgent
+    ).catch(() => {
+      // Silently fail
+    });
 
     const { password, ...userWithoutPassword } = user;
 
@@ -165,5 +230,46 @@ export class AuthService {
 
     const hashedPassword = await PasswordUtil.hash(newPassword);
     await this.repository.updatePassword(user.id, hashedPassword);
+  }
+
+  async verifyEmail(token: string): Promise<void> {
+    const user = await this.repository.findUserByEmailVerificationToken(token);
+    if (!user) {
+      throw new UnauthorizedError("Invalid or expired verification token");
+    }
+
+    if (user.isEmailVerified) {
+      throw new ConflictError("Email already verified");
+    }
+
+    await this.repository.verifyUserEmail(user.id);
+  }
+
+  async resendVerificationEmail(userId: string): Promise<void> {
+    const user = await this.repository.findUserById(userId);
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    if (user.isEmailVerified) {
+      throw new ConflictError("Email already verified");
+    }
+
+    const verificationToken = JWTUtil.generatePasswordResetToken();
+    const expires = new Date();
+    expires.setHours(expires.getHours() + 24); // 24 hours expiry
+
+    await this.repository.setEmailVerificationToken(
+      user.id,
+      verificationToken,
+      expires
+    );
+
+    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+    await EmailUtil.sendEmail(
+      user.email,
+      "Verify Your Email",
+      `Click the link to verify your email: ${verificationUrl}`
+    );
   }
 }

@@ -1,3 +1,4 @@
+import { CookieConsent } from "@/components/layout/cookie-consent";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
@@ -9,10 +10,9 @@ export default function MainLayout({
   return (
     <div className="relative z-10 min-h-screen flex flex-col bg-[#fafafa]">
       <Header />
-      <main className="relative z-10 flex-1 w-full">
-        {children}
-      </main>
+      <main className="relative z-10 flex-1 w-full">{children}</main>
       <Footer />
+      <CookieConsent />
     </div>
   );
 }

@@ -1,9 +1,11 @@
 import { Prisma } from "@prisma/client";
 import { NotFoundError } from "../../utils/error.util";
+import { CacheUtil } from "../../utils/cache.util";
 import { ProductFilters, ProductsRepository } from "./products.repository";
 
 export class ProductsService {
   private repository: ProductsRepository;
+  private readonly CACHE_TTL = 3600; // 1 hour
 
   constructor() {
     this.repository = new ProductsRepository();
@@ -34,6 +36,22 @@ export class ProductsService {
         break;
     }
 
+    // Generate cache key
+    const cacheKey = `products:${JSON.stringify(filters)}:${page}:${limit}:${sort || "default"}`;
+
+    // Try to get from cache
+    const cached = await CacheUtil.get<{
+      products: any[];
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    }>(cacheKey);
+
+    if (cached) {
+      return cached;
+    }
+
     const { products, total } = await this.repository.findProducts(
       filters,
       skip,
@@ -48,20 +66,37 @@ export class ProductsService {
             product.reviews.length
           : 0;
 
-      const { reviews, ...productData } = product;
-
       return {
-        ...productData,
+        ...product,
         averageRating: Math.round(avgRating * 10) / 10,
-        reviewCount: reviews.length,
+        reviewCount: product.reviews.length,
       };
     });
 
-    return { products: productsWithRatings, total, page, limit };
+    const result = {
+      products: productsWithRatings,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+
+    // Cache the result
+    await CacheUtil.set(cacheKey, result, this.CACHE_TTL);
+
+    return result;
   }
 
-  async getProductById(id: string) {
-    const product = await this.repository.findProductById(id);
+  async getProductBySlug(slug: string) {
+    // Try cache first
+    const cacheKey = `product:slug:${slug}`;
+    const cached = await CacheUtil.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const product = await this.repository.findProductBySlug(slug);
+
     if (!product) {
       throw new NotFoundError("Product not found");
     }
@@ -72,11 +107,140 @@ export class ProductsService {
           product.reviews.length
         : 0;
 
-    return {
+    const result = {
       ...product,
       averageRating: Math.round(avgRating * 10) / 10,
       reviewCount: product.reviews.length,
     };
+
+    // Cache the result
+    await CacheUtil.set(cacheKey, result, this.CACHE_TTL);
+
+    return result;
+  }
+
+  async getProductById(id: string) {
+    // Try cache first
+    const cacheKey = `product:id:${id}`;
+    const cached = await CacheUtil.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const product = await this.repository.findProductById(id);
+
+    if (!product) {
+      throw new NotFoundError("Product not found");
+    }
+
+    const avgRating =
+      product.reviews.length > 0
+        ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
+          product.reviews.length
+        : 0;
+
+    const result = {
+      ...product,
+      averageRating: Math.round(avgRating * 10) / 10,
+      reviewCount: product.reviews.length,
+    };
+
+    // Cache the result
+    await CacheUtil.set(cacheKey, result, this.CACHE_TTL);
+
+    return result;
+  }
+
+  async getFeaturedProducts(limit: number = 12) {
+    const cacheKey = `products:featured:${limit}`;
+    
+    return CacheUtil.getOrSet(
+      cacheKey,
+      async () => {
+        const { products } = await this.repository.findProducts(
+          { isFeatured: true },
+          0,
+          limit,
+          { totalSold: "desc" }
+        );
+
+        return products.map((product) => {
+          const avgRating =
+            product.reviews.length > 0
+              ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
+                product.reviews.length
+              : 0;
+
+          return {
+            ...product,
+            averageRating: Math.round(avgRating * 10) / 10,
+            reviewCount: product.reviews.length,
+          };
+        });
+      },
+      this.CACHE_TTL
+    );
+  }
+
+  async getNewArrivals(limit: number = 12) {
+    const cacheKey = `products:new-arrivals:${limit}`;
+    
+    return CacheUtil.getOrSet(
+      cacheKey,
+      async () => {
+        const { products } = await this.repository.findProducts(
+          { isNewArrival: true },
+          0,
+          limit,
+          { createdAt: "desc" }
+        );
+
+        return products.map((product) => {
+          const avgRating =
+            product.reviews.length > 0
+              ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
+                product.reviews.length
+              : 0;
+
+          return {
+            ...product,
+            averageRating: Math.round(avgRating * 10) / 10,
+            reviewCount: product.reviews.length,
+          };
+        });
+      },
+      this.CACHE_TTL
+    );
+  }
+
+  async searchProducts(query: string, limit: number = 20) {
+    if (!query || query.trim().length === 0) {
+      return [];
+    }
+
+    const cacheKey = `products:search:${query.toLowerCase()}:${limit}`;
+    
+    return CacheUtil.getOrSet(
+      cacheKey,
+      async () => {
+        const { products } = await this.repository.searchProducts(query, limit);
+        
+        return products.map((product) => {
+          const avgRating =
+            product.reviews?.length > 0
+              ? product.reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) /
+                product.reviews.length
+              : 0;
+
+          return {
+            ...product,
+            averageRating: Math.round(avgRating * 10) / 10,
+            reviewCount: product.reviews?.length || 0,
+          };
+        });
+      },
+      1800 // 30 minutes for search results
+    );
   }
 
   async getRelatedProducts(productId: string) {
@@ -104,22 +268,5 @@ export class ProductsService {
         reviewCount: reviews.length,
       };
     });
-  }
-
-  async searchProducts(query: string, limit: number = 10) {
-    const { products } = await this.repository.findProducts(
-      { search: query },
-      0,
-      limit,
-      { totalSold: "desc" }
-    );
-
-    return products.map((p) => ({
-      id: p.id,
-      name: p.name,
-      slug: p.slug,
-      basePrice: p.basePrice,
-      image: p.images[0]?.url || null,
-    }));
   }
 }

@@ -1,18 +1,20 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useAddresses } from "@/hooks/use-addresses";
+import { useAnalytics } from "@/hooks/use-analytics";
 import { useCart } from "@/hooks/use-cart";
 import { useCreateOrder } from "@/hooks/use-orders";
+import { InputSanitizer } from "@/lib/input-sanitizer";
 import { formatPrice } from "@/lib/utils";
 import { useAppSelector } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -28,10 +30,21 @@ type CheckoutForm = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const analytics = useAnalytics();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { data: cartData, isLoading: cartLoading } = useCart();
   const { data: addressesData, isLoading: addressesLoading } = useAddresses();
   const createOrder = useCreateOrder();
+
+  // Track checkout started
+  useEffect(() => {
+    if (cartData?.data && cartData.data.items.length > 0) {
+      analytics.trackCheckoutStarted({
+        itemCount: cartData.data.items.length,
+        subtotal: Number(cartData.data.subtotal),
+      });
+    }
+  }, [cartData, analytics]);
 
   const {
     register,
@@ -102,7 +115,25 @@ export default function CheckoutPage() {
 
   const onSubmit = async (data: CheckoutForm) => {
     try {
-      const order = await createOrder.mutateAsync(data);
+      // Sanitize form data
+      const sanitizedData = {
+        ...data,
+        notes: data.notes
+          ? InputSanitizer.sanitizeString(data.notes, { maxLength: 500 })
+          : undefined,
+      };
+
+      const order = await createOrder.mutateAsync(sanitizedData);
+
+      // Track order completion
+      analytics.trackOrderCompleted(
+        order.data.id,
+        order.data.orderNumber,
+        Number(order.data.total),
+        order.data.items.length,
+        data.paymentMethod
+      );
+
       router.push(`/dashboard/orders/${order.data.id}`);
     } catch (error) {
       console.error("Checkout error:", error);
@@ -113,22 +144,22 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-[#fafafa]">
       {/* Header Section */}
       <section className="bg-white border-b border-[#e5e5e5]">
-        <div className="container-luxury py-8 sm:py-12">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-normal">
+        <div className="container-luxury py-6 sm:py-8">
+          <h1 className="text-3xl sm:text-4xl font-medium tracking-normal text-[#0a0a0a]">
             Checkout
           </h1>
         </div>
       </section>
 
       {/* Main Content */}
-      <section className="container-luxury py-8 sm:py-12">
+      <section className="container-luxury py-6 sm:py-8">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid lg:grid-cols-12 gap-6 lg:gap-8">
+          <div className="grid lg:grid-cols-12 gap-5 lg:gap-6">
             {/* Left Column */}
-            <div className="lg:col-span-8 space-y-6">
+            <div className="lg:col-span-8 space-y-5">
               {/* Shipping Address */}
-              <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-                <h2 className="text-xl font-medium tracking-normal mb-6 border-b border-[#e5e5e5] pb-4">
+              <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
+                <h2 className="text-lg font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
                   Shipping Address
                 </h2>
 
@@ -169,7 +200,8 @@ export default function CheckoutPage() {
                           </p>
                           <p className="text-xs text-neutral-600 font-medium">
                             {address.addressLine1}
-                            {address.addressLine2 && `, ${address.addressLine2}`}
+                            {address.addressLine2 &&
+                              `, ${address.addressLine2}`}
                           </p>
                           <p className="text-xs text-neutral-600 font-medium">
                             {address.city}, {address.state} {address.postalCode}
@@ -190,8 +222,8 @@ export default function CheckoutPage() {
               </div>
 
               {/* Billing Address */}
-              <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-                <h2 className="text-xl font-medium tracking-normal mb-6 border-b border-[#e5e5e5] pb-4">
+              <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
+                <h2 className="text-lg font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
                   Billing Address
                 </h2>
                 <div className="space-y-3">
@@ -232,8 +264,8 @@ export default function CheckoutPage() {
               </div>
 
               {/* Payment Method */}
-              <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-                <h2 className="text-xl font-medium tracking-normal mb-6 border-b border-[#e5e5e5] pb-4">
+              <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
+                <h2 className="text-lg font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
                   Payment Method
                 </h2>
                 <div className="space-y-3">
@@ -266,8 +298,8 @@ export default function CheckoutPage() {
               </div>
 
               {/* Order Notes */}
-              <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-                <h2 className="text-xl font-medium tracking-normal mb-6 border-b border-[#e5e5e5] pb-4">
+              <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
+                <h2 className="text-lg font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
                   Order Notes (Optional)
                 </h2>
                 <Textarea
@@ -280,12 +312,12 @@ export default function CheckoutPage() {
 
             {/* Right Column - Order Summary */}
             <div className="lg:col-span-4">
-              <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px] sticky top-24">
-                <h2 className="text-sm font-medium tracking-normal mb-6 border-b border-[#e5e5e5] pb-4">
+              <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px] sticky top-24">
+                <h2 className="text-sm font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
                   Order Summary
                 </h2>
 
-                <div className="space-y-3 mb-6">
+                <div className="space-y-3 mb-4">
                   {cart.items.map((item) => (
                     <div
                       key={item.id}
@@ -316,7 +348,7 @@ export default function CheckoutPage() {
                   ))}
                 </div>
 
-                <div className="space-y-3 mb-6 border-t border-[#e5e5e5] pt-4">
+                <div className="space-y-3 mb-4 border-t border-[#e5e5e5] pt-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-xs font-medium text-neutral-500">
                       Subtotal
@@ -338,6 +370,24 @@ export default function CheckoutPage() {
                     <span>{formatPrice(cart.subtotal)}</span>
                   </div>
                 </div>
+
+                <p className="text-xs text-neutral-500 font-medium text-center mb-4 leading-relaxed">
+                  By placing your order, you agree to our{" "}
+                  <Link
+                    href="/terms-of-service"
+                    className="text-[#0a0a0a] underline hover:no-underline"
+                  >
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    href="/privacy-policy"
+                    className="text-[#0a0a0a] underline hover:no-underline"
+                  >
+                    Privacy Policy
+                  </Link>
+                  .
+                </p>
 
                 <Button
                   type="submit"

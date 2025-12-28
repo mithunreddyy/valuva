@@ -120,22 +120,22 @@ export default function AdminOrderDetailPage() {
   const order = data;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] py-8 sm:py-12 lg:py-16">
+    <div className="min-h-screen bg-[#fafafa] py-6 sm:py-8">
       <div className="container-luxury">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8 border-b border-[#e5e5e5] pb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 border-b border-[#e5e5e5] pb-5">
           <div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-normal mb-3">
+            <h1 className="text-2xl sm:text-3xl font-medium tracking-normal mb-1.5">
               Order Details
             </h1>
-            <p className="text-sm text-neutral-500 font-medium tracking-normal">
+            <p className="text-xs text-neutral-500 font-medium">
               Order #{order.orderNumber}
             </p>
           </div>
           <Button
             variant="outline"
-            size="lg"
-            className="rounded-[10px]"
+            size="default"
+            className="rounded-[10px] h-10"
             onClick={() => router.push("/admin/orders")}
           >
             Back to Orders
@@ -146,13 +146,13 @@ export default function AdminOrderDetailPage() {
           {/* Order Information */}
           <div className="lg:col-span-2 space-y-6">
             {/* Order Status */}
-            <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-              <h2 className="text-xl font-medium tracking-normal mb-4">
+            <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
+              <h2 className="text-base font-medium tracking-normal mb-4">
                 Order Status
               </h2>
               <div className="flex items-center gap-4">
                 <Select value={order.status} onValueChange={handleStatusUpdate}>
-                  <SelectTrigger className="w-48 rounded-[10px]">
+                  <SelectTrigger className="w-48 rounded-[10px] h-10 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -176,8 +176,8 @@ export default function AdminOrderDetailPage() {
             </div>
 
             {/* Order Items */}
-            <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-              <h2 className="text-xl font-medium tracking-normal mb-6">
+            <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
+              <h2 className="text-base font-medium tracking-normal mb-5">
                 Order Items
               </h2>
               <div className="space-y-4">
@@ -216,8 +216,8 @@ export default function AdminOrderDetailPage() {
             </div>
 
             {/* Shipping Address */}
-            <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-              <h2 className="text-xl font-medium tracking-normal mb-6">
+            <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
+              <h2 className="text-base font-medium tracking-normal mb-5">
                 Shipping Address
               </h2>
               <div className="text-sm space-y-1 font-medium">
@@ -246,16 +246,16 @@ export default function AdminOrderDetailPage() {
             </div>
 
             {/* Order Tracking */}
-            <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-              <h2 className="text-xl font-medium tracking-normal mb-6">
+            <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
+              <h2 className="text-base font-medium tracking-normal mb-5">
                 Order Tracking
               </h2>
               <OrderTracking orderNumber={order.orderNumber} />
             </div>
 
             {/* Add Tracking Update */}
-            <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
-              <h2 className="text-xl font-medium tracking-normal mb-6">
+            <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
+              <h2 className="text-base font-medium tracking-normal mb-5">
                 Add Tracking Update
               </h2>
               <div className="space-y-4">
@@ -267,7 +267,7 @@ export default function AdminOrderDetailPage() {
                     value={trackingStatus}
                     onValueChange={setTrackingStatus}
                   >
-                    <SelectTrigger className="w-full rounded-[10px]">
+                    <SelectTrigger className="w-full rounded-[10px] h-10 text-sm">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -284,7 +284,7 @@ export default function AdminOrderDetailPage() {
                   </Select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-xs font-medium mb-1.5 text-[#0a0a0a]">
                     Location
                   </label>
                   <Input
@@ -292,24 +292,25 @@ export default function AdminOrderDetailPage() {
                     value={trackingLocation}
                     onChange={(e) => setTrackingLocation(e.target.value)}
                     placeholder="Current location"
-                    className="rounded-[10px]"
+                    className="rounded-[10px] h-10 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-xs font-medium mb-1.5 text-[#0a0a0a]">
                     Description
                   </label>
                   <Textarea
                     value={trackingDescription}
                     onChange={(e) => setTrackingDescription(e.target.value)}
                     placeholder="Update description"
-                    className="rounded-[10px] min-h-[100px]"
+                    className="rounded-[10px] min-h-[100px] text-sm"
                   />
                 </div>
                 <Button
                   onClick={handleAddTrackingUpdate}
                   disabled={updateTracking.isPending}
-                  className="rounded-[10px]"
+                  variant="filled"
+                  className="rounded-[10px] h-10"
                 >
                   {updateTracking.isPending
                     ? "Adding..."
@@ -321,8 +322,8 @@ export default function AdminOrderDetailPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px] sticky top-24">
-              <h2 className="text-sm font-medium tracking-normal mb-6 border-b border-[#e5e5e5] pb-4">
+            <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px] sticky top-24">
+              <h2 className="text-sm font-medium tracking-normal mb-5 border-b border-[#e5e5e5] pb-4">
                 Order Summary
               </h2>
               <div className="space-y-3 mb-4">
