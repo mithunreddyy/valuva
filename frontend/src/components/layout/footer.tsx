@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export function Footer() {
   const [email, setEmail] = useState("");
@@ -32,19 +32,7 @@ export function Footer() {
     legal: false,
   });
 
-  // Open sections by default on desktop
-  useEffect(() => {
-    const isDesktop = window.innerWidth >= 1024;
-    if (isDesktop) {
-      setOpenSections({
-        shop: true,
-        service: true,
-        newsletter: true,
-        legal: true,
-      });
-    }
-  }, []);
-
+  // Toggle sections independently - all stay closed by default
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections((prev) => ({
       ...prev,
