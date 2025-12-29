@@ -56,4 +56,19 @@ export const productsApi = {
     });
     return response.data;
   },
+
+  /**
+   * Get available filter options (sizes and colors)
+   * Production-ready: Fetches real data from API
+   */
+  getFilterOptions: async (): Promise<{
+    success: boolean;
+    data: {
+      sizes: string[];
+      colors: Array<{ name: string; value: string; hex?: string }>;
+    };
+  }> => {
+    const response = await apiClient.get("/products/filter-options");
+    return response.data;
+  },
 };

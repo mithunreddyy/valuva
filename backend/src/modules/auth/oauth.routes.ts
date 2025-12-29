@@ -90,10 +90,10 @@ router.get(
 
 router.post(
   "/apple/callback",
-  asyncHandler(async (_req, res) => {
+  asyncHandler(async (req, res) => {
     // Handle Apple Sign In callback
     // Apple uses POST requests for callbacks
-    const { identityToken } = _req.body;
+    const { identityToken, authorizationCode, user } = req.body;
 
     if (!identityToken) {
       return res.status(400).json({
@@ -102,14 +102,59 @@ router.post(
       });
     }
 
-    // TODO: Verify Apple identity token
-    // This requires JWT verification with Apple's public keys
-    // For now, return a placeholder response
+    try {
+      // Verify Apple identity token
+      const { verifyAppleIdentityToken } = await import("./apple-oauth.util");
+      const applePayload = await verifyAppleIdentityToken(identityToken);
 
-    return res.status(501).json({
-      success: false,
-      message: "Apple Sign In callback requires additional implementation",
-    });
+      // Create OAuth profile from Apple token
+      const oauthProfile = {
+        id: applePayload.sub,
+        email: applePayload.email || user?.email || "",
+        firstName: user?.name?.firstName,
+        lastName: user?.name?.lastName,
+        picture: undefined,
+        provider: "apple" as const,
+      };
+
+      // Use OAuth service to find or create user
+      const { OAuthService } = await import("./oauth.service");
+      const oauthService = new OAuthService();
+      const result = await oauthService.findOrCreateUser(oauthProfile);
+
+      // Redirect to frontend with tokens
+      const frontendUrl = process.env.FRONTEND_URL;
+      if (!frontendUrl && process.env.NODE_ENV === "production") {
+        return res.status(500).json({
+          success: false,
+          message: "Server configuration error",
+        });
+      }
+      const frontendUrlFinal = frontendUrl || "http://localhost:3000";
+      const redirectUrl = new URL(`${frontendUrlFinal}/auth/callback`);
+      redirectUrl.searchParams.set("accessToken", result.accessToken);
+      redirectUrl.searchParams.set("refreshToken", result.refreshToken);
+      redirectUrl.searchParams.set("success", "true");
+
+      return res.redirect(redirectUrl.toString());
+    } catch (error: any) {
+      const frontendUrl = process.env.FRONTEND_URL;
+      if (!frontendUrl && process.env.NODE_ENV === "production") {
+        return res.status(500).json({
+          success: false,
+          message: "Server configuration error",
+        });
+      }
+      const frontendUrlFinal = frontendUrl || "http://localhost:3000";
+      const redirectUrl = new URL(`${frontendUrlFinal}/auth/callback`);
+      redirectUrl.searchParams.set("success", "false");
+      redirectUrl.searchParams.set(
+        "error",
+        error.message || "Apple Sign In failed"
+      );
+
+      return res.redirect(redirectUrl.toString());
+    }
   })
 );
 

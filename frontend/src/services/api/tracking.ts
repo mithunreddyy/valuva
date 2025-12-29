@@ -1,29 +1,11 @@
 import apiClient from "@/lib/axios";
-
-export interface TrackingUpdate {
-  id: string;
-  status: string;
-  location?: string;
-  description?: string;
-  timestamp: string;
-}
-
-export interface OrderTracking {
-  orderId: string;
-  orderNumber: string;
-  currentStatus: string;
-  updates: TrackingUpdate[];
-  estimatedDelivery?: string;
-}
-
-interface TrackingResponse {
-  success: boolean;
-  data: OrderTracking;
-}
+import { ApiResponse, OrderTracking } from "@/types";
 
 export const trackingApi = {
-  trackOrder: async (orderNumber: string): Promise<TrackingResponse> => {
-    const response = await apiClient.get<TrackingResponse>(
+  trackOrder: async (
+    orderNumber: string
+  ): Promise<ApiResponse<OrderTracking>> => {
+    const response = await apiClient.get<ApiResponse<OrderTracking>>(
       `/tracking/${orderNumber}`
     );
     return response.data;
@@ -32,10 +14,19 @@ export const trackingApi = {
   trackOrderPublic: async (
     orderNumber: string,
     email: string
-  ): Promise<TrackingResponse> => {
-    const response = await apiClient.post<TrackingResponse>(
+  ): Promise<ApiResponse<OrderTracking>> => {
+    const response = await apiClient.post<ApiResponse<OrderTracking>>(
       `/tracking/public`,
       { orderNumber, email }
+    );
+    return response.data;
+  },
+
+  getTrackingUpdates: async (
+    orderNumber: string
+  ): Promise<ApiResponse<OrderTracking>> => {
+    const response = await apiClient.get<ApiResponse<OrderTracking>>(
+      `/tracking/${orderNumber}/updates`
     );
     return response.data;
   },

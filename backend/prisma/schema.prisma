@@ -82,10 +82,11 @@ model User {
   auditLogs      AuditLog[]
   returnRequests ReturnRequest[]
   productViews   ProductView[]
-  supportTickets SupportTicket[]
-  ticketReplies  TicketReply[]
-  stockAlerts    StockAlert[]
-  oauthAccounts  OAuthAccount[]
+  supportTickets    SupportTicket[]
+  ticketReplies     TicketReply[]
+  stockAlerts       StockAlert[]
+  oauthAccounts     OAuthAccount[]
+  pushSubscriptions PushSubscription[]
 
   @@index([email])
   @@index([role])
@@ -605,4 +606,60 @@ model StockAlert {
   @@index([productId])
   @@index([createdAt])
   @@map("stock_alerts")
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String
+  endpoint  String
+  keys      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, endpoint])
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+model BlogCategory {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  posts BlogPost[]
+
+  @@index([slug])
+  @@map("blog_categories")
+}
+
+model BlogPost {
+  id             String        @id @default(uuid())
+  title          String
+  slug           String        @unique
+  excerpt        String?       @db.Text
+  content        String        @db.Text
+  featuredImage  String?
+  authorId       String?
+  categoryId     String?
+  isPublished    Boolean       @default(false)
+  publishedAt    DateTime?
+  viewCount      Int           @default(0)
+  metaTitle      String?
+  metaDescription String?      @db.Text
+  tags           String[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  category BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([isPublished])
+  @@index([publishedAt])
+  @@map("blog_posts")
 }

@@ -1,8 +1,6 @@
 import { toast } from "@/hooks/use-toast";
-import {
-  paymentsService,
-  RazorpayPaymentVerification,
-} from "@/services/payments.service";
+import { paymentsService } from "@/services/payments.service";
+import { RazorpayPaymentVerification } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 
 interface RazorpayOptions {

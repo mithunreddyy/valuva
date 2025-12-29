@@ -12,6 +12,7 @@ import { InputSanitizer } from "@/lib/input-sanitizer";
 import { formatPrice } from "@/lib/utils";
 import { useAppSelector } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,7 +23,13 @@ import { z } from "zod";
 const checkoutSchema = z.object({
   shippingAddressId: z.string().min(1, "Please select a shipping address"),
   billingAddressId: z.string().min(1, "Please select a billing address"),
-  paymentMethod: z.enum(["COD", "UPI", "CREDIT_CARD", "DEBIT_CARD", "RAZORPAY"]),
+  paymentMethod: z.enum([
+    "COD",
+    "UPI",
+    "CREDIT_CARD",
+    "DEBIT_CARD",
+    "RAZORPAY",
+  ]),
   couponCode: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -97,18 +104,24 @@ export default function CheckoutPage() {
   if (!cartData?.data || cartData.data.items.length === 0) {
     return (
       <div className="min-h-screen bg-[#fafafa] flex items-center justify-center py-24">
-        <div className="container-luxury text-center space-y-6">
-          <h1 className="text-3xl sm:text-4xl font-medium tracking-normal">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="container-luxury text-center space-y-6"
+        >
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-normal text-[#0a0a0a]">
             Your cart is empty
           </h1>
           <Button
             onClick={() => router.push("/shop")}
             size="lg"
-            className="rounded-[10px]"
+            variant="filled"
+            className="rounded-[16px]"
           >
             Continue Shopping
           </Button>
-        </div>
+        </motion.div>
       </div>
     );
   }
@@ -173,16 +186,26 @@ export default function CheckoutPage() {
       {/* Header Section */}
       <section className="bg-white border-b border-[#e5e5e5]">
         <div className="container-luxury py-6 sm:py-8">
-          <h1 className="text-3xl sm:text-4xl font-medium tracking-normal text-[#0a0a0a]">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-normal text-[#0a0a0a]"
+          >
             Checkout
-          </h1>
+          </motion.h1>
         </div>
       </section>
 
       {/* Main Content */}
       <section className="container-luxury py-6 sm:py-8">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid lg:grid-cols-12 gap-5 lg:gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.6 }}
+            className="grid lg:grid-cols-12 gap-5 lg:gap-6"
+          >
             {/* Left Column */}
             <div className="lg:col-span-8 space-y-5">
               {/* Shipping Address */}
@@ -298,7 +321,10 @@ export default function CheckoutPage() {
                 </h2>
                 <div className="space-y-3">
                   {[
-                    { value: "RAZORPAY", label: "Razorpay (Cards, UPI, Wallets, Net Banking)" },
+                    {
+                      value: "RAZORPAY",
+                      label: "Razorpay (Cards, UPI, Wallets, Net Banking)",
+                    },
                     { value: "COD", label: "Cash on Delivery" },
                     { value: "UPI", label: "UPI" },
                     { value: "CREDIT_CARD", label: "Credit Card" },
@@ -433,7 +459,7 @@ export default function CheckoutPage() {
                 </Button>
               </div>
             </div>
-          </div>
+          </motion.div>
         </form>
       </section>
     </div>

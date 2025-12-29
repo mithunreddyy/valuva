@@ -34,9 +34,17 @@ export class OAuthController {
 
       const result = await this.oauthService.findOrCreateUser(profile);
 
-      // Redirect to frontend with tokens
-      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
-      const redirectUrl = new URL(`${frontendUrl}/auth/callback`);
+      // Production-ready: Fail if FRONTEND_URL is not configured
+      const frontendUrl = process.env.FRONTEND_URL;
+      if (!frontendUrl && process.env.NODE_ENV === "production") {
+        logger.error("FRONTEND_URL environment variable is required in production");
+        return res.status(500).json({
+          success: false,
+          message: "Server configuration error",
+        });
+      }
+      const frontendUrlFinal = frontendUrl || "http://localhost:3000";
+      const redirectUrl = new URL(`${frontendUrlFinal}/auth/callback`);
       redirectUrl.searchParams.set("accessToken", result.accessToken);
       redirectUrl.searchParams.set("refreshToken", result.refreshToken);
       redirectUrl.searchParams.set("success", "true");
@@ -54,8 +62,16 @@ export class OAuthController {
         user: req.user,
       });
 
-      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
-      const redirectUrl = new URL(`${frontendUrl}/auth/callback`);
+      const frontendUrl = process.env.FRONTEND_URL;
+      if (!frontendUrl && process.env.NODE_ENV === "production") {
+        logger.error("FRONTEND_URL environment variable is required in production");
+        return res.status(500).json({
+          success: false,
+          message: "Server configuration error",
+        });
+      }
+      const frontendUrlFinal = frontendUrl || "http://localhost:3000";
+      const redirectUrl = new URL(`${frontendUrlFinal}/auth/callback`);
       redirectUrl.searchParams.set("success", "false");
       redirectUrl.searchParams.set(
         "error",

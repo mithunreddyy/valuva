@@ -172,6 +172,35 @@ export class OrdersService {
       },
     });
 
+    // Send order confirmation email (async, don't block)
+    try {
+      const { EmailNotificationService } = await import("../notifications/email.service");
+      const orderWithUser = await this.repository.findOrderById(order.id, userId);
+      if (orderWithUser) {
+        // Get user data
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+        if (user && orderWithUser) {
+          const orderWithUserData = { ...orderWithUser, user };
+          EmailNotificationService.sendOrderConfirmation(orderWithUserData).catch(
+            (error) => {
+              logger.error("Failed to send order confirmation email", {
+                orderId: order.id,
+                error: error instanceof Error ? error.message : String(error),
+              });
+            }
+          );
+        }
+      }
+    } catch (error) {
+      // Don't fail order creation if email fails
+      logger.error("Error sending order confirmation email", {
+        orderId: order.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+
     // Audit log
     await AuditLogUtil.logOrder(
       userId,

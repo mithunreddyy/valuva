@@ -106,6 +106,30 @@ export class ProductsRepository {
     return { products, total };
   }
 
+  /**
+   * Get available variants for filter options
+   * Production-ready: Fetches real sizes and colors from database
+   */
+  async getAvailableVariants() {
+    const variants = await prisma.productVariant.findMany({
+      where: {
+        isActive: true,
+        stock: { gt: 0 },
+        product: {
+          isActive: true,
+        },
+      },
+      select: {
+        size: true,
+        color: true,
+        colorHex: true,
+      },
+      distinct: ["size", "color"],
+    });
+
+    return variants;
+  }
+
   async findProductById(id: string) {
     const product = await prisma.product.findUnique({
       where: { id, isActive: true },

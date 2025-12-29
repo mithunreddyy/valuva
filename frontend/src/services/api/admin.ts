@@ -3,10 +3,12 @@ import {
   Category,
   Coupon,
   HomepageSection,
+  InventoryUpdateData,
   Product,
+  ProductImageData,
+  ProductVariantData,
   SubCategory,
 } from "@/types";
-import { Variant } from "framer-motion";
 
 export const adminApi = {
   // Products
@@ -54,18 +56,8 @@ export const adminApi = {
     return response.data;
   },
 
-  addProductImage: async (
-    productId: string,
-    url: string,
-    altText?: string,
-    isPrimary?: boolean
-  ) => {
-    const response = await apiClient.post("/admin/images", {
-      productId,
-      url,
-      altText,
-      isPrimary,
-    });
+  addProductImage: async (data: ProductImageData) => {
+    const response = await apiClient.post("/admin/images", data);
     return response.data;
   },
 
@@ -74,28 +66,23 @@ export const adminApi = {
     return response.data;
   },
 
-  createVariant: async (data: Variant) => {
+  createVariant: async (data: ProductVariantData) => {
     const response = await apiClient.post("/admin/variants", data);
     return response.data;
   },
 
-  updateVariant: async (id: string, data: Variant) => {
+  updateVariant: async (id: string, data: Partial<ProductVariantData>) => {
     const response = await apiClient.put(`/admin/variants/${id}`, data);
     return response.data;
   },
 
-  updateInventory: async (
-    variantId: string,
-    change: number,
-    reason: string,
-    notes?: string
-  ) => {
+  updateInventory: async (data: InventoryUpdateData) => {
     const response = await apiClient.patch(
-      `/admin/variants/${variantId}/inventory`,
+      `/admin/variants/${data.variantId}/inventory`,
       {
-        change,
-        reason,
-        notes,
+        change: data.change,
+        reason: data.reason,
+        notes: data.notes,
       }
     );
     return response.data;

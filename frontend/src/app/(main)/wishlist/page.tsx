@@ -16,7 +16,15 @@ import {
   fetchWishlist,
   removeFromWishlist,
 } from "@/store/slices/wishlistSlice";
-import { ArrowUpDown, Heart, Search, Share2, Trash2 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowRight,
+  ArrowUpDown,
+  Heart,
+  Search,
+  Share2,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -89,41 +97,58 @@ export default function WishlistPage() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-[calc(100vh-200px)] bg-[#fafafa] flex items-center justify-center px-4 py-12 sm:py-16">
-        <div className="w-full max-w-md text-center space-y-6">
-          <div className="flex justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="w-full max-w-md text-center space-y-6"
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="flex justify-center"
+          >
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[20px] bg-white border border-[#e5e5e5] flex items-center justify-center">
-              <Heart className="h-8 w-8 sm:h-10 sm:w-10 text-neutral-400" />
+              <Heart className="h-8 w-8 sm:h-10 sm:w-10 text-neutral-300" />
             </div>
-          </div>
-          <div className="space-y-2">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="space-y-2"
+          >
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-normal text-[#0a0a0a]">
               Sign in to view your wishlist
             </h1>
             <p className="text-sm text-neutral-500 font-medium tracking-normal">
               Create an account or sign in to save your favorite products
             </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-3 justify-center"
+          >
             <Link href="/login">
               <Button
-                size="sm"
+                size="lg"
                 variant="filled"
-                className="rounded-[10px] w-auto sm:w-auto"
+                className="rounded-[16px] gap-2"
               >
                 Sign In
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link href="/register">
-              <Button
-                size="sm"
-                variant="outline"
-                className="rounded-[10px] w-auto sm:w-auto"
-              >
+              <Button size="lg" variant="outline" className="rounded-[16px]">
                 Create Account
               </Button>
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     );
   }
@@ -151,31 +176,62 @@ export default function WishlistPage() {
     return (
       <div className="min-h-screen bg-[#fafafa]">
         <div className="container-luxury py-6 sm:py-8">
-          <div className="mb-6 sm:mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-6 sm:mb-8"
+          >
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-normal text-[#0a0a0a]">
               My Wishlist
             </h1>
-          </div>
-          <div className="max-w-md mx-auto text-center py-8 sm:py-12 space-y-6">
-            <div className="flex justify-center">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="max-w-md mx-auto text-center py-8 sm:py-12 space-y-6"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+              className="flex justify-center"
+            >
               <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[20px] bg-white border border-[#e5e5e5] flex items-center justify-center">
-                <Heart className="h-8 w-8 sm:h-10 sm:w-10 text-neutral-400" />
+                <Heart className="h-8 w-8 sm:h-10 sm:w-10 text-neutral-300" />
               </div>
-            </div>
-            <div className="space-y-2">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="space-y-2"
+            >
               <h2 className="text-xl sm:text-2xl md:text-3xl font-medium tracking-normal text-[#0a0a0a]">
                 Your wishlist is empty
               </h2>
               <p className="text-sm text-neutral-500 font-medium tracking-normal">
                 Start adding products you love to your wishlist
               </p>
-            </div>
-            <Link href="/shop" className="inline-block">
-              <Button size="lg" variant="filled" className="rounded-[16px]">
-                Start Shopping
-              </Button>
-            </Link>
-          </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Link href="/shop" className="inline-block">
+                <Button
+                  size="lg"
+                  variant="filled"
+                  className="rounded-[16px] gap-2"
+                >
+                  Start Shopping
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     );
@@ -186,7 +242,12 @@ export default function WishlistPage() {
       {/* Header Section */}
       <section className="bg-white border-b border-[#e5e5e5]">
         <div className="container-luxury py-6 sm:py-8">
-          <div className="space-y-4 sm:space-y-5">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-4 sm:space-y-5"
+          >
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
               <div>
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-normal text-[#0a0a0a] mb-1">
@@ -319,14 +380,19 @@ export default function WishlistPage() {
                 )}
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Products Grid */}
       <section className="container-luxury py-6 sm:py-8">
         {sortedItems.length === 0 && searchQuery ? (
-          <div className="text-center py-12 sm:py-16 space-y-5">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center py-12 sm:py-16 space-y-5"
+          >
             <div className="flex justify-center">
               <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-[20px] bg-white border border-[#e5e5e5] flex items-center justify-center">
                 <Search className="h-10 w-10 sm:h-12 sm:w-12 text-neutral-300" />
@@ -341,33 +407,47 @@ export default function WishlistPage() {
               </p>
             </div>
             <Button
-              size="sm"
+              size="lg"
               variant="outline"
               onClick={() => setSearchQuery("")}
               className="rounded-[16px]"
             >
               Clear Search
             </Button>
-          </div>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-            {sortedItems.map((item) => (
-              <WishlistItemCard
-                key={item.id}
-                item={item}
-                isSelected={selectedItems.has(item.id)}
-                onSelect={(id, selected) => {
-                  const newSelected = new Set(selectedItems);
-                  if (selected) {
-                    newSelected.add(id);
-                  } else {
-                    newSelected.delete(id);
-                  }
-                  setSelectedItems(newSelected);
-                }}
-              />
-            ))}
-          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+          >
+            <AnimatePresence>
+              {sortedItems.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ delay: index * 0.05, duration: 0.3 }}
+                >
+                  <WishlistItemCard
+                    item={item}
+                    isSelected={selectedItems.has(item.id)}
+                    onSelect={(id, selected) => {
+                      const newSelected = new Set(selectedItems);
+                      if (selected) {
+                        newSelected.add(id);
+                      } else {
+                        newSelected.delete(id);
+                      }
+                      setSelectedItems(newSelected);
+                    }}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         )}
       </section>
     </div>

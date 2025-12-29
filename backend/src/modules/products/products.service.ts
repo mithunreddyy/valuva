@@ -87,6 +87,52 @@ export class ProductsService {
     return result;
   }
 
+  /**
+   * Get available filter options (sizes and colors) from actual product variants
+   * Production-ready: Fetches real data from database
+   */
+  async getFilterOptions() {
+    const cacheKey = "products:filter-options";
+    const cached = await CacheUtil.get<{
+      sizes: string[];
+      colors: Array<{ name: string; value: string; hex?: string }>;
+    }>(cacheKey);
+
+    if (cached) {
+      return cached;
+    }
+
+    const variants = await this.repository.getAvailableVariants();
+
+    // Extract unique sizes
+    const sizes = Array.from(
+      new Set(variants.map((v) => v.size).filter(Boolean))
+    ).sort();
+
+    // Extract unique colors with hex values
+    const colorMap = new Map<
+      string,
+      { name: string; value: string; hex?: string }
+    >();
+    variants.forEach((v) => {
+      if (v.color && !colorMap.has(v.color.toLowerCase())) {
+        colorMap.set(v.color.toLowerCase(), {
+          name: v.color,
+          value: v.color.toLowerCase(),
+          hex: v.colorHex || undefined,
+        });
+      }
+    });
+    const colors = Array.from(colorMap.values());
+
+    const result = { sizes, colors };
+
+    // Cache for 1 hour
+    await CacheUtil.set(cacheKey, result, this.CACHE_TTL);
+
+    return result;
+  }
+
   async getProductBySlug(slug: string) {
     // Try cache first
     const cacheKey = `product:slug:${slug}`;
@@ -101,26 +147,26 @@ export class ProductsService {
       throw new NotFoundError("Product not found");
     }
 
+    // Calculate average rating
     const avgRating =
       product.reviews.length > 0
         ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
           product.reviews.length
         : 0;
 
-    const result = {
+    const productWithRating = {
       ...product,
       averageRating: Math.round(avgRating * 10) / 10,
       reviewCount: product.reviews.length,
     };
 
-    // Cache the result
-    await CacheUtil.set(cacheKey, result, this.CACHE_TTL);
+    // Cache for 1 hour
+    await CacheUtil.set(cacheKey, productWithRating, this.CACHE_TTL);
 
-    return result;
+    return productWithRating;
   }
 
   async getProductById(id: string) {
-    // Try cache first
     const cacheKey = `product:id:${id}`;
     const cached = await CacheUtil.get(cacheKey);
     if (cached) {
@@ -133,142 +179,104 @@ export class ProductsService {
       throw new NotFoundError("Product not found");
     }
 
+    // Calculate average rating
     const avgRating =
       product.reviews.length > 0
         ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
           product.reviews.length
         : 0;
 
-    const result = {
+    const productWithRating = {
       ...product,
       averageRating: Math.round(avgRating * 10) / 10,
       reviewCount: product.reviews.length,
     };
 
-    // Cache the result
-    await CacheUtil.set(cacheKey, result, this.CACHE_TTL);
+    // Cache for 1 hour
+    await CacheUtil.set(cacheKey, productWithRating, this.CACHE_TTL);
 
-    return result;
-  }
-
-  async getFeaturedProducts(limit: number = 12) {
-    const cacheKey = `products:featured:${limit}`;
-
-    return CacheUtil.getOrSet(
-      cacheKey,
-      async () => {
-        const { products } = await this.repository.findProducts(
-          { isFeatured: true },
-          0,
-          limit,
-          { totalSold: "desc" }
-        );
-
-        return products.map((product) => {
-          const avgRating =
-            product.reviews.length > 0
-              ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
-                product.reviews.length
-              : 0;
-
-          return {
-            ...product,
-            averageRating: Math.round(avgRating * 10) / 10,
-            reviewCount: product.reviews.length,
-          };
-        });
-      },
-      this.CACHE_TTL
-    );
-  }
-
-  async getNewArrivals(limit: number = 12) {
-    const cacheKey = `products:new-arrivals:${limit}`;
-
-    return CacheUtil.getOrSet(
-      cacheKey,
-      async () => {
-        const { products } = await this.repository.findProducts(
-          { isNewArrival: true },
-          0,
-          limit,
-          { createdAt: "desc" }
-        );
-
-        return products.map((product) => {
-          const avgRating =
-            product.reviews.length > 0
-              ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
-                product.reviews.length
-              : 0;
-
-          return {
-            ...product,
-            averageRating: Math.round(avgRating * 10) / 10,
-            reviewCount: product.reviews.length,
-          };
-        });
-      },
-      this.CACHE_TTL
-    );
-  }
-
-  async searchProducts(query: string, limit: number = 20) {
-    if (!query || query.trim().length === 0) {
-      return [];
-    }
-
-    const cacheKey = `products:search:${query.toLowerCase()}:${limit}`;
-
-    return CacheUtil.getOrSet(
-      cacheKey,
-      async () => {
-        const { products } = await this.repository.searchProducts(query, limit);
-
-        return products.map((product) => {
-          const reviews = (product as any).reviews || [];
-          const avgRating =
-            reviews.length > 0
-              ? reviews.reduce(
-                  (sum: number, r: { rating: number }) => sum + r.rating,
-                  0
-                ) / reviews.length
-              : 0;
-
-          return {
-            ...product,
-            averageRating: Math.round(avgRating * 10) / 10,
-            reviewCount: reviews.length,
-          };
-        });
-      },
-      1800 // 30 minutes for search results
-    );
+    return productWithRating;
   }
 
   async getRelatedProducts(productId: string) {
     const product = await this.repository.findProductById(productId);
+
     if (!product) {
       throw new NotFoundError("Product not found");
     }
 
-    const relatedProducts = await this.repository.findRelatedProducts(
+    const related = await this.repository.findRelatedProducts(
       productId,
-      product.categoryId
+      product.categoryId,
+      (product.subCategoryId as string | undefined)
+        ? (product.subCategoryId as string).length
+        : undefined
     );
 
-    return relatedProducts.map((p) => {
+    return related.map((p) => {
       const avgRating =
         p.reviews.length > 0
           ? p.reviews.reduce((sum, r) => sum + r.rating, 0) / p.reviews.length
           : 0;
 
-      const { reviews, ...productData } = p;
+      return {
+        ...p,
+        averageRating: Math.round(avgRating * 10) / 10,
+        reviewCount: p.reviews.length,
+      };
+    });
+  }
+
+  async getFeaturedProducts(limit: number = 12) {
+    const cacheKey = `products:featured:${limit}`;
+    const cached = await CacheUtil.get<any[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const result = await this.getProducts(
+      { isFeatured: true },
+      1,
+      limit,
+      "popular"
+    );
+
+    await CacheUtil.set(cacheKey, result.products, this.CACHE_TTL);
+    return result.products;
+  }
+
+  async getNewArrivals(limit: number = 12) {
+    const cacheKey = `products:new-arrivals:${limit}`;
+    const cached = await CacheUtil.get<any[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const result = await this.getProducts(
+      { isNewArrival: true },
+      1,
+      limit,
+      "newest"
+    );
+
+    await CacheUtil.set(cacheKey, result.products, this.CACHE_TTL);
+    return result.products;
+  }
+
+  async searchProducts(query: string, limit: number = 10) {
+    const products = await this.repository.searchProducts(query, limit);
+
+    return (products as { products: any[] }).products.map((product: any) => {
+      const avgRating =
+        product.reviews && product.reviews.length > 0
+          ? product.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) /
+            product.reviews.length
+          : 0;
 
       return {
-        ...productData,
+        ...product,
         averageRating: Math.round(avgRating * 10) / 10,
-        reviewCount: reviews.length,
+        reviewCount: product.reviews?.length || 0,
       };
     });
   }

@@ -34,7 +34,9 @@ import wishlistRoutes from "./modules/wishlist/wishlist.routes";
 
 // New routes
 import analyticsRoutes from "./modules/analytics/analytics.routes";
+import blogRoutes from "./modules/blog/blog.routes";
 import newsletterRoutes from "./modules/newsletter/newsletter.routes";
+import pushNotificationRoutes from "./modules/notifications/push.routes";
 import orderTrackingRoutes from "./modules/order-tracking/tracking.routes";
 import recommendationsRoutes from "./modules/recommendations/recommendations.routes";
 import returnsRoutes from "./modules/returns/returns.routes";
@@ -205,6 +207,12 @@ export const createApp = (): Application => {
 
   // Support routes
   app.use(`${API_PREFIX}/support`, supportRoutes);
+
+  // Notification routes
+  app.use(`${API_PREFIX}/notifications/push`, pushNotificationRoutes);
+
+  // Blog routes
+  app.use(`${API_PREFIX}/blog`, blogRoutes);
 
   // Error handling
   app.use(notFoundHandler);

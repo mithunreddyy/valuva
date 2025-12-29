@@ -64,27 +64,31 @@ class Analytics {
 
   private async trackEvent(event: AnalyticsEvent): Promise<void> {
     try {
+      // Production-ready: Fail if API URL is not configured
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (!apiUrl && process.env.NODE_ENV === "production") {
+        throw new Error(
+          "NEXT_PUBLIC_API_URL environment variable is required in production"
+        );
+      }
+      const apiUrlFinal = apiUrl || "http://localhost:5000";
+
       // Send to backend analytics endpoint
-      const response = await fetch(
-        `${
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
-        }/api/v1/analytics/track`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...event,
-            userId: this.userId,
-            sessionId: this.sessionId,
-            timestamp: new Date().toISOString(),
-            url: typeof window !== "undefined" ? window.location.href : "",
-            referrer: typeof window !== "undefined" ? document.referrer : "",
-            userAgent: typeof window !== "undefined" ? navigator.userAgent : "",
-          }),
-        }
-      );
+      const response = await fetch(`${apiUrlFinal}/api/v1/analytics/track`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...event,
+          userId: this.userId,
+          sessionId: this.sessionId,
+          timestamp: new Date().toISOString(),
+          url: typeof window !== "undefined" ? window.location.href : "",
+          referrer: typeof window !== "undefined" ? document.referrer : "",
+          userAgent: typeof window !== "undefined" ? navigator.userAgent : "",
+        }),
+      });
 
       if (!response.ok) {
         console.warn("Analytics tracking failed", response.status);

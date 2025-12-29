@@ -6,8 +6,18 @@
 /**
  * API Configuration
  */
+// Production-ready: Fail if API URL is not configured
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+if (!API_BASE_URL && process.env.NODE_ENV === "production") {
+  throw new Error(
+    "NEXT_PUBLIC_API_URL environment variable is required in production"
+  );
+}
+// Development fallback only
+const API_BASE_URL_FINAL = API_BASE_URL || "http://localhost:5000";
+
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1",
+  BASE_URL: `${API_BASE_URL_FINAL}/api/v1`,
   TIMEOUT: 30000, // 30 seconds
 } as const;
 

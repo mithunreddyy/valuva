@@ -30,7 +30,14 @@ class HealthCheck {
   private listeners: Array<(status: HealthStatus) => void> = [];
 
   constructor() {
-    this.apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    // Production-ready: Fail if API URL is not configured
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl && process.env.NODE_ENV === "production") {
+      throw new Error(
+        "NEXT_PUBLIC_API_URL environment variable is required in production"
+      );
+    }
+    this.apiUrl = apiUrl || "http://localhost:5000";
   }
 
   /**
@@ -53,10 +60,10 @@ class HealthCheck {
 
       const data = await response.json();
       this.lastStatus = data;
-      
+
       // Notify listeners
       this.listeners.forEach((listener) => listener(data));
-      
+
       return data;
     } catch (error) {
       console.error("Health check failed", error);
@@ -103,7 +110,7 @@ class HealthCheck {
    */
   onStatusChange(listener: (status: HealthStatus) => void): () => void {
     this.listeners.push(listener);
-    
+
     // Return unsubscribe function
     return () => {
       this.listeners = this.listeners.filter((l) => l !== listener);
@@ -154,4 +161,3 @@ export function useHealthCheck() {
 
   return { status, isHealthy };
 }
-

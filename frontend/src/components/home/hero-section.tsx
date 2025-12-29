@@ -14,7 +14,7 @@ export function HeroSection() {
           className="max-w-4xl mx-auto text-center space-y-6"
         >
           <p className="text-sm font-medium tracking-normal text-neutral-500">
-            SS/2024
+            SS/2026
           </p>
           <h1 className="text-8xl sm:text-9xl md:text-10xl lg:text-11xl font-large tracking-tight">
             వలువ

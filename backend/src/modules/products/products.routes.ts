@@ -113,6 +113,19 @@ router.get("/new-arrivals", asyncHandler(controller.getNewArrivals));
 
 /**
  * @swagger
+ * /api/v1/products/filter-options:
+ *   get:
+ *     summary: Get available filter options (sizes and colors)
+ *     tags: [Products]
+ *     description: Returns unique sizes and colors from actual product variants
+ *     responses:
+ *       200:
+ *         description: Filter options
+ */
+router.get("/filter-options", asyncHandler(controller.getFilterOptions));
+
+/**
+ * @swagger
  * /api/v1/products/{slug}:
  *   get:
  *     summary: Get product by slug

@@ -1,23 +1,33 @@
 "use client";
 
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { StructuredData } from "@/components/seo/structured-data";
 import { ProductCard } from "@/components/products/ProductCard";
 import {
   ProductImageModal,
   ProductImageZoom,
 } from "@/components/products/product-image-zoom";
+import { ProductRecommendations } from "@/components/products/product-recommendations";
 import { ProductReviews } from "@/components/products/product-reviews";
+import { ShareButtons } from "@/components/social/share-buttons";
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { useAddToCart } from "@/hooks/use-cart";
 import { useProduct, useRelatedProducts } from "@/hooks/use-products";
+import { toast } from "@/hooks/use-toast";
+import { generateProductStructuredDataWithReviews } from "@/lib/seo";
 import { formatPrice } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   addToWishlist,
   removeFromWishlist,
 } from "@/store/slices/wishlistSlice";
+import { AnimatePresence, motion } from "framer-motion";
 import {
+  ArrowRight,
+  CheckCircle,
   Heart,
   Info,
   Minus,
@@ -29,6 +39,7 @@ import {
   Truck,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
@@ -65,15 +76,18 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     data?.data?.category?.name,
   ]);
 
+
   if (isLoading) {
     return (
-      <div className="container-luxury py-16">
-        <div className="grid lg:grid-cols-2 gap-12">
-          <Skeleton className="aspect-square" />
-          <div className="space-y-6">
-            <Skeleton className="h-12 w-3/4" />
-            <Skeleton className="h-8 w-1/2" />
-            <Skeleton className="h-32 w-full" />
+      <div className="min-h-screen bg-[#fafafa]">
+        <div className="container-luxury py-8 sm:py-12">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            <Skeleton className="aspect-square rounded-[20px]" />
+            <div className="space-y-6">
+              <Skeleton className="h-12 w-3/4 rounded-[12px]" />
+              <Skeleton className="h-8 w-1/2 rounded-[12px]" />
+              <Skeleton className="h-32 w-full rounded-[12px]" />
+            </div>
           </div>
         </div>
       </div>
@@ -82,10 +96,27 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   if (!data?.data) {
     return (
-      <div className="container-luxury py-16 text-center">
-        <h1 className="text-2xl font-medium tracking-normal">
-          Product not found
-        </h1>
+      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center py-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="container-luxury text-center space-y-6"
+        >
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-normal text-[#0a0a0a]">
+            Product not found
+          </h1>
+          <p className="text-sm text-neutral-500 font-medium">
+            The product you&apos;re looking for doesn&apos;t exist or has been
+            removed.
+          </p>
+          <Link href="/shop">
+            <Button size="lg" variant="filled" className="rounded-[16px] gap-2">
+              Continue Shopping
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </motion.div>
       </div>
     );
   }
@@ -109,9 +140,26 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               quantity,
               Number(selectedVariant.price)
             );
+            toast({
+              title: "Added to cart!",
+              description: `${product.name} has been added to your cart`,
+            });
+          },
+          onError: () => {
+            toast({
+              title: "Error",
+              description: "Failed to add product to cart. Please try again.",
+              variant: "destructive",
+            });
           },
         }
       );
+    } else {
+      toast({
+        title: "Select options",
+        description: "Please select size and color before adding to cart",
+        variant: "destructive",
+      });
     }
   };
 
@@ -119,59 +167,152 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     if (isInWishlist) {
       dispatch(removeFromWishlist(product.id));
       analytics.trackWishlistRemove(product.id);
+      toast({
+        title: "Removed from wishlist",
+        description: `${product.name} has been removed from your wishlist`,
+      });
     } else {
       dispatch(addToWishlist(product.id));
       analytics.trackWishlistAdd(product.id);
+      toast({
+        title: "Added to wishlist",
+        description: `${product.name} has been added to your wishlist`,
+      });
     }
   };
 
   const availableSizes = [...new Set(product.variants.map((v) => v.size))];
   const availableColors = [...new Set(product.variants.map((v) => v.color))];
 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://valuva.com";
+  const productUrl = `${baseUrl}/products/${product.slug}`;
+  const productImage = product.images[0]?.url || "/og-image.jpg";
+  const averageRating =
+    product.reviews && product.reviews.length > 0
+      ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
+        product.reviews.length
+      : undefined;
+  const reviewCount = product.reviews?.length || 0;
+
+  // Generate product structured data
+  const productStructuredData = generateProductStructuredDataWithReviews({
+    name: product.name,
+    description: product.description,
+    images: product.images.map((img) => img.url),
+    slug: product.slug,
+    price: Number(product.basePrice),
+    availability: product.totalStock > 0 ? "in stock" : "out of stock",
+    category: product.category?.name,
+    averageRating,
+    reviewCount,
+    brand: product.brand || "Valuva",
+  });
+
   return (
-    <div className="min-h-screen bg-[#fafafa]">
-      {/* Product Details */}
-      <section className="bg-white border-b border-[#e5e5e5]">
-        <div className="container-luxury py-8 sm:py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+    <>
+      {/* Product Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productStructuredData),
+        }}
+      />
+
+      {/* Breadcrumbs */}
+      <div className="container-luxury pt-6">
+        <Breadcrumbs
+          items={[
+            { name: "Home", url: "/" },
+            { name: "Shop", url: "/shop" },
+            { name: product.category?.name || "Products", url: `/shop?category=${product.category?.slug || ""}` },
+            { name: product.name, url: productUrl },
+          ]}
+        />
+      </div>
+
+      <div className="min-h-screen bg-[#fafafa]">
+        {/* Product Details */}
+        <section className="bg-white border-b border-[#e5e5e5]">
+          <div className="container-luxury py-6 sm:py-8 lg:py-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12"
+          >
             {/* Images */}
-            <div>
-              <div
-                className="aspect-square border border-[#e5e5e5] overflow-hidden bg-[#fafafa] mb-3 rounded-[12px] cursor-pointer"
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+            >
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+                className="aspect-square border border-[#e5e5e5] overflow-hidden bg-[#fafafa] mb-3 rounded-[20px] cursor-pointer relative group"
                 onClick={() => setIsImageModalOpen(true)}
               >
-                {product.images[selectedImage]?.url ? (
-                  <ProductImageZoom
-                    src={product.images[selectedImage].url}
-                    alt={product.images[selectedImage].altText || product.name}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={selectedImage}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
                     className="w-full h-full"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-neutral-100">
-                    <span className="text-neutral-400">No Image Available</span>
-                  </div>
-                )}
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {product.images.map((image, index) => (
-                  <button
-                    key={image.id}
-                    onClick={() => setSelectedImage(index)}
-                    className={`aspect-square border overflow-hidden transition-all rounded-[8px] ${
-                      selectedImage === index
-                        ? "border-[#0a0a0a]"
-                        : "border-[#e5e5e5] hover:border-[#0a0a0a]"
-                    }`}
                   >
-                    <Image
-                      src={image.url}
-                      alt={image.altText || product.name}
-                      width={200}
-                      height={200}
-                      className="object-cover w-full h-full"
-                    />
-                  </button>
-                ))}
+                    {product.images[selectedImage]?.url ? (
+                      <ProductImageZoom
+                        src={product.images[selectedImage].url}
+                        alt={
+                          product.images[selectedImage].altText || product.name
+                        }
+                        className="w-full h-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-neutral-100">
+                        <span className="text-neutral-400 text-sm font-medium">
+                          No Image Available
+                        </span>
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors rounded-[20px]" />
+              </motion.div>
+              <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-3 gap-2 sm:gap-3">
+                <AnimatePresence>
+                  {product.images.map((image, index) => (
+                    <motion.button
+                      key={image.id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ delay: index * 0.05 }}
+                      onClick={() => setSelectedImage(index)}
+                      className={`aspect-square border overflow-hidden transition-all rounded-[12px] relative ${
+                        selectedImage === index
+                          ? "border-[#0a0a0a] ring-2 ring-[#0a0a0a] ring-offset-2"
+                          : "border-[#e5e5e5] hover:border-[#0a0a0a]"
+                      }`}
+                    >
+                      <Image
+                        src={image.url}
+                        alt={image.altText || product.name}
+                        width={200}
+                        height={200}
+                        className="object-cover w-full h-full"
+                      />
+                      {selectedImage === index && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="absolute inset-0 bg-[#0a0a0a]/10"
+                        />
+                      )}
+                    </motion.button>
+                  ))}
+                </AnimatePresence>
               </div>
               {product.images.length > 0 && (
                 <ProductImageModal
@@ -186,129 +327,206 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   productName={product.name}
                 />
               )}
-            </div>
+            </motion.div>
 
             {/* Product Info */}
-            <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="space-y-6"
+            >
               <div className="space-y-3">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-normal">
+                <motion.h1
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-normal text-[#0a0a0a]"
+                >
                   {product.name}
-                </h1>
-                <div className="flex items-baseline gap-4">
-                  <span className="text-2xl md:text-3xl font-medium">
+                </motion.h1>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="flex items-baseline gap-4"
+                >
+                  <span className="text-xl sm:text-2xl md:text-3xl font-medium text-[#0a0a0a]">
                     {formatPrice(product.basePrice)}
                   </span>
                   {product.compareAtPrice && (
-                    <span className="text-base text-neutral-500 line-through font-medium">
+                    <span className="text-sm sm:text-base text-neutral-500 line-through font-medium">
                       {formatPrice(product.compareAtPrice)}
                     </span>
                   )}
-                </div>
+                </motion.div>
                 {product.reviewCount && product.reviewCount! > 0 && (
-                  <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 fill-[#0a0a0a]" />
-                    <span className="text-sm font-medium">
-                      {product.averageRating}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="flex items-center gap-2"
+                  >
+                    <Star className="h-4 w-4 fill-[#0a0a0a] text-[#0a0a0a]" />
+                    <span className="text-sm font-medium text-[#0a0a0a]">
+                      {product.averageRating?.toFixed(1)}
                     </span>
                     <span className="text-xs text-neutral-500 font-medium">
                       ({product.reviewCount}{" "}
                       {product.reviewCount === 1 ? "review" : "reviews"})
                     </span>
-                  </div>
+                  </motion.div>
                 )}
               </div>
 
               {/* Short Description */}
-              {product.shortDescription && (
-                <div>
-                  <p className="text-sm text-neutral-600 leading-relaxed font-medium">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                {product.shortDescription ? (
+                  <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">
                     {product.shortDescription}
                   </p>
-                </div>
-              )}
-
-              {/* Description */}
-              {!product.shortDescription && (
-                <div>
-                  <p className="text-sm text-neutral-600 leading-relaxed font-medium">
+                ) : (
+                  <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-medium">
                     {product.description}
                   </p>
-                </div>
-              )}
+                )}
+              </motion.div>
 
               {/* Size Selection */}
               {availableSizes.length > 0 && (
-                <div>
-                  <label className="block text-xs font-medium tracking-normal mb-2">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                >
+                  <label className="block text-xs font-medium tracking-normal mb-2.5 text-[#0a0a0a]">
                     Size
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {availableSizes.map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        className={`px-4 py-2 border text-xs font-medium tracking-normal transition-all rounded-[8px] ${
-                          selectedSize === size
-                            ? "border-[#0a0a0a] bg-[#0a0a0a] text-[#fafafa]"
-                            : "border-[#e5e5e5] hover:border-[#0a0a0a]"
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
+                    <AnimatePresence>
+                      {availableSizes.map((size, index) => {
+                        const variant = product.variants.find(
+                          (v) => v.size === size && v.color === selectedColor
+                        );
+                        const isOutOfStock = variant
+                          ? variant.stock === 0
+                          : false;
+                        return (
+                          <motion.button
+                            key={size}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ delay: index * 0.05 }}
+                            onClick={() => setSelectedSize(size)}
+                            disabled={isOutOfStock}
+                            aria-label={`Select size ${size}${isOutOfStock ? " (out of stock)" : ""}`}
+                            aria-pressed={selectedSize === size}
+                            className={`px-4 py-2.5 border text-xs sm:text-sm font-medium tracking-normal transition-all rounded-[12px] relative focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
+                              selectedSize === size
+                                ? "border-[#0a0a0a] bg-[#0a0a0a] text-[#fafafa]"
+                                : isOutOfStock
+                                ? "border-[#e5e5e5] text-neutral-400 cursor-not-allowed opacity-50"
+                                : "border-[#e5e5e5] hover:border-[#0a0a0a] text-[#0a0a0a]"
+                            }`}
+                          >
+                            {size}
+                            {selectedSize === size && (
+                              <motion.div
+                                layoutId="sizeIndicator"
+                                className="absolute inset-0 border-2 border-[#0a0a0a] rounded-[12px]"
+                                transition={{ type: "spring", bounce: 0.2 }}
+                              />
+                            )}
+                          </motion.button>
+                        );
+                      })}
+                    </AnimatePresence>
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* Color Selection */}
               {availableColors.length > 0 && (
-                <div>
-                  <label className="block text-xs font-medium tracking-normal mb-2">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                >
+                  <label className="block text-xs font-medium tracking-normal mb-2.5 text-[#0a0a0a]">
                     Color
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {availableColors.map((color) => {
-                      const variant = product.variants.find(
-                        (v) => v.color === color
-                      );
-                      return (
-                        <button
-                          key={color}
-                          onClick={() => setSelectedColor(color)}
-                          className={`px-4 py-2 border text-xs font-medium tracking-normal transition-all flex items-center gap-2 rounded-[8px] ${
-                            selectedColor === color
-                              ? "border-[#0a0a0a] bg-[#0a0a0a] text-[#fafafa]"
-                              : "border-[#e5e5e5] hover:border-[#0a0a0a]"
-                          }`}
-                        >
-                          {variant?.colorHex && (
-                            <span
-                              className="w-4 h-4 border border-[#e5e5e5] rounded-[4px]"
-                              style={{ backgroundColor: variant.colorHex }}
-                            />
-                          )}
-                          {color}
-                        </button>
-                      );
-                    })}
+                    <AnimatePresence>
+                      {availableColors.map((color, index) => {
+                        const variant = product.variants.find(
+                          (v) => v.color === color && v.size === selectedSize
+                        );
+                        const isOutOfStock = variant
+                          ? variant.stock === 0
+                          : false;
+                        return (
+                          <motion.button
+                            key={color}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ delay: index * 0.05 }}
+                            onClick={() => setSelectedColor(color)}
+                            disabled={isOutOfStock}
+                            className={`px-4 py-2.5 border text-xs sm:text-sm font-medium tracking-normal transition-all flex items-center gap-2 rounded-[12px] relative ${
+                              selectedColor === color
+                                ? "border-[#0a0a0a] bg-[#0a0a0a] text-[#fafafa]"
+                                : isOutOfStock
+                                ? "border-[#e5e5e5] text-neutral-400 cursor-not-allowed opacity-50"
+                                : "border-[#e5e5e5] hover:border-[#0a0a0a] text-[#0a0a0a]"
+                            }`}
+                          >
+                            {variant?.colorHex && (
+                              <span
+                                className="w-4 h-4 border border-[#e5e5e5] rounded-[6px] flex-shrink-0"
+                                style={{ backgroundColor: variant.colorHex }}
+                              />
+                            )}
+                            {color}
+                            {selectedColor === color && (
+                              <motion.div
+                                layoutId="colorIndicator"
+                                className="absolute inset-0 border-2 border-[#0a0a0a] rounded-[12px]"
+                                transition={{ type: "spring", bounce: 0.2 }}
+                              />
+                            )}
+                          </motion.button>
+                        );
+                      })}
+                    </AnimatePresence>
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* Quantity */}
-              <div>
-                <label className="block text-xs font-medium tracking-normal mb-2">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+              >
+                <label className="block text-xs font-medium tracking-normal mb-2.5 text-[#0a0a0a]">
                   Quantity
                 </label>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 border border-[#e5e5e5] flex items-center justify-center hover:border-[#0a0a0a] transition-all rounded-[8px] disabled:opacity-50"
+                    className="w-10 h-10 sm:w-11 sm:h-11 border border-[#e5e5e5] flex items-center justify-center hover:border-[#0a0a0a] hover:bg-[#fafafa] transition-all rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={quantity <= 1}
+                    aria-label="Decrease quantity"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
-                  <span className="text-base font-medium w-10 text-center">
+                  <span className="text-base sm:text-lg font-medium w-12 text-center text-[#0a0a0a]">
                     {quantity}
                   </span>
                   <button
@@ -320,75 +538,139 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                         )
                       )
                     }
-                    className="w-10 h-10 border border-[#e5e5e5] flex items-center justify-center hover:border-[#0a0a0a] transition-all rounded-[8px] disabled:opacity-50"
+                    className="w-10 h-10 sm:w-11 sm:h-11 border border-[#e5e5e5] flex items-center justify-center hover:border-[#0a0a0a] hover:bg-[#fafafa] transition-all rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={
                       quantity >= (selectedVariant?.stock || product.totalStock)
                     }
+                    aria-label="Increase quantity"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Actions */}
-              <div className="flex gap-3 pt-2">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1 }}
+                className="flex flex-col sm:flex-row gap-3 pt-2"
+              >
                 <Button
                   size="lg"
                   variant="filled"
-                  className="flex-1 rounded-[10px]"
+                  className="flex-1 rounded-[16px] gap-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2"
                   onClick={handleAddToCart}
-                  disabled={!selectedSize || !selectedColor || !selectedVariant}
+                  disabled={
+                    !selectedSize ||
+                    !selectedColor ||
+                    !selectedVariant ||
+                    addToCart.isPending ||
+                    (selectedVariant && selectedVariant.stock === 0)
+                  }
+                  aria-label={`Add ${product.name} to cart`}
                 >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Add to Cart
+                  {addToCart.isPending ? (
+                    <>
+                      <LoadingSpinner size="sm" />
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="h-4 w-4" />
+                      Add to Cart
+                    </>
+                  )}
                 </Button>
                 <Button
                   size="lg"
                   variant="outline"
                   onClick={handleWishlistToggle}
-                  className="rounded-[10px]"
+                  className="rounded-[16px] px-4 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2"
+                  aria-label={
+                    isInWishlist
+                      ? `Remove ${product.name} from wishlist`
+                      : `Add ${product.name} to wishlist`
+                  }
                 >
                   <Heart
-                    className={`h-4 w-4 ${isInWishlist ? "fill-current" : ""}`}
+                    className={`h-4 w-4 transition-colors ${
+                      isInWishlist
+                        ? "fill-[#0a0a0a] text-[#0a0a0a]"
+                        : "text-[#0a0a0a]"
+                    }`}
                   />
                 </Button>
-              </div>
+                <ShareButtons
+                  url={typeof window !== "undefined" ? window.location.href : ""}
+                  title={product.name}
+                  description={product.shortDescription || product.description}
+                  image={productImage}
+                />
+              </motion.div>
 
               {selectedVariant && (
-                <p className="text-xs font-medium tracking-normal text-neutral-500">
-                  {selectedVariant.stock > 0
-                    ? `${selectedVariant.stock} in stock`
-                    : "Out of stock"}
-                </p>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.1 }}
+                  className="flex items-center gap-2"
+                >
+                  {selectedVariant.stock > 0 ? (
+                    <>
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <p className="text-xs font-medium tracking-normal text-green-600">
+                        {selectedVariant.stock} in stock
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-xs font-medium tracking-normal text-red-600">
+                      Out of stock
+                    </p>
+                  )}
+                </motion.div>
               )}
 
               {/* Product Details */}
-              <div className="border-t border-[#e5e5e5] pt-5 space-y-3">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2 }}
+                className="border-t border-[#e5e5e5] pt-5 space-y-3"
+              >
                 {product.brand && (
                   <div className="flex gap-4">
-                    <span className="text-xs font-medium w-20">Brand:</span>
-                    <span className="text-sm font-medium">{product.brand}</span>
+                    <span className="text-xs font-medium w-20 text-neutral-600">
+                      Brand:
+                    </span>
+                    <span className="text-sm font-medium text-[#0a0a0a]">
+                      {product.brand}
+                    </span>
                   </div>
                 )}
                 {product.material && (
                   <div className="flex gap-4">
-                    <span className="text-xs font-medium w-20">Material:</span>
-                    <span className="text-sm font-medium">
+                    <span className="text-xs font-medium w-20 text-neutral-600">
+                      Material:
+                    </span>
+                    <span className="text-sm font-medium text-[#0a0a0a]">
                       {product.material}
                     </span>
                   </div>
                 )}
                 {product.careInstructions && (
                   <div className="flex gap-4">
-                    <span className="text-xs font-medium w-20">Care:</span>
-                    <span className="text-sm font-medium">
+                    <span className="text-xs font-medium w-20 text-neutral-600">
+                      Care:
+                    </span>
+                    <span className="text-sm font-medium text-[#0a0a0a]">
                       {product.careInstructions}
                     </span>
                   </div>
                 )}
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -399,13 +681,23 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         product.shippingInfo ||
         product.sizeGuide) && (
         <section className="bg-white border-t border-[#e5e5e5]">
-          <div className="container-luxury py-8 sm:py-10">
+          <div className="container-luxury py-6 sm:py-8 lg:py-10">
             {/* Tabs */}
-            <div className="flex flex-wrap gap-2 mb-6 border-b border-[#e5e5e5]">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="flex flex-wrap gap-2 mb-6 sm:mb-8 border-b border-[#e5e5e5]"
+            >
               {product.longDescription && (
                 <button
                   onClick={() => setActiveTab("description")}
-                  className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 ${
+                  role="tab"
+                  aria-selected={activeTab === "description"}
+                  aria-controls="description-panel"
+                  id="description-tab"
+                  className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
                     activeTab === "description"
                       ? "border-[#0a0a0a] text-[#0a0a0a]"
                       : "border-transparent text-neutral-600 hover:text-[#0a0a0a]"
@@ -417,48 +709,68 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               {product.specifications && (
                 <button
                   onClick={() => setActiveTab("specs")}
-                  className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 ${
+                  role="tab"
+                  aria-selected={activeTab === "specs"}
+                  aria-controls="specs-panel"
+                  id="specs-tab"
+                  className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
                     activeTab === "specs"
                       ? "border-[#0a0a0a] text-[#0a0a0a]"
                       : "border-transparent text-neutral-600 hover:text-[#0a0a0a]"
                   }`}
                 >
-                  <Package className="h-3.5 w-3.5 inline mr-1.5" />
+                  <Package className="h-3.5 w-3.5 inline mr-1.5" aria-hidden="true" />
                   Specifications
                 </button>
               )}
               {(product.washCareInstructions || product.careInstructions) && (
                 <button
                   onClick={() => setActiveTab("care")}
-                  className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 ${
+                  role="tab"
+                  aria-selected={activeTab === "care"}
+                  aria-controls="care-panel"
+                  id="care-tab"
+                  className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
                     activeTab === "care"
                       ? "border-[#0a0a0a] text-[#0a0a0a]"
                       : "border-transparent text-neutral-600 hover:text-[#0a0a0a]"
                   }`}
                 >
-                  <Info className="h-3.5 w-3.5 inline mr-1.5" />
+                  <Info className="h-3.5 w-3.5 inline mr-1.5" aria-hidden="true" />
                   Care Instructions
                 </button>
               )}
               {(product.shippingInfo || product.sizeGuide) && (
                 <button
                   onClick={() => setActiveTab("shipping")}
-                  className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 ${
+                  role="tab"
+                  aria-selected={activeTab === "shipping"}
+                  aria-controls="shipping-panel"
+                  id="shipping-tab"
+                  className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
                     activeTab === "shipping"
                       ? "border-[#0a0a0a] text-[#0a0a0a]"
                       : "border-transparent text-neutral-600 hover:text-[#0a0a0a]"
                   }`}
                 >
-                  <Truck className="h-3.5 w-3.5 inline mr-1.5" />
+                  <Truck className="h-3.5 w-3.5 inline mr-1.5" aria-hidden="true" />
                   Shipping & Size
                 </button>
               )}
-            </div>
+            </motion.div>
 
             {/* Tab Content */}
-            <div className="max-w-3xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+              className="max-w-3xl"
+              role="tabpanel"
+              aria-labelledby={`${activeTab}-tab`}
+            >
               {activeTab === "description" && product.longDescription && (
-                <div className="space-y-4">
+                <div className="space-y-4" id="description-panel">
                   <div
                     className="text-sm text-neutral-700 leading-relaxed font-medium prose prose-sm max-w-none"
                     dangerouslySetInnerHTML={{
@@ -469,7 +781,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               )}
 
               {activeTab === "specs" && product.specifications && (
-                <div className="space-y-3">
+                <div className="space-y-3" id="specs-panel">
                   {Object.entries(product.specifications).map(
                     ([key, value]) => (
                       <div
@@ -490,7 +802,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
               {activeTab === "care" &&
                 (product.washCareInstructions || product.careInstructions) && (
-                  <div className="space-y-4">
+                  <div className="space-y-4" id="care-panel">
                     <div className="bg-[#fafafa] border border-[#e5e5e5] rounded-[12px] p-5">
                       <h3 className="text-sm font-medium mb-3 text-[#0a0a0a]">
                         Wash Care Instructions
@@ -504,7 +816,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                 )}
 
               {activeTab === "shipping" && (
-                <div className="space-y-6">
+                <div className="space-y-6" id="shipping-panel">
                   {product.shippingInfo && (
                     <div className="space-y-4">
                       <h3 className="text-base font-medium text-[#0a0a0a] flex items-center gap-2">
@@ -648,7 +960,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   )}
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
         </section>
       )}
@@ -656,22 +968,73 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       {/* Reviews Section */}
       <section className="section-padding bg-white border-t border-[#e5e5e5]">
         <div className="container-luxury">
-          <ProductReviews productId={product.id} />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <ProductReviews productId={product.id} />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Product Recommendations */}
+      <section className="section-padding bg-[#fafafa] border-t border-[#e5e5e5]">
+        <div className="container-luxury">
+          <ProductRecommendations productId={product.id} />
         </div>
       </section>
 
       {/* Related Products */}
       {relatedData && relatedData.data.length > 0 && (
-        <section className="section-padding bg-[#fafafa]">
+        <section className="section-padding bg-white border-t border-[#e5e5e5]">
           <div className="container-luxury">
-            <h2 className="text-2xl sm:text-3xl font-medium tracking-normal mb-8">
-              You May Also Like
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedData.data.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="flex items-center justify-between mb-6 sm:mb-8">
+                <div>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-normal text-[#0a0a0a] mb-1">
+                    You May Also Like
+                  </h2>
+                  <p className="text-sm text-neutral-500 font-medium">
+                    Similar products you might enjoy
+                  </p>
+                </div>
+                <Link
+                  href="/shop"
+                  className="hidden sm:flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-[#0a0a0a] transition-colors"
+                >
+                  View All
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1, duration: 0.6 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+              >
+                <AnimatePresence>
+                  {relatedData.data.map((relatedProduct, index) => (
+                    <motion.div
+                      key={relatedProduct.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1, duration: 0.5 }}
+                    >
+                      <ProductCard product={relatedProduct} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
       )}

@@ -1,13 +1,10 @@
 import { apiClient } from "@/lib/api-client";
-import { ApiResponse, Order, PaginatedResponse, PaymentMethod } from "@/types";
-
-export interface CreateOrderData {
-  shippingAddressId: string;
-  billingAddressId: string;
-  paymentMethod: PaymentMethod;
-  couponCode?: string;
-  notes?: string;
-}
+import {
+  ApiResponse,
+  CreateOrderData,
+  Order,
+  PaginatedResponse,
+} from "@/types";
 
 export const ordersService = {
   createOrder: async (data: CreateOrderData): Promise<Order> => {

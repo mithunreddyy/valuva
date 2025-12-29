@@ -1,20 +1,10 @@
 import { apiClient } from "@/lib/api-client";
-import { ApiResponse, PaginatedResponse, Product } from "@/types";
-
-export interface ProductFilters {
-  page?: number;
-  limit?: number;
-  categoryId?: string;
-  subCategoryId?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  size?: string;
-  color?: string;
-  search?: string;
-  sort?: "price_asc" | "price_desc" | "newest" | "popular";
-  isFeatured?: boolean;
-  isNewArrival?: boolean;
-}
+import {
+  ApiResponse,
+  PaginatedResponse,
+  Product,
+  ProductFilters,
+} from "@/types";
 
 export const productsService = {
   getProducts: async (

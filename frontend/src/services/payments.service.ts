@@ -1,26 +1,10 @@
 import { apiClient } from "@/lib/api-client";
-import { ApiResponse } from "@/types";
-
-export interface RazorpayOrderResponse {
-  orderId: string;
-  amount: string;
-  currency: string;
-  keyId: string;
-  receipt: string;
-}
-
-export interface RazorpayPaymentVerification {
-  razorpay_order_id: string;
-  razorpay_payment_id: string;
-  razorpay_signature: string;
-}
-
-export interface RazorpayVerificationResponse {
-  success: boolean;
-  transactionId: string;
-  orderId: string;
-  amount: string;
-}
+import {
+  ApiResponse,
+  RazorpayOrderResponse,
+  RazorpayPaymentVerification,
+  RazorpayVerificationResponse,
+} from "@/types";
 
 export const paymentsService = {
   /**
@@ -48,4 +32,3 @@ export const paymentsService = {
     return response.data.data!;
   },
 };
-

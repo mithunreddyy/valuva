@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import { ApiResponse, Cart } from "@/types";
+import { AddToCartData, ApiResponse, Cart, UpdateCartItemData } from "@/types";
 
 export const cartService = {
   getCart: async (): Promise<Cart> => {
@@ -7,20 +7,21 @@ export const cartService = {
     return response.data.data!;
   },
 
-  addToCart: async (variantId: string, quantity: number): Promise<Cart> => {
-    const response = await apiClient.post<ApiResponse<Cart>>("/cart/items", {
-      variantId,
-      quantity,
-    });
+  addToCart: async (data: AddToCartData): Promise<Cart> => {
+    const response = await apiClient.post<ApiResponse<Cart>>(
+      "/cart/items",
+      data
+    );
     return response.data.data!;
   },
 
-  updateCartItem: async (itemId: string, quantity: number): Promise<Cart> => {
+  updateCartItem: async (
+    itemId: string,
+    data: UpdateCartItemData
+  ): Promise<Cart> => {
     const response = await apiClient.put<ApiResponse<Cart>>(
       `/cart/items/${itemId}`,
-      {
-        quantity,
-      }
+      data
     );
     return response.data.data!;
   },

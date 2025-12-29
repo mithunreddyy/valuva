@@ -1,11 +1,9 @@
 import apiClient from "@/lib/axios";
-
-export interface MFASetupResponse {
-  secret: string;
-  qrCode: string;
-  backupCodes: string[];
-  otpAuthUrl: string;
-}
+import {
+  MFABackupCodesResponse,
+  MFASetupResponse,
+  MFAVerifyData,
+} from "@/types";
 
 export const adminMFAApi = {
   setupMFA: async (): Promise<MFASetupResponse> => {
@@ -15,11 +13,7 @@ export const adminMFAApi = {
     return response.data.data;
   },
 
-  verifyAndEnableMFA: async (data: {
-    token: string;
-    secret: string;
-    backupCodes: string[];
-  }): Promise<void> => {
+  verifyAndEnableMFA: async (data: MFAVerifyData): Promise<void> => {
     await apiClient.post("/admin/mfa/verify", data);
   },
 
@@ -27,8 +21,8 @@ export const adminMFAApi = {
     await apiClient.post("/admin/mfa/disable", { password });
   },
 
-  regenerateBackupCodes: async (): Promise<{ backupCodes: string[] }> => {
-    const response = await apiClient.post<{ data: { backupCodes: string[] } }>(
+  regenerateBackupCodes: async (): Promise<MFABackupCodesResponse> => {
+    const response = await apiClient.post<{ data: MFABackupCodesResponse }>(
       "/admin/mfa/backup-codes"
     );
     return response.data.data;

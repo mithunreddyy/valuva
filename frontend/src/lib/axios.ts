@@ -15,11 +15,19 @@ import { getStorageItem, removeStorageItem, setStorageItem } from "./storage";
  * - Request sanitization
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+// Production-ready: Fail if API URL is not configured
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+if (!API_URL && process.env.NODE_ENV === "production") {
+  throw new Error(
+    "NEXT_PUBLIC_API_URL environment variable is required in production"
+  );
+}
+// Development fallback only
+const API_URL_FINAL = API_URL || "http://localhost:5000";
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
-  baseURL: `${API_URL}/api/v1`,
+  baseURL: `${API_URL_FINAL}/api/v1`,
   timeout: 30000, // 30 seconds
   headers: {
     "Content-Type": "application/json",

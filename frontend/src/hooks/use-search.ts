@@ -8,6 +8,10 @@ import {
   setSearching,
   setSearchResults,
   clearSearchResults,
+  saveSearch,
+  removeSavedSearch,
+  clearSavedSearches,
+  SavedSearch,
 } from "@/store/slices/searchSlice";
 import { Product } from "@/types";
 import { useCallback, useEffect } from "react";
@@ -18,8 +22,14 @@ import { useCallback, useEffect } from "react";
  */
 export function useSearch() {
   const dispatch = useAppDispatch();
-  const { query, searchHistory, recentSearches, isSearching, searchResults } =
-    useAppSelector((state) => state.search);
+  const {
+    query,
+    searchHistory,
+    recentSearches,
+    savedSearches,
+    isSearching,
+    searchResults,
+  } = useAppSelector((state) => state.search);
 
   // Set search query
   const updateQuery = useCallback(
@@ -90,10 +100,42 @@ export function useSearch() {
     [updateQuery, addSearchToHistory]
   );
 
+  // Save search
+  const saveCurrentSearch = useCallback(
+    (
+      searchQuery: string,
+      filters?: {
+        minPrice?: number;
+        maxPrice?: number;
+        minRating?: number;
+        brand?: string;
+        size?: string;
+        color?: string;
+      }
+    ) => {
+      dispatch(saveSearch({ query: searchQuery, filters }));
+    },
+    [dispatch]
+  );
+
+  // Remove saved search
+  const removeSaved = useCallback(
+    (id: string) => {
+      dispatch(removeSavedSearch(id));
+    },
+    [dispatch]
+  );
+
+  // Clear all saved searches
+  const clearAllSaved = useCallback(() => {
+    dispatch(clearSavedSearches());
+  }, [dispatch]);
+
   return {
     query,
     searchHistory,
     recentSearches,
+    savedSearches,
     isSearching,
     searchResults,
     updateQuery,
@@ -105,6 +147,9 @@ export function useSearch() {
     setSearchResults: updateSearchResults,
     clearSearchResults: clearResults,
     performSearch,
+    saveSearch: saveCurrentSearch,
+    removeSavedSearch: removeSaved,
+    clearSavedSearches: clearAllSaved,
   };
 }
 

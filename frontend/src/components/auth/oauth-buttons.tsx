@@ -20,8 +20,15 @@ export function OAuthButtons({ mode = "login", className = "" }: OAuthButtonsPro
     try {
       setIsLoading("google");
       setError(null);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const redirectUrl = `${apiUrl}/api/v1/auth/oauth/google`;
+      // Production-ready: Fail if API URL is not configured
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (!apiUrl && process.env.NODE_ENV === "production") {
+        throw new Error(
+          "NEXT_PUBLIC_API_URL environment variable is required in production"
+        );
+      }
+      const apiUrlFinal = apiUrl || "http://localhost:5000";
+      const redirectUrl = `${apiUrlFinal}/api/v1/auth/oauth/google`;
       
       // Store the current page for redirect after OAuth
       if (typeof window !== "undefined") {

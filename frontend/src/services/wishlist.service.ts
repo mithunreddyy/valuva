@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import { ApiResponse, WishlistItem } from "@/types";
+import { AddToWishlistData, ApiResponse, WishlistItem } from "@/types";
 
 export const wishlistService = {
   getWishlist: async (): Promise<WishlistItem[]> => {
@@ -9,12 +9,10 @@ export const wishlistService = {
     return response.data.data!;
   },
 
-  addToWishlist: async (productId: string): Promise<WishlistItem[]> => {
+  addToWishlist: async (data: AddToWishlistData): Promise<WishlistItem[]> => {
     const response = await apiClient.post<ApiResponse<WishlistItem[]>>(
       "/wishlist/items",
-      {
-        productId,
-      }
+      data
     );
     return response.data.data!;
   },
@@ -26,4 +24,3 @@ export const wishlistService = {
     return response.data.data!;
   },
 };
-

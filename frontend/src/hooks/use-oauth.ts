@@ -9,14 +9,21 @@ export function useOAuth() {
   const signInWithGoogle = useCallback(() => {
     try {
       setIsLoading("google");
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      // Production-ready: Fail if API URL is not configured
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (!apiUrl && process.env.NODE_ENV === "production") {
+        throw new Error(
+          "NEXT_PUBLIC_API_URL environment variable is required in production"
+        );
+      }
+      const apiUrlFinal = apiUrl || "http://localhost:5000";
       
       // Store current path for redirect
       if (typeof window !== "undefined") {
         sessionStorage.setItem("oauth_redirect", window.location.pathname);
       }
       
-      window.location.href = `${apiUrl}/api/v1/auth/oauth/google`;
+      window.location.href = `${apiUrlFinal}/api/v1/auth/oauth/google`;
     } catch (error) {
       setIsLoading(null);
       const errorMessage = error instanceof Error ? error.message : "Failed to initiate Google sign in";

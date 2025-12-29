@@ -3,9 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { newsletterApi } from "@/services/api/newsletter";
+import { newsletterService } from "@/services";
 import { useState } from "react";
-import { Mail } from "lucide-react";
+import { Mail, CheckCircle } from "lucide-react";
 
 export function NewsletterSignup() {
   const [email, setEmail] = useState("");
@@ -18,7 +18,7 @@ export function NewsletterSignup() {
 
     try {
       setIsLoading(true);
-      await newsletterApi.subscribe(email);
+      await newsletterService.subscribe({ email });
       setIsSubscribed(true);
       setEmail("");
       toast({
@@ -40,8 +40,8 @@ export function NewsletterSignup() {
   if (isSubscribed) {
     return (
       <div className="text-center py-8">
-        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Mail className="w-6 h-6 text-green-600" />
+        <div className="w-12 h-12 bg-green-50 border border-green-200 rounded-full flex items-center justify-center mx-auto mb-4">
+          <CheckCircle className="w-6 h-6 text-green-600" />
         </div>
         <p className="text-sm font-medium text-neutral-600">
           Thank you for subscribing!

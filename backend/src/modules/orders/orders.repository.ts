@@ -144,6 +144,7 @@ export class OrdersRepository {
     return prisma.order.findFirst({
       where: { id: orderId, userId },
       include: {
+        user: true,
         items: {
           include: {
             variant: {

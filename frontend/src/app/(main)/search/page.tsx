@@ -2,6 +2,8 @@
 
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductCardSkeleton } from "@/components/products/product-card-skeleton";
+import { AdvancedFilters } from "@/components/search/advanced-filters";
+import { SearchAutocomplete } from "@/components/search/search-autocomplete";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,7 +17,14 @@ import { useAnalytics } from "@/hooks/use-analytics";
 import { useSearchProducts } from "@/hooks/use-products";
 import { useSearch } from "@/hooks/use-search";
 import { InputSanitizer } from "@/lib/input-sanitizer";
-import { ArrowUpDown, Search as SearchIcon, TrendingUp, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowUpDown,
+  Filter,
+  Search as SearchIcon,
+  TrendingUp,
+  X,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -37,6 +46,15 @@ export default function SearchPage() {
 
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [sortBy, setSortBy] = useState<string>("relevance");
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState<{
+    minPrice?: number;
+    maxPrice?: number;
+    minRating?: number;
+    brand?: string;
+    size?: string;
+    color?: string;
+  }>({});
 
   // Sync with URL params
   useEffect(() => {
@@ -110,40 +128,59 @@ export default function SearchPage() {
       {/* Header Section */}
       <section className="bg-white border-b border-[#e5e5e5]">
         <div className="container-luxury py-6 sm:py-8">
-          <div className="max-w-4xl mx-auto space-y-4">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-normal text-center text-[#0a0a0a]">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto space-y-4"
+          >
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-normal text-center text-[#0a0a0a]">
               Search
             </h1>
 
             {/* Search Form */}
-            <form onSubmit={handleSearch} className="relative">
-              <div className="relative">
-                <SearchIcon className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-neutral-400" />
-                <Input
-                  type="text"
-                  value={query}
-                  onChange={(e) => updateQuery(e.target.value)}
-                  placeholder="Search products, brands, categories..."
-                  className="pl-11 sm:pl-14 pr-24 sm:pr-28 h-12 sm:h-14 rounded-[16px] border border-[#e5e5e5] focus:border-[#0a0a0a] text-sm sm:text-base shadow-sm hover:shadow-md transition-all"
-                  autoFocus
-                />
-                {query && (
-                  <button
-                    type="button"
-                    onClick={handleClear}
-                    className="absolute right-20 sm:right-24 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center hover:bg-[#fafafa] transition-colors rounded-[12px]"
+            <div className="relative">
+              <form onSubmit={handleSearch} className="relative">
+                <div className="relative">
+                  <SearchIcon className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-neutral-400 z-10" />
+                  <Input
+                    type="text"
+                    value={query}
+                    onChange={(e) => updateQuery(e.target.value)}
+                    placeholder="Search products, brands, categories..."
+                    className="pl-11 sm:pl-14 pr-24 sm:pr-28 h-12 sm:h-14 rounded-[16px] border border-[#e5e5e5] focus:border-[#0a0a0a] text-sm sm:text-base shadow-sm hover:shadow-md transition-all"
+                    autoFocus
+                  />
+                  {query && (
+                    <button
+                      type="button"
+                      onClick={handleClear}
+                      className="absolute right-20 sm:right-24 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center hover:bg-[#fafafa] transition-colors rounded-[12px] z-10"
+                    >
+                      <X className="h-4 w-4 text-neutral-400" />
+                    </button>
+                  )}
+                  <Button
+                    type="submit"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-9 sm:h-10 px-4 sm:px-5 rounded-[12px] text-sm font-medium z-10"
                   >
-                    <X className="h-4 w-4 text-neutral-400" />
-                  </button>
-                )}
-                <Button
-                  type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-9 sm:h-10 px-4 sm:px-5 rounded-[12px] text-sm font-medium"
-                >
-                  Search
-                </Button>
-              </div>
-            </form>
+                    Search
+                  </Button>
+                </div>
+              </form>
+              <SearchAutocomplete
+                query={query}
+                onSelect={(selectedQuery) => {
+                  updateQuery(selectedQuery);
+                  handleSearch(
+                    { preventDefault: () => {} } as React.FormEvent,
+                    selectedQuery
+                  );
+                }}
+                onClear={handleClear}
+                className="w-full"
+              />
+            </div>
 
             {/* Recent Searches - Only show when no results */}
             {!searchQuery && recentSearches.length > 0 && (
@@ -178,7 +215,7 @@ export default function SearchPage() {
                 </div>
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -192,7 +229,7 @@ export default function SearchPage() {
           </div>
         ) : searchQuery && data?.data ? (
           <div className="space-y-5 sm:space-y-6">
-            {/* Results Header with Sort */}
+            {/* Results Header with Sort and Filters */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <p className="text-sm text-neutral-500 font-medium tracking-normal">
                 {data.data.length}{" "}
@@ -202,7 +239,20 @@ export default function SearchPage() {
                 </span>
                 &quot;
               </p>
-              <div className="w-full sm:w-auto">
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsFiltersOpen(true)}
+                  className="rounded-[16px] gap-2 border border-[#e5e5e5] hover:border-[#0a0a0a]"
+                >
+                  <Filter className="h-4 w-4" />
+                  Filters
+                  {Object.keys(appliedFilters).length > 0 && (
+                    <span className="w-5 h-5 rounded-full bg-[#0a0a0a] text-[#fafafa] text-xs font-medium flex items-center justify-center">
+                      {Object.keys(appliedFilters).length}
+                    </span>
+                  )}
+                </Button>
                 <Select value={sortBy} onValueChange={handleSort}>
                   <SelectTrigger className="w-full sm:w-[180px] border border-[#e5e5e5] text-sm font-medium h-10 sm:h-11 hover:border-[#0a0a0a] transition-all rounded-[16px] bg-white shadow-sm hover:shadow-md">
                     <div className="flex items-center gap-2">
@@ -240,6 +290,21 @@ export default function SearchPage() {
               </div>
             </div>
 
+            {/* Advanced Filters Modal */}
+            <AdvancedFilters
+              isOpen={isFiltersOpen}
+              onClose={() => setIsFiltersOpen(false)}
+              filters={appliedFilters}
+              onApply={(filters) => {
+                setAppliedFilters(filters);
+                // Apply filters to search - you can extend this to filter the results
+                analytics.trackFilterApplied(filters);
+              }}
+              onReset={() => {
+                setAppliedFilters({});
+              }}
+            />
+
             {sortedProducts.length === 0 ? (
               <div className="text-center py-12 sm:py-16 space-y-5">
                 <div className="flex justify-center">
@@ -264,15 +329,35 @@ export default function SearchPage() {
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-                {sortedProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+              >
+                <AnimatePresence>
+                  {sortedProducts.map((product, index) => (
+                    <motion.div
+                      key={product.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ delay: index * 0.05, duration: 0.3 }}
+                    >
+                      <ProductCard product={product} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
             )}
           </div>
         ) : (
-          <div className="text-center py-12 sm:py-16 space-y-5">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center py-12 sm:py-16 space-y-5"
+          >
             <div className="flex justify-center">
               <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-[20px] bg-white border border-[#e5e5e5] flex items-center justify-center">
                 <SearchIcon className="h-10 w-10 sm:h-12 sm:w-12 text-neutral-300" />
@@ -301,7 +386,7 @@ export default function SearchPage() {
                 </button>
               ))}
             </div>
-          </div>
+          </motion.div>
         )}
       </section>
     </div>

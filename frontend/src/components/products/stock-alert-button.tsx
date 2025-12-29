@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { stockAlertsApi } from "@/services/api/stock-alerts";
+import { stockAlertsService } from "@/services";
 import { Bell, BellOff } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
@@ -17,15 +17,16 @@ export function StockAlertButton({
 }: StockAlertButtonProps) {
   const queryClient = useQueryClient();
 
-  const { data: alerts } = useQuery({
+  const { data: alertsData } = useQuery({
     queryKey: ["stock-alerts"],
-    queryFn: () => stockAlertsApi.getUserAlerts(),
+    queryFn: () => stockAlertsService.getUserAlerts(1, 100),
   });
 
-  const hasAlert = alerts?.some((alert) => alert.productId === productId);
+  const alerts = alertsData?.data || [];
+  const hasAlert = alerts.some((alert) => alert.productId === productId);
 
   const createAlert = useMutation({
-    mutationFn: () => stockAlertsApi.createAlert(productId),
+    mutationFn: () => stockAlertsService.createAlert({ productId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["stock-alerts"] });
       toast({
@@ -36,7 +37,12 @@ export function StockAlertButton({
   });
 
   const deleteAlert = useMutation({
-    mutationFn: () => stockAlertsApi.deleteAlert(productId),
+    mutationFn: async () => {
+      const alert = alerts.find((a) => a.productId === productId);
+      if (alert) {
+        await stockAlertsService.deleteAlert(alert.id);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["stock-alerts"] });
       toast({

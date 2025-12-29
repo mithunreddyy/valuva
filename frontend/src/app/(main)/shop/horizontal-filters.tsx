@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useCategories } from "@/hooks/use-categories";
+import { useFilterOptions } from "@/hooks/use-filter-options";
 import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -18,6 +19,7 @@ export function HorizontalFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: categoriesData } = useCategories();
+  const { data: filterOptions } = useFilterOptions();
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
 
@@ -54,8 +56,20 @@ export function HorizontalFilters() {
     setMaxPrice("");
   };
 
-  const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
-  const colors = [
+  // Production-ready: Use real filter options from API, fallback to common sizes/colors
+  const sizes = (filterOptions as { sizes: string[] })?.sizes || [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "XXL",
+  ];
+  const colors = (
+    filterOptions as {
+      colors: Array<{ name: string; value: string; hex?: string }>;
+    }
+  )?.colors || [
     { name: "Black", value: "black", hex: "#0a0a0a" },
     { name: "White", value: "white", hex: "#ffffff" },
     { name: "Gray", value: "gray", hex: "#808080" },

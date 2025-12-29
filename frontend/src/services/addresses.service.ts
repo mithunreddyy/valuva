@@ -1,17 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import { Address, ApiResponse } from "@/types";
-
-export interface AddressData {
-  fullName: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country?: string;
-  isDefault?: boolean;
-}
+import { Address, AddressFormData, ApiResponse } from "@/types";
 
 export const addressesService = {
   getAddresses: async (): Promise<Address[]> => {
@@ -26,7 +14,7 @@ export const addressesService = {
     return response.data.data!;
   },
 
-  createAddress: async (data: AddressData): Promise<Address> => {
+  createAddress: async (data: AddressFormData): Promise<Address> => {
     const response = await apiClient.post<ApiResponse<Address>>(
       "/addresses",
       data
@@ -36,7 +24,7 @@ export const addressesService = {
 
   updateAddress: async (
     id: string,
-    data: Partial<AddressData>
+    data: Partial<AddressFormData>
   ): Promise<Address> => {
     const response = await apiClient.put<ApiResponse<Address>>(
       `/addresses/${id}`,

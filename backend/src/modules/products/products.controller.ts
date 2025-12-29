@@ -61,7 +61,10 @@ export class ProductsController {
     return ResponseUtil.success(res, product);
   };
 
-  getRelatedProducts = async (req: Request, res: Response): Promise<Response> => {
+  getRelatedProducts = async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
     const products = await this.service.getRelatedProducts(req.params.id);
     return ResponseUtil.success(res, products);
   };
@@ -112,14 +115,16 @@ export class ProductsController {
       import("../../modules/recommendations/recommendations.service")
         .then(({ RecommendationsService }) => {
           const recommendationsService = new RecommendationsService();
-          recommendationsService.trackProductView(
-            product.id,
-            authReq.user!.userId,
-            ipAddress,
-            userAgent
-          ).catch(() => {
-            // Silently fail - tracking is not critical
-          });
+          recommendationsService
+            .trackProductView(
+              (product as { id: string }).id,
+              authReq.user!.userId,
+              ipAddress,
+              userAgent
+            )
+            .catch(() => {
+              // Silently fail - tracking is not critical
+            });
         })
         .catch(() => {
           // Silently fail
@@ -128,7 +133,7 @@ export class ProductsController {
 
     // Track analytics
     AnalyticsUtil.trackProductView(
-      product.id,
+      (product as { id: string }).id,
       authReq.user?.userId,
       sessionId,
       ipAddress
@@ -139,7 +144,10 @@ export class ProductsController {
     return ResponseUtil.success(res, product);
   };
 
-  getFeaturedProducts = async (req: Request, res: Response): Promise<Response> => {
+  getFeaturedProducts = async (
+    req: Request,
+    res: Response
+  ): Promise<Response> => {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 12;
     const products = await this.service.getFeaturedProducts(limit);
     return ResponseUtil.success(res, products);
@@ -149,5 +157,14 @@ export class ProductsController {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 12;
     const products = await this.service.getNewArrivals(limit);
     return ResponseUtil.success(res, products);
+  };
+
+  /**
+   * Get available filter options (sizes and colors)
+   * Production-ready: Returns real data from product variants
+   */
+  getFilterOptions = async (req: Request, res: Response): Promise<Response> => {
+    const options = await this.service.getFilterOptions();
+    return ResponseUtil.success(res, options);
   };
 }

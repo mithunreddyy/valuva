@@ -1,32 +1,15 @@
 import apiClient from "@/lib/axios";
-
-export interface SupportTicket {
-  id: string;
-  userId: string;
-  subject: string;
-  message: string;
-  category: string;
-  status: "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
-  createdAt: string;
-  updatedAt: string;
-  replies?: TicketReply[];
-}
-
-export interface TicketReply {
-  id: string;
-  ticketId: string;
-  userId: string;
-  message: string;
-  isAdmin: boolean;
-  createdAt: string;
-}
+import {
+  CreateSupportTicketData,
+  CreateTicketReplyData,
+  SupportTicket,
+  TicketReply,
+} from "@/types";
 
 export const supportApi = {
-  createTicket: async (data: {
-    subject: string;
-    message: string;
-    category: string;
-  }): Promise<SupportTicket> => {
+  createTicket: async (
+    data: CreateSupportTicketData
+  ): Promise<SupportTicket> => {
     const response = await apiClient.post("/support", data);
     return response.data.data;
   },
@@ -41,10 +24,11 @@ export const supportApi = {
     return response.data.data;
   },
 
-  addReply: async (ticketId: string, message: string): Promise<TicketReply> => {
-    const response = await apiClient.post(`/support/${ticketId}/reply`, {
-      message,
-    });
+  addReply: async (
+    ticketId: string,
+    data: CreateTicketReplyData
+  ): Promise<TicketReply> => {
+    const response = await apiClient.post(`/support/${ticketId}/reply`, data);
     return response.data.data;
   },
 };

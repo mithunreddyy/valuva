@@ -5,10 +5,25 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
  * Search slice state interface
  * Manages search state and history
  */
+interface SavedSearch {
+  id: string;
+  query: string;
+  filters?: {
+    minPrice?: number;
+    maxPrice?: number;
+    minRating?: number;
+    brand?: string;
+    size?: string;
+    color?: string;
+  };
+  createdAt: number;
+}
+
 interface SearchState {
   query: string;
   searchHistory: string[];
   recentSearches: string[];
+  savedSearches: SavedSearch[];
   isSearching: boolean;
   searchResults: Product[];
 }
@@ -17,6 +32,7 @@ const initialState: SearchState = {
   query: "",
   searchHistory: [],
   recentSearches: [],
+  savedSearches: [],
   isSearching: false,
   searchResults: [],
 };
@@ -69,6 +85,45 @@ const searchSlice = createSlice({
     clearSearchResults: (state) => {
       state.searchResults = [];
     },
+    saveSearch: (
+      state,
+      action: PayloadAction<{
+        query: string;
+        filters?: {
+          minPrice?: number;
+          maxPrice?: number;
+          minRating?: number;
+          brand?: string;
+          size?: string;
+          color?: string;
+        };
+      }>
+    ) => {
+      const savedSearch: SavedSearch = {
+        id: Date.now().toString(),
+        query: action.payload.query,
+        filters: action.payload.filters,
+        createdAt: Date.now(),
+      };
+      // Remove if already exists (by query and filters)
+      state.savedSearches = state.savedSearches.filter(
+        (s) =>
+          s.query !== savedSearch.query ||
+          JSON.stringify(s.filters) !== JSON.stringify(savedSearch.filters)
+      );
+      // Add to beginning
+      state.savedSearches.unshift(savedSearch);
+      // Keep only last 20 saved searches
+      state.savedSearches = state.savedSearches.slice(0, 20);
+    },
+    removeSavedSearch: (state, action: PayloadAction<string>) => {
+      state.savedSearches = state.savedSearches.filter(
+        (s) => s.id !== action.payload
+      );
+    },
+    clearSavedSearches: (state) => {
+      state.savedSearches = [];
+    },
   },
 });
 
@@ -81,5 +136,9 @@ export const {
   setSearching,
   setSearchResults,
   clearSearchResults,
+  saveSearch,
+  removeSavedSearch,
+  clearSavedSearches,
 } = searchSlice.actions;
+export type { SavedSearch };
 export default searchSlice.reducer;

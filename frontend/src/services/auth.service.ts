@@ -1,19 +1,15 @@
 import { apiClient } from "@/lib/api-client";
 import { removeStorageItem } from "@/lib/storage";
-import { ApiResponse, AuthResponse, User } from "@/types";
-
-export interface RegisterData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
-}
-
-export interface LoginData {
-  email: string;
-  password: string;
-}
+import {
+  ApiResponse,
+  AuthResponse,
+  ChangePasswordData,
+  ForgotPasswordData,
+  LoginData,
+  RegisterData,
+  ResetPasswordData,
+  User,
+} from "@/types";
 
 export const authService = {
   register: async (data: RegisterData): Promise<AuthResponse> => {
@@ -48,12 +44,12 @@ export const authService = {
     return response.data.data!;
   },
 
-  forgotPassword: async (email: string): Promise<void> => {
-    await apiClient.post("/auth/forgot-password", { email });
+  forgotPassword: async (data: ForgotPasswordData): Promise<void> => {
+    await apiClient.post("/auth/forgot-password", data);
   },
 
-  resetPassword: async (token: string, newPassword: string): Promise<void> => {
-    await apiClient.post("/auth/reset-password", { token, newPassword });
+  resetPassword: async (data: ResetPasswordData): Promise<void> => {
+    await apiClient.post("/auth/reset-password", data);
   },
 
   getProfile: async (): Promise<User> => {
@@ -69,13 +65,7 @@ export const authService = {
     return response.data.data!;
   },
 
-  changePassword: async (
-    currentPassword: string,
-    newPassword: string
-  ): Promise<void> => {
-    await apiClient.post("/users/change-password", {
-      currentPassword,
-      newPassword,
-    });
+  changePassword: async (data: ChangePasswordData): Promise<void> => {
+    await apiClient.post("/users/change-password", data);
   },
 };

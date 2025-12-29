@@ -1,22 +1,11 @@
 import apiClient from "@/lib/axios";
-import { Review } from "@/types";
-
-interface ReviewsResponse {
-  success: boolean;
-  data: Review[];
-}
-
-interface ReviewResponse {
-  success: boolean;
-  data: Review;
-}
-
-interface CreateReviewData {
-  productId: string;
-  rating: number;
-  title?: string;
-  comment: string;
-}
+import {
+  ApiResponse,
+  CreateReviewData,
+  PaginatedResponse,
+  Review,
+  UpdateReviewData,
+} from "@/types";
 
 /**
  * Reviews API client
@@ -32,8 +21,8 @@ export const reviewsApi = {
   getProductReviews: async (
     productId: string,
     params?: { page?: number; limit?: number }
-  ): Promise<ReviewsResponse> => {
-    const response = await apiClient.get<ReviewsResponse>(
+  ): Promise<PaginatedResponse<Review>> => {
+    const response = await apiClient.get<PaginatedResponse<Review>>(
       `/products/${productId}/reviews`,
       { params }
     );
@@ -45,8 +34,8 @@ export const reviewsApi = {
    * @param data - Review data
    * @returns Promise with created review
    */
-  createReview: async (data: CreateReviewData): Promise<ReviewResponse> => {
-    const response = await apiClient.post<ReviewResponse>("/reviews", data);
+  createReview: async (data: CreateReviewData): Promise<ApiResponse<Review>> => {
+    const response = await apiClient.post<ApiResponse<Review>>("/reviews", data);
     return response.data;
   },
 
@@ -58,9 +47,9 @@ export const reviewsApi = {
    */
   updateReview: async (
     reviewId: string,
-    data: Partial<CreateReviewData>
-  ): Promise<ReviewResponse> => {
-    const response = await apiClient.put<ReviewResponse>(
+    data: UpdateReviewData
+  ): Promise<ApiResponse<Review>> => {
+    const response = await apiClient.put<ApiResponse<Review>>(
       `/reviews/${reviewId}`,
       data
     );

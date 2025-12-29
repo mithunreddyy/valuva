@@ -2,9 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useSupport } from "@/hooks/use-support";
-import { MessageSquare, Send } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { AnimatePresence, motion } from "framer-motion";
+import { CheckCircle, Clock, MessageSquare, Send, XCircle } from "lucide-react";
 import { useState } from "react";
 
 export default function SupportPage() {
@@ -25,26 +28,77 @@ export default function SupportPage() {
       setSubject("");
       setMessage("");
       setCategory("general");
+      toast({
+        title: "Ticket created!",
+        description: "Your support ticket has been created successfully.",
+      });
     } catch {
-      // Error handled by hook
+      toast({
+        title: "Error",
+        description: "Failed to create support ticket. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "RESOLVED":
+        return "bg-green-50 border-green-200 text-green-700";
+      case "IN_PROGRESS":
+        return "bg-yellow-50 border-yellow-200 text-yellow-700";
+      case "CLOSED":
+        return "bg-neutral-50 border-neutral-200 text-neutral-700";
+      default:
+        return "bg-blue-50 border-blue-200 text-blue-700";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "RESOLVED":
+        return <CheckCircle className="h-4 w-4" />;
+      case "IN_PROGRESS":
+        return <Clock className="h-4 w-4" />;
+      case "CLOSED":
+        return <XCircle className="h-4 w-4" />;
+      default:
+        return <MessageSquare className="h-4 w-4" />;
     }
   };
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
+      {/* Header */}
       <section className="bg-white border-b border-[#e5e5e5]">
-        <div className="container-luxury py-8 sm:py-10">
-          <h1 className="text-3xl sm:text-4xl font-medium tracking-normal text-[#0a0a0a]">
-            Customer Support
-          </h1>
+        <div className="container-luxury py-6 sm:py-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-normal text-[#0a0a0a] mb-2">
+              Customer Support
+            </h1>
+            <p className="text-sm text-neutral-500 font-medium">
+              Get help with your orders, products, or account
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      <section className="container-luxury py-8 sm:py-10">
+      {/* Main Content */}
+      <section className="container-luxury py-6 sm:py-8 lg:py-10">
         <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white border border-[#e5e5e5] rounded-[16px] p-5">
-              <h2 className="text-lg font-medium mb-4 text-[#0a0a0a]">
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+            {/* Create Ticket Form */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="bg-white border border-[#e5e5e5] rounded-[20px] p-5 sm:p-6 hover:border-[#0a0a0a] transition-all"
+            >
+              <h2 className="text-lg sm:text-xl font-medium tracking-normal mb-4 sm:mb-5 text-[#0a0a0a]">
                 Create Support Ticket
               </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -55,7 +109,7 @@ export default function SupportPage() {
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3 py-2 h-10 text-sm border border-[#e5e5e5] rounded-[10px] focus:outline-none focus:border-[#0a0a0a]"
+                    className="w-full px-3 py-2 h-10 text-sm border border-[#e5e5e5] rounded-[12px] focus:outline-none focus:border-[#0a0a0a] bg-transparent transition-colors"
                   >
                     <option value="general">General</option>
                     <option value="order">Order Issue</option>
@@ -72,7 +126,7 @@ export default function SupportPage() {
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="Brief description of your issue"
-                    className="rounded-[10px] h-10 text-sm"
+                    className="rounded-[12px] h-10 text-sm border-[#e5e5e5] focus:border-[#0a0a0a]"
                     required
                   />
                 </div>
@@ -85,69 +139,98 @@ export default function SupportPage() {
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Describe your issue in detail..."
                     rows={5}
-                    className="rounded-[10px] text-sm"
+                    className="rounded-[12px] text-sm border-[#e5e5e5] focus:border-[#0a0a0a] resize-none"
                     required
                   />
                 </div>
                 <Button
                   type="submit"
                   variant="filled"
-                  className="w-full rounded-[10px] h-10 text-sm"
+                  size="lg"
+                  className="w-full rounded-[16px] gap-2"
                   disabled={isLoadingTickets}
                 >
-                  <Send className="w-3.5 h-3.5 mr-2" />
-                  {isLoadingTickets ? "Creating..." : "Create Ticket"}
+                  {isLoadingTickets ? (
+                    <>
+                      <LoadingSpinner size="sm" />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4" />
+                      Create Ticket
+                    </>
+                  )}
                 </Button>
               </form>
-            </div>
+            </motion.div>
 
-            <div className="bg-white border border-[#e5e5e5] rounded-[16px] p-5">
-              <h2 className="text-lg font-medium mb-4 text-[#0a0a0a]">
+            {/* Tickets List */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white border border-[#e5e5e5] rounded-[20px] p-5 sm:p-6 hover:border-[#0a0a0a] transition-all"
+            >
+              <h2 className="text-lg sm:text-xl font-medium tracking-normal mb-4 sm:mb-5 text-[#0a0a0a]">
                 Your Tickets
               </h2>
-              {tickets && tickets.length > 0 ? (
+              {isLoadingTickets ? (
+                <div className="flex items-center justify-center py-12">
+                  <LoadingSpinner />
+                </div>
+              ) : tickets && tickets.length > 0 ? (
                 <div className="space-y-3">
-                  {tickets.map((ticket) => (
-                    <div
-                      key={ticket.id}
-                      className="border border-[#e5e5e5] rounded-[12px] p-3 hover:border-[#0a0a0a] transition-all"
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-medium text-[#0a0a0a]">
-                            {ticket.subject}
-                          </h3>
-                          <p className="text-xs text-neutral-500 mt-0.5">
-                            {ticket.category}
-                          </p>
+                  <AnimatePresence>
+                    {tickets.map((ticket, index) => (
+                      <motion.div
+                        key={ticket.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="border border-[#e5e5e5] rounded-[16px] p-4 hover:border-[#0a0a0a] transition-all"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-sm sm:text-base font-medium tracking-normal text-[#0a0a0a] mb-1">
+                              {ticket.subject}
+                            </h3>
+                            <p className="text-xs text-neutral-500 font-medium">
+                              {ticket.category}
+                            </p>
+                          </div>
+                          <span
+                            className={`px-2.5 py-1 rounded-[10px] text-xs font-medium flex items-center gap-1.5 flex-shrink-0 ml-2 border ${getStatusColor(
+                              ticket.status
+                            )}`}
+                          >
+                            {getStatusIcon(ticket.status)}
+                            {ticket.status}
+                          </span>
                         </div>
-                        <span
-                          className={`px-2 py-0.5 rounded-[8px] text-xs font-medium flex-shrink-0 ml-2 ${
-                            ticket.status === "RESOLVED"
-                              ? "bg-green-100 text-green-700"
-                              : ticket.status === "IN_PROGRESS"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-neutral-100 text-neutral-700"
-                          }`}
-                        >
-                          {ticket.status}
-                        </span>
-                      </div>
-                      <p className="text-xs text-neutral-600 line-clamp-2 font-medium">
-                        {ticket.message}
-                      </p>
-                    </div>
-                  ))}
+                        <p className="text-xs sm:text-sm text-neutral-600 line-clamp-2 font-medium leading-relaxed">
+                          {ticket.message}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
               ) : (
-                <div className="text-center py-6">
-                  <MessageSquare className="w-10 h-10 text-neutral-300 mx-auto mb-3" />
-                  <p className="text-xs text-neutral-500 font-medium">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-12"
+                >
+                  <div className="w-16 h-16 rounded-[20px] bg-white border border-[#e5e5e5] flex items-center justify-center mx-auto mb-4">
+                    <MessageSquare className="w-8 h-8 text-neutral-300" />
+                  </div>
+                  <p className="text-sm text-neutral-500 font-medium">
                     No support tickets yet
                   </p>
-                </div>
+                </motion.div>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
