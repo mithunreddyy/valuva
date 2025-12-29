@@ -1,8 +1,10 @@
 import compression from "compression";
 import cors from "cors";
 import express, { Application } from "express";
+import session from "express-session";
 import helmet from "helmet";
 import morgan from "morgan";
+import passport from "passport";
 import { API_PREFIX } from "./config/constants";
 import { env } from "./config/env";
 import { errorHandler, notFoundHandler } from "./middleware/error.middleware";
@@ -18,6 +20,7 @@ import adminHomepageRoutes from "./modules/admin/admin-homepage.routes";
 import adminProductsRoutes from "./modules/admin/admin-products.routes";
 import adminRoutes from "./modules/admin/admin.routes";
 import authRoutes from "./modules/auth/auth.routes";
+import oauthRoutes from "./modules/auth/oauth.routes";
 import cartRoutes from "./modules/cart/cart.routes";
 import categoriesRoutes from "./modules/categories/categories.routes";
 import couponsRoutes from "./modules/coupons/coupons.routes";
@@ -69,6 +72,24 @@ export const createApp = (): Application => {
   // Body parsing middleware
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+  // Session middleware for OAuth
+  app.use(
+    session({
+      secret: env.JWT_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: env.NODE_ENV === "production",
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      },
+    })
+  );
+
+  // Initialize Passport
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   // Logging middleware
   if (env.NODE_ENV === "development") {
@@ -134,6 +155,7 @@ export const createApp = (): Application => {
 
   // Public routes
   app.use(`${API_PREFIX}/auth`, rateLimiters.auth.middleware(), authRoutes);
+  app.use(`${API_PREFIX}/auth/oauth`, oauthRoutes);
   app.use(`${API_PREFIX}/products`, productsRoutes);
   app.use(`${API_PREFIX}/categories`, categoriesRoutes);
   app.use(`${API_PREFIX}/homepage`, homepageRoutes);

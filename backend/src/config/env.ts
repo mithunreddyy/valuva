@@ -68,6 +68,17 @@ const envSchema = z.object({
     (val) => (typeof val === "string" ? Number(val) : val),
     z.number().default(1.0)
   ),
+
+  // OAuth Providers
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  GOOGLE_CALLBACK_URL: z.string().optional(),
+  APPLE_CLIENT_ID: z.string().optional(),
+  APPLE_TEAM_ID: z.string().optional(),
+  APPLE_KEY_ID: z.string().optional(),
+  APPLE_PRIVATE_KEY: z.string().optional(),
+  APPLE_CALLBACK_URL: z.string().optional(),
+  OAUTH_ENCRYPTION_KEY: z.string().optional(), // For encrypting OAuth tokens
 });
 
 const parseEnv = () => {

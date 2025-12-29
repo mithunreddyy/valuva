@@ -59,7 +59,7 @@ enum SectionType {
 model User {
   id                   String    @id @default(uuid())
   email                String    @unique
-  password             String
+  password             String? // Optional for OAuth users
   firstName            String
   lastName             String
   phone                String?
@@ -84,10 +84,34 @@ model User {
   supportTickets SupportTicket[]
   ticketReplies  TicketReply[]
   stockAlerts    StockAlert[]
+  oauthAccounts  OAuthAccount[]
 
   @@index([email])
   @@index([role])
   @@map("users")
+}
+
+model OAuthAccount {
+  id           String    @id @default(uuid())
+  userId       String
+  provider     String // 'google', 'apple', etc.
+  providerId   String // Provider's user ID
+  email        String
+  firstName    String?
+  lastName     String?
+  picture      String? // Profile picture URL
+  accessToken  String? // Encrypted
+  refreshToken String? // Encrypted
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerId])
+  @@index([userId])
+  @@index([provider, providerId])
+  @@map("oauth_accounts")
 }
 
 model Admin {
@@ -100,6 +124,10 @@ model Admin {
   isActive     Boolean   @default(true)
   refreshToken String?
   lastLogin    DateTime?
+  // MFA fields
+  mfaEnabled   Boolean   @default(false)
+  mfaSecret    String?
+  backupCodes  String[]  @default([])
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
@@ -150,32 +178,32 @@ model SubCategory {
 }
 
 model Product {
-  id                  String   @id @default(uuid())
-  name                String
-  slug                String   @unique
-  description         String
-  shortDescription    String?  @db.Text
-  longDescription     String?  @db.Text
-  basePrice           Decimal  @db.Decimal(10, 2)
-  compareAtPrice      Decimal? @db.Decimal(10, 2)
-  sku                 String   @unique
-  brand               String?
-  material            String?
-  careInstructions    String?  @db.Text
-  washCareInstructions String? @db.Text
-  specifications      Json?    // Structured product specifications
-  sizeGuide           Json?    // Size guide data
-  shippingInfo        Json?    // Shipping information
-  isActive            Boolean  @default(true)
-  isFeatured          Boolean  @default(false)
-  isNewArrival        Boolean  @default(false)
-  totalStock          Int      @default(0)
-  totalSold           Int      @default(0)
-  viewCount           Int      @default(0)
-  categoryId          String
-  subCategoryId       String?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                   String   @id @default(uuid())
+  name                 String
+  slug                 String   @unique
+  description          String
+  shortDescription     String?  @db.Text
+  longDescription      String?  @db.Text
+  basePrice            Decimal  @db.Decimal(10, 2)
+  compareAtPrice       Decimal? @db.Decimal(10, 2)
+  sku                  String   @unique
+  brand                String?
+  material             String?
+  careInstructions     String?  @db.Text
+  washCareInstructions String?  @db.Text
+  specifications       Json? // Structured product specifications
+  sizeGuide            Json? // Size guide data
+  shippingInfo         Json? // Shipping information
+  isActive             Boolean  @default(true)
+  isFeatured           Boolean  @default(false)
+  isNewArrival         Boolean  @default(false)
+  totalStock           Int      @default(0)
+  totalSold            Int      @default(0)
+  viewCount            Int      @default(0)
+  categoryId           String
+  subCategoryId        String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   category      Category         @relation(fields: [categoryId], references: [id])
   subCategory   SubCategory?     @relation(fields: [subCategoryId], references: [id])

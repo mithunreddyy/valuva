@@ -13,8 +13,8 @@ export class AdminController {
   }
 
   login = async (req: AuthRequest, res: Response): Promise<Response> => {
-    const { email, password } = req.body;
-    const result = await this.service.login(email, password);
+    const { email, password, mfaToken } = req.body;
+    const result = await this.service.login(email, password, mfaToken);
     return ResponseUtil.success(res, result, SUCCESS_MESSAGES.LOGIN);
   };
 

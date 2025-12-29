@@ -11,7 +11,7 @@ export class AdminService {
   constructor() {
     this.repository = new AdminRepository();
   }
-  async login(email: string, password: string) {
+  async login(email: string, password: string, mfaToken?: string) {
     const admin = await this.repository.findAdminByEmail(email);
 
     if (!admin || !admin.isActive) {
@@ -21,6 +21,33 @@ export class AdminService {
     const isValid = await PasswordUtil.compare(password, admin.password);
     if (!isValid) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
+    }
+
+    // Type assertion for MFA fields (Prisma types may need refresh)
+    const adminWithMFA = admin as typeof admin & {
+      mfaEnabled?: boolean;
+      mfaSecret?: string | null;
+      backupCodes?: string[];
+    };
+
+    // Check if MFA is enabled
+    if (adminWithMFA.mfaEnabled === true) {
+      if (!mfaToken) {
+        // Return partial response indicating MFA is required
+        return {
+          requiresMFA: true,
+          adminId: admin.id,
+        };
+      }
+
+      // Verify MFA token
+      const { AdminMFAService } = await import("./admin-mfa.service");
+      const mfaService = new AdminMFAService();
+      const isValidMFA = await mfaService.verifyMFAToken(admin.id, mfaToken);
+
+      if (!isValidMFA) {
+        throw new UnauthorizedError("Invalid MFA token");
+      }
     }
 
     const accessToken = JWTUtil.generateAccessToken({
@@ -37,9 +64,15 @@ export class AdminService {
 
     await this.repository.updateAdminLogin(admin.id, refreshToken);
 
-    const { password: _, ...adminData } = admin;
+    const {
+      password: _,
+      mfaEnabled: __,
+      mfaSecret: ___,
+      backupCodes: ____,
+      ...adminData
+    } = adminWithMFA;
 
-    return { admin: adminData, accessToken, refreshToken };
+    return { admin: adminData, accessToken, refreshToken, requiresMFA: false };
   }
 
   async getDashboardStats() {

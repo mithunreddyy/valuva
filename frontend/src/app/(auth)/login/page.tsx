@@ -1,7 +1,9 @@
 "use client";
 
+import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "@/hooks/use-toast";
 import { authApi } from "@/services/api/auth";
 import { useAuthStore } from "@/store/auth-store";
@@ -99,11 +101,10 @@ export default function LoginPage() {
 
             <div>
               <label className="block text-sm font-medium mb-2">Password</label>
-              <Input
-                type="password"
+              <PasswordInput
                 {...register("password")}
                 placeholder="••••••••"
-                className="rounded-[10px]"
+                className="rounded-[10px] pr-10"
               />
               {errors.password && (
                 <p className="text-red-600 text-xs mt-1 font-medium">
@@ -131,6 +132,8 @@ export default function LoginPage() {
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
+
+          <OAuthButtons mode="login" />
 
           <div className="mt-6 text-center text-sm">
             <span className="text-neutral-600 font-medium">

@@ -8,6 +8,7 @@ import {
   LogOut,
   MessageSquare,
   Package,
+  Shield,
   ShoppingCart,
   Tag,
   Ticket,
@@ -60,6 +61,7 @@ export default function AdminLayout({
     { href: "/admin/coupons", label: "Coupons", icon: Ticket },
     { href: "/admin/reviews", label: "Reviews", icon: MessageSquare },
     { href: "/admin/homepage", label: "Homepage", icon: LayoutDashboard },
+    { href: "/admin/security", label: "Security", icon: Shield },
     { href: "/admin/analytics", label: "Analytics", icon: BarChart },
     { href: "/admin/tracking", label: "Tracking", icon: Truck },
   ];
