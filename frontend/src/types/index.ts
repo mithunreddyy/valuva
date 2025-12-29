@@ -20,6 +20,7 @@ export enum PaymentMethod {
   NET_BANKING = "NET_BANKING",
   WALLET = "WALLET",
   COD = "COD",
+  RAZORPAY = "RAZORPAY",
 }
 
 export enum PaymentStatus {

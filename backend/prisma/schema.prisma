@@ -39,6 +39,7 @@ enum PaymentMethod {
   WALLET
   COD
   SHOPIFY_PAYMENTS
+  RAZORPAY
 }
 
 enum DiscountType {

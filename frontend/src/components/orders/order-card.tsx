@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge, BadgeProps } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { formatOrderStatus } from "@/lib/formatters";
 import { formatDate, formatPrice } from "@/lib/utils";
@@ -44,7 +44,9 @@ export function OrderCard({ order }: OrderCardProps) {
                 {order.orderNumber}
               </p>
             </div>
-            <Badge variant={getStatusColor(order.status) as any}>
+            <Badge
+              variant={getStatusColor(order.status) as BadgeProps["variant"]}
+            >
               {formatOrderStatus(order.status)}
             </Badge>
           </div>

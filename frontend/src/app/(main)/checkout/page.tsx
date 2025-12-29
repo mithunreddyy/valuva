@@ -7,6 +7,7 @@ import { useAddresses } from "@/hooks/use-addresses";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { useCart } from "@/hooks/use-cart";
 import { useCreateOrder } from "@/hooks/use-orders";
+import { useRazorpay } from "@/hooks/use-razorpay";
 import { InputSanitizer } from "@/lib/input-sanitizer";
 import { formatPrice } from "@/lib/utils";
 import { useAppSelector } from "@/store";
@@ -14,14 +15,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const checkoutSchema = z.object({
   shippingAddressId: z.string().min(1, "Please select a shipping address"),
   billingAddressId: z.string().min(1, "Please select a billing address"),
-  paymentMethod: z.enum(["COD", "UPI", "CREDIT_CARD", "DEBIT_CARD"]),
+  paymentMethod: z.enum(["COD", "UPI", "CREDIT_CARD", "DEBIT_CARD", "RAZORPAY"]),
   couponCode: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -35,6 +36,8 @@ export default function CheckoutPage() {
   const { data: cartData, isLoading: cartLoading } = useCart();
   const { data: addressesData, isLoading: addressesLoading } = useAddresses();
   const createOrder = useCreateOrder();
+  const { openRazorpayCheckout, isLoading: isRazorpayLoading } = useRazorpay();
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
 
   // Track checkout started
   useEffect(() => {
@@ -124,17 +127,42 @@ export default function CheckoutPage() {
       };
 
       const order = await createOrder.mutateAsync(sanitizedData);
+      const orderId = order.data.id;
 
-      // Track order completion
-      analytics.trackOrderCompleted(
-        order.data.id,
-        order.data.orderNumber,
-        Number(order.data.total),
-        order.data.items.length,
-        data.paymentMethod
-      );
-
-      router.push(`/dashboard/orders/${order.data.id}`);
+      // If payment method is Razorpay, open Razorpay checkout
+      if (data.paymentMethod === "RAZORPAY") {
+        setCreatedOrderId(orderId);
+        await openRazorpayCheckout(
+          orderId,
+          (successOrderId) => {
+            // Track order completion
+            analytics.trackOrderCompleted(
+              successOrderId,
+              order.data.orderNumber,
+              Number(order.data.total),
+              order.data.items.length,
+              data.paymentMethod
+            );
+            router.push(`/dashboard/orders/${successOrderId}`);
+          },
+          (error) => {
+            console.error("Razorpay payment error:", error);
+            // Order is already created, redirect to order page
+            router.push(`/dashboard/orders/${orderId}`);
+          }
+        );
+      } else {
+        // For COD and other methods, redirect immediately
+        // Track order completion
+        analytics.trackOrderCompleted(
+          orderId,
+          order.data.orderNumber,
+          Number(order.data.total),
+          order.data.items.length,
+          data.paymentMethod
+        );
+        router.push(`/dashboard/orders/${orderId}`);
+      }
     } catch (error) {
       console.error("Checkout error:", error);
     }
@@ -270,6 +298,7 @@ export default function CheckoutPage() {
                 </h2>
                 <div className="space-y-3">
                   {[
+                    { value: "RAZORPAY", label: "Razorpay (Cards, UPI, Wallets, Net Banking)" },
                     { value: "COD", label: "Cash on Delivery" },
                     { value: "UPI", label: "UPI" },
                     { value: "CREDIT_CARD", label: "Credit Card" },
@@ -394,9 +423,13 @@ export default function CheckoutPage() {
                   size="lg"
                   variant="filled"
                   className="w-full rounded-[10px]"
-                  disabled={createOrder.isPending}
+                  disabled={createOrder.isPending || isRazorpayLoading}
                 >
-                  {createOrder.isPending ? "Placing Order..." : "Place Order"}
+                  {createOrder.isPending || isRazorpayLoading
+                    ? "Processing..."
+                    : watch("paymentMethod") === "RAZORPAY"
+                    ? "Proceed to Payment"
+                    : "Place Order"}
                 </Button>
               </div>
             </div>

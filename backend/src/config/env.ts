@@ -36,6 +36,11 @@ const envSchema = z.object({
   SHOPIFY_SHOP_DOMAIN: z.string(),
   SHOPIFY_WEBHOOK_SECRET: z.string(),
 
+  // Razorpay Payment Gateway
+  RAZORPAY_KEY_ID: z.string().optional(),
+  RAZORPAY_KEY_SECRET: z.string().optional(),
+  RAZORPAY_WEBHOOK_SECRET: z.string().optional(),
+
   // Cloud Storage (AWS S3 or Cloudinary)
   STORAGE_PROVIDER: z.enum(["s3", "cloudinary", "local"]).default("local"),
   AWS_ACCESS_KEY_ID: z.string().optional(),

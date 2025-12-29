@@ -42,12 +42,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${manrope.variable} ${notoSansTelugu.variable}`}>
       <body className={`${manrope.className} antialiased`}>
-        <ErrorBoundary>
-          <ReduxProvider>
-            <ReactQueryProvider>
-              {children}
-              <Toaster />
-            </ReactQueryProvider>
+      <ErrorBoundary>
+        <ReduxProvider>
+          <ReactQueryProvider>
+            {children}
+            <Toaster />
+          </ReactQueryProvider>
           </ReduxProvider>
         </ErrorBoundary>
       </body>
