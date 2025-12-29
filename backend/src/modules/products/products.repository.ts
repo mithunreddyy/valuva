@@ -197,6 +197,11 @@ export class ProductsRepository {
           take: 1,
         },
         category: true,
+        reviews: {
+          select: {
+            rating: true,
+          },
+        },
       },
       take: limit,
       orderBy: [

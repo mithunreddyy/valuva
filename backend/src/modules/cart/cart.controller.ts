@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { SUCCESS_MESSAGES } from "../../config/constants";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { ResponseUtil } from "../../utils/response.util";
@@ -11,46 +11,45 @@ export class CartController {
     this.service = new CartService();
   }
 
-  getCart = async (req: AuthRequest, res: Response): Promise<Response> => {
-    const cart = await this.service.getCart(req.user!.userId);
+  getCart = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
+    const cart = await this.service.getCart(authReq.user!.userId);
     return ResponseUtil.success(res, cart);
   };
 
-  addToCart = async (req: AuthRequest, res: Response): Promise<Response> => {
+  addToCart = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const { variantId, quantity } = req.body;
     const cart = await this.service.addToCart(
-      req.user!.userId,
+      authReq.user!.userId,
       variantId,
       quantity
     );
     return ResponseUtil.success(res, cart, "Item added to cart");
   };
 
-  updateCartItem = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  updateCartItem = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const { itemId } = req.params;
     const { quantity } = req.body;
     const cart = await this.service.updateCartItem(
-      req.user!.userId,
+      authReq.user!.userId,
       itemId,
       quantity
     );
     return ResponseUtil.success(res, cart, SUCCESS_MESSAGES.UPDATED);
   };
 
-  removeCartItem = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  removeCartItem = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const { itemId } = req.params;
-    const cart = await this.service.removeCartItem(req.user!.userId, itemId);
+    const cart = await this.service.removeCartItem(authReq.user!.userId, itemId);
     return ResponseUtil.success(res, cart, "Item removed from cart");
   };
 
-  clearCart = async (req: AuthRequest, res: Response): Promise<Response> => {
-    const cart = await this.service.clearCart(req.user!.userId);
+  clearCart = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
+    const cart = await this.service.clearCart(authReq.user!.userId);
     return ResponseUtil.success(res, cart, "Cart cleared");
   };
 }

@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { HTTP_STATUS } from "../../config/constants";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { PaginationUtil } from "../../utils/pagination.util";
@@ -12,7 +12,8 @@ export class OrdersController {
     this.service = new OrdersService();
   }
 
-  createOrder = async (req: AuthRequest, res: Response): Promise<Response> => {
+  createOrder = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const {
       shippingAddressId,
       billingAddressId,
@@ -28,7 +29,7 @@ export class OrdersController {
     const userAgent = req.headers["user-agent"] || "";
 
     const order = await this.service.createOrder(
-      req.user!.userId,
+      authReq.user!.userId,
       shippingAddressId,
       billingAddressId,
       paymentMethod,
@@ -46,10 +47,8 @@ export class OrdersController {
     );
   };
 
-  getUserOrders = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getUserOrders = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const { page, limit } = PaginationUtil.parse(
       typeof req.query.page === "string" || typeof req.query.page === "number"
         ? req.query.page
@@ -59,7 +58,7 @@ export class OrdersController {
         : undefined
     );
     const result = await this.service.getUserOrders(
-      req.user!.userId,
+      authReq.user!.userId,
       page,
       limit
     );
@@ -73,18 +72,20 @@ export class OrdersController {
     );
   };
 
-  getOrderById = async (req: AuthRequest, res: Response): Promise<Response> => {
+  getOrderById = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const order = await this.service.getOrderById(
       req.params.id,
-      req.user!.userId
+      authReq.user!.userId
     );
     return ResponseUtil.success(res, order);
   };
 
-  cancelOrder = async (req: AuthRequest, res: Response): Promise<Response> => {
+  cancelOrder = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const order = await this.service.cancelOrder(
       req.params.id,
-      req.user!.userId
+      authReq.user!.userId
     );
     return ResponseUtil.success(res, order, "Order cancelled successfully");
   };

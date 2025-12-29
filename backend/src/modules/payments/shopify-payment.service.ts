@@ -1,8 +1,6 @@
 import { Decimal } from "@prisma/client/runtime/library";
 import axios, { AxiosInstance } from "axios";
 import { env } from "../../config/env";
-import { circuitBreakers } from "../../utils/circuit-breaker.util";
-import { retry } from "../../utils/retry.util";
 import { logger } from "../../utils/logger.util";
 
 interface ShopifyPaymentSession {
@@ -104,7 +102,7 @@ export class ShopifyPaymentService {
     } catch (error) {
       logger.error("Shopify payment session creation failed", {
         error: error instanceof Error ? error.message : String(error),
-        orderId: data.orderId,
+        orderId: params.orderId,
       });
       throw new Error("Failed to create payment session");
     }
@@ -131,8 +129,8 @@ export class ShopifyPaymentService {
           status: isPaid
             ? "success"
             : checkout.financial_status === "pending"
-            ? "pending"
-            : "failed",
+              ? "pending"
+              : "failed",
           amount: checkout.total_price,
           currency: checkout.currency,
           customer_id: checkout.customer?.id,
@@ -146,7 +144,7 @@ export class ShopifyPaymentService {
     } catch (error) {
       logger.error("Payment verification failed", {
         error: error instanceof Error ? error.message : String(error),
-        paymentId,
+        checkoutToken,
       });
       throw new Error("Failed to verify payment");
     }
@@ -217,7 +215,7 @@ export class ShopifyPaymentService {
     } catch (error) {
       logger.error("Refund failed", {
         error: error instanceof Error ? error.message : String(error),
-        paymentId,
+        orderId,
         amount,
       });
       throw new Error("Failed to process refund");
@@ -294,7 +292,7 @@ export class ShopifyPaymentService {
     } catch (error) {
       logger.error("Draft order creation failed", {
         error: error instanceof Error ? error.message : String(error),
-        orderData: data,
+        orderData: params,
       });
       throw new Error("Failed to create draft order");
     }

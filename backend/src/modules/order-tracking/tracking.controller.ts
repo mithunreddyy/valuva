@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { ResponseUtil } from "../../utils/response.util";
 import { OrderTrackingService } from "./tracking.service";
@@ -10,26 +10,24 @@ export class OrderTrackingController {
     this.service = new OrderTrackingService();
   }
 
-  trackOrder = async (req: AuthRequest, res: Response): Promise<Response> => {
+  trackOrder = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const { orderNumber } = req.params;
     const tracking = await this.service.trackOrder(
       orderNumber,
-      req.user!.userId
+      authReq.user!.userId
     );
     return ResponseUtil.success(res, tracking);
   };
 
-  trackOrderPublic = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  trackOrderPublic = async (req: Request, res: Response): Promise<Response> => {
     const { orderNumber, email } = req.body;
     const tracking = await this.service.trackOrderPublic(orderNumber, email);
     return ResponseUtil.success(res, tracking);
   };
 
   updateOrderTracking = async (
-    req: AuthRequest,
+    req: Request,
     res: Response
   ): Promise<Response> => {
     const { orderId } = req.params;
@@ -42,7 +40,7 @@ export class OrderTrackingController {
   };
 
   addTrackingUpdate = async (
-    req: AuthRequest,
+    req: Request,
     res: Response
   ): Promise<Response> => {
     const { orderId } = req.params;
@@ -64,7 +62,7 @@ export class OrderTrackingController {
   };
 
   getAllActiveOrders = async (
-    req: AuthRequest,
+    req: Request,
     res: Response
   ): Promise<Response> => {
     const orders = await this.service.getAllActiveOrders();

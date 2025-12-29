@@ -1,6 +1,5 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { HTTP_STATUS, SUCCESS_MESSAGES } from "../../config/constants";
-import { AuthRequest } from "../../middleware/auth.middleware";
 import { PaginationUtil } from "../../utils/pagination.util";
 import { ResponseUtil } from "../../utils/response.util";
 import { AdminProductsService } from "./admin-products.service";
@@ -12,10 +11,7 @@ export class AdminProductsController {
     this.service = new AdminProductsService();
   }
 
-  createProduct = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  createProduct = async (req: Request, res: Response): Promise<Response> => {
     const product = await this.service.createProduct(req.body);
     return ResponseUtil.success(
       res,
@@ -25,34 +21,22 @@ export class AdminProductsController {
     );
   };
 
-  updateProduct = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  updateProduct = async (req: Request, res: Response): Promise<Response> => {
     const product = await this.service.updateProduct(req.params.id, req.body);
     return ResponseUtil.success(res, product, SUCCESS_MESSAGES.UPDATED);
   };
 
-  deleteProduct = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  deleteProduct = async (req: Request, res: Response): Promise<Response> => {
     await this.service.deleteProduct(req.params.id);
     return ResponseUtil.success(res, null, SUCCESS_MESSAGES.DELETED);
   };
 
-  getProductById = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getProductById = async (req: Request, res: Response): Promise<Response> => {
     const product = await this.service.getProductById(req.params.id);
     return ResponseUtil.success(res, product);
   };
 
-  getAllProducts = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getAllProducts = async (req: Request, res: Response): Promise<Response> => {
     const { page, limit } = PaginationUtil.parse(
       typeof req.query.page === "string" || typeof req.query.page === "number"
         ? req.query.page
@@ -71,10 +55,7 @@ export class AdminProductsController {
     );
   };
 
-  createVariant = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  createVariant = async (req: Request, res: Response): Promise<Response> => {
     const variant = await this.service.createVariant(req.body);
     return ResponseUtil.success(
       res,
@@ -84,18 +65,12 @@ export class AdminProductsController {
     );
   };
 
-  updateVariant = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  updateVariant = async (req: Request, res: Response): Promise<Response> => {
     const variant = await this.service.updateVariant(req.params.id, req.body);
     return ResponseUtil.success(res, variant, SUCCESS_MESSAGES.UPDATED);
   };
 
-  updateInventory = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  updateInventory = async (req: Request, res: Response): Promise<Response> => {
     const { change, reason, notes } = req.body;
     const variant = await this.service.updateInventory(
       req.params.id,
@@ -106,10 +81,7 @@ export class AdminProductsController {
     return ResponseUtil.success(res, variant, "Inventory updated successfully");
   };
 
-  addProductImage = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  addProductImage = async (req: Request, res: Response): Promise<Response> => {
     const { productId, url, altText, isPrimary } = req.body;
     const image = await this.service.addProductImage(
       productId,
@@ -126,7 +98,7 @@ export class AdminProductsController {
   };
 
   deleteProductImage = async (
-    req: AuthRequest,
+    req: Request,
     res: Response
   ): Promise<Response> => {
     await this.service.deleteProductImage(req.params.id);
@@ -134,7 +106,7 @@ export class AdminProductsController {
   };
 
   getLowStockProducts = async (
-    req: AuthRequest,
+    req: Request,
     res: Response
   ): Promise<Response> => {
     const threshold = req.query.threshold

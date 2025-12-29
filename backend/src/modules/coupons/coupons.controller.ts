@@ -1,7 +1,6 @@
 import { Decimal } from "@prisma/client/runtime/library";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { HTTP_STATUS } from "../../config/constants";
-import { AuthRequest } from "../../middleware/auth.middleware";
 import { ResponseUtil } from "../../utils/response.util";
 import { CouponsService } from "./coupons.service";
 
@@ -12,10 +11,7 @@ export class CouponsController {
     this.service = new CouponsService();
   }
 
-  validateCoupon = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  validateCoupon = async (req: Request, res: Response): Promise<Response> => {
     const { code } = req.params;
     const subtotalParam = req.query.subtotal as string | undefined;
     const subtotal = subtotalParam ? new Decimal(subtotalParam) : undefined;
@@ -25,7 +21,7 @@ export class CouponsController {
   };
 
   listActiveCoupons = async (
-    req: AuthRequest,
+    req: Request,
     res: Response
   ): Promise<Response> => {
     const page = parseInt((req.query.page as string) || "1", 10);

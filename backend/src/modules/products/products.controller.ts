@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { AnalyticsUtil } from "../../utils/analytics.util";
 import { InputSanitizer } from "../../utils/input-sanitizer.util";
@@ -14,7 +14,7 @@ export class ProductsController {
     this.service = new ProductsService();
   }
 
-  getProducts = async (req: AuthRequest, res: Response): Promise<Response> => {
+  getProducts = async (req: Request, res: Response): Promise<Response> => {
     const { page, limit } = PaginationUtil.parse(
       typeof req.query.page === "string" ? req.query.page : undefined,
       typeof req.query.limit === "string" ? req.query.limit : undefined
@@ -52,10 +52,7 @@ export class ProductsController {
     );
   };
 
-  getProductById = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getProductById = async (req: Request, res: Response): Promise<Response> => {
     const product = await this.service.getProductById(req.params.id);
     // Increment view count asynchronously (non-blocking)
     ProductUtil.incrementViewCount(req.params.id).catch(() => {
@@ -64,18 +61,13 @@ export class ProductsController {
     return ResponseUtil.success(res, product);
   };
 
-  getRelatedProducts = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getRelatedProducts = async (req: Request, res: Response): Promise<Response> => {
     const products = await this.service.getRelatedProducts(req.params.id);
     return ResponseUtil.success(res, products);
   };
 
-  searchProducts = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  searchProducts = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const rawQuery = req.query.q as string;
     const query = InputSanitizer.sanitizeSearchQuery(rawQuery);
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
@@ -91,7 +83,7 @@ export class ProductsController {
     AnalyticsUtil.trackSearch(
       query,
       products.length,
-      req.user?.userId,
+      authReq.user?.userId,
       sessionId
     ).catch(() => {
       // Silently fail - analytics shouldn't break the flow
@@ -100,10 +92,8 @@ export class ProductsController {
     return ResponseUtil.success(res, products);
   };
 
-  getProductBySlug = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getProductBySlug = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const slug = InputSanitizer.sanitizeString(req.params.slug, {
       maxLength: 200,
     });
@@ -117,14 +107,14 @@ export class ProductsController {
     const sessionId = req.headers["x-session-id"] as string;
 
     // Track product view for recommendations
-    if (req.user?.userId) {
+    if (authReq.user?.userId) {
       // Track view asynchronously (non-blocking)
       import("../../modules/recommendations/recommendations.service")
         .then(({ RecommendationsService }) => {
           const recommendationsService = new RecommendationsService();
           recommendationsService.trackProductView(
             product.id,
-            req.user!.userId,
+            authReq.user!.userId,
             ipAddress,
             userAgent
           ).catch(() => {
@@ -139,7 +129,7 @@ export class ProductsController {
     // Track analytics
     AnalyticsUtil.trackProductView(
       product.id,
-      req.user?.userId,
+      authReq.user?.userId,
       sessionId,
       ipAddress
     ).catch(() => {
@@ -149,19 +139,13 @@ export class ProductsController {
     return ResponseUtil.success(res, product);
   };
 
-  getFeaturedProducts = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getFeaturedProducts = async (req: Request, res: Response): Promise<Response> => {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 12;
     const products = await this.service.getFeaturedProducts(limit);
     return ResponseUtil.success(res, products);
   };
 
-  getNewArrivals = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getNewArrivals = async (req: Request, res: Response): Promise<Response> => {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 12;
     const products = await this.service.getNewArrivals(limit);
     return ResponseUtil.success(res, products);

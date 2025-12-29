@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { HTTP_STATUS, SUCCESS_MESSAGES } from "../../config/constants";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { ResponseUtil } from "../../utils/response.util";
@@ -11,18 +11,14 @@ export class AuthController {
     this.service = new AuthService();
   }
 
-  register = async (req: AuthRequest, res: Response): Promise<Response> => {
+  register = async (req: Request, res: Response): Promise<Response> => {
     const ipAddress =
       (req.headers["x-forwarded-for"] as string)?.split(",")[0] ||
       req.socket.remoteAddress ||
       req.ip;
     const userAgent = req.headers["user-agent"] || "";
 
-    const result = await this.service.register(
-      req.body,
-      ipAddress,
-      userAgent
-    );
+    const result = await this.service.register(req.body, ipAddress, userAgent);
     return ResponseUtil.success(
       res,
       result,
@@ -31,27 +27,25 @@ export class AuthController {
     );
   };
 
-  login = async (req: AuthRequest, res: Response): Promise<Response> => {
+  login = async (req: Request, res: Response): Promise<Response> => {
     const { email, password } = req.body;
     const result = await this.service.login(email, password);
     return ResponseUtil.success(res, result, SUCCESS_MESSAGES.LOGIN);
   };
 
-  refreshToken = async (req: AuthRequest, res: Response): Promise<Response> => {
+  refreshToken = async (req: Request, res: Response): Promise<Response> => {
     const { refreshToken } = req.body;
     const result = await this.service.refreshToken(refreshToken);
     return ResponseUtil.success(res, result);
   };
 
-  logout = async (req: AuthRequest, res: Response): Promise<Response> => {
-    await this.service.logout(req.user!.userId);
+  logout = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
+    await this.service.logout(authReq.user!.userId);
     return ResponseUtil.success(res, null, SUCCESS_MESSAGES.LOGOUT);
   };
 
-  forgotPassword = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  forgotPassword = async (req: Request, res: Response): Promise<Response> => {
     const { email } = req.body;
     await this.service.forgotPassword(email);
     return ResponseUtil.success(
@@ -61,10 +55,7 @@ export class AuthController {
     );
   };
 
-  resetPassword = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  resetPassword = async (req: Request, res: Response): Promise<Response> => {
     const { token, newPassword } = req.body;
     await this.service.resetPassword(token, newPassword);
     return ResponseUtil.success(
@@ -74,17 +65,18 @@ export class AuthController {
     );
   };
 
-  verifyEmail = async (req: AuthRequest, res: Response): Promise<Response> => {
+  verifyEmail = async (req: Request, res: Response): Promise<Response> => {
     const { token } = req.query;
     await this.service.verifyEmail(token as string);
     return ResponseUtil.success(res, null, "Email verified successfully");
   };
 
   resendVerification = async (
-    req: AuthRequest,
+    req: Request,
     res: Response
   ): Promise<Response> => {
-    await this.service.resendVerificationEmail(req.user!.userId);
+    const authReq = req as AuthRequest;
+    await this.service.resendVerificationEmail(authReq.user!.userId);
     return ResponseUtil.success(
       res,
       null,

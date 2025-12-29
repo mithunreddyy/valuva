@@ -8,7 +8,9 @@ import apiClient from "@/lib/axios";
 import { useAuthStore } from "@/store/auth-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
-import { Shield, Lock } from "lucide-react";
+import { Lock, Shield } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -27,13 +29,11 @@ export default function AdminLoginPage() {
   const { setAuth } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [requiresMFA, setRequiresMFA] = useState(false);
-  const [adminId, setAdminId] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<AdminLoginForm>({
     resolver: zodResolver(adminLoginSchema),
   });
@@ -50,7 +50,6 @@ export default function AdminLoginPage() {
       // Check if MFA is required
       if (response.data.data?.requiresMFA && !data.mfaToken) {
         setRequiresMFA(true);
-        setAdminId(response.data.data.adminId);
         toast({
           title: "MFA Required",
           description: "Please enter your MFA code to continue",
@@ -100,111 +99,158 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-6 py-24">
-      <div className="w-full max-w-md">
-        <div className="bg-white border border-[#e5e5e5] p-8 sm:p-12 rounded-[12px]">
-          <div className="text-center mb-8 space-y-2">
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-16 h-16 bg-[#0a0a0a] rounded-full flex items-center justify-center">
-                <Shield className="h-8 w-8 text-white" />
-              </div>
+    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+      <div className="w-full max-w-[420px]">
+        {/* Logo and Brand */}
+        <div className="text-center mb-8 sm:mb-10">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-[1px] mb-6 sm:mb-8 hover:opacity-80 transition-opacity justify-center"
+          >
+            <Image
+              src="/valuvaLogo.png"
+              alt="VALUVA"
+              width={48}
+              height={48}
+              className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              priority
+            />
+            <span className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
+              valuva
+            </span>
+          </Link>
+          <div className="flex items-center justify-center mb-4 sm:mb-6">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#0a0a0a] rounded-full flex items-center justify-center">
+              <Shield className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-medium tracking-normal">
-              Admin Login
-            </h1>
-            <p className="text-sm text-neutral-500 font-medium">
-              Secure admin access portal
-            </p>
           </div>
+          <h1 className="text-2xl sm:text-[28px] font-medium tracking-normal text-[#0a0a0a] mb-2">
+            Admin Login
+          </h1>
+          <p className="text-sm sm:text-base text-neutral-600 font-medium">
+            Secure admin access portal
+          </p>
+        </div>
 
+        {/* Form Card */}
+        <div className="bg-white rounded-[16px] sm:rounded-[20px] border border-[#e5e5e5] shadow-sm p-6 sm:p-8 lg:p-10">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {!requiresMFA ? (
               <>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Email</label>
+                {/* Email Field */}
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="email"
+                    className="block text-xs sm:text-sm font-medium text-[#0a0a0a] mb-1.5"
+                  >
+                    Email
+                  </label>
                   <Input
+                    id="email"
                     type="email"
                     {...register("email")}
                     placeholder="admin@valuva.com"
-                    className="rounded-[10px]"
+                    className="h-10 sm:h-11 px-4 text-sm sm:text-[15px] bg-[#fafafa] border border-[#e5e5e5] rounded-[10px] focus:bg-white focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-500"
+                    autoComplete="email"
                   />
                   {errors.email && (
-                    <p className="text-red-600 text-xs mt-1 font-medium">
+                    <p className="text-xs sm:text-[13px] text-red-600 font-medium mt-1">
                       {errors.email.message}
                     </p>
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
+                {/* Password Field */}
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="password"
+                    className="block text-xs sm:text-sm font-medium text-[#0a0a0a] mb-1.5"
+                  >
                     Password
                   </label>
                   <PasswordInput
+                    id="password"
                     {...register("password")}
-                    placeholder="••••••••"
-                    className="rounded-[10px] pr-10"
+                    placeholder="Enter your password"
+                    className="h-10 sm:h-11 px-4 text-sm sm:text-[15px] bg-[#fafafa] border border-[#e5e5e5] rounded-[10px] focus:bg-white focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-500 pr-12"
+                    autoComplete="current-password"
                   />
                   {errors.password && (
-                    <p className="text-red-600 text-xs mt-1 font-medium">
+                    <p className="text-xs sm:text-[13px] text-red-600 font-medium mt-1">
                       {errors.password.message}
                     </p>
                   )}
                 </div>
               </>
             ) : (
-              <div>
-                <div className="flex items-center gap-2 mb-4 p-3 bg-blue-50 border border-blue-200 rounded-[10px]">
-                  <Lock className="h-4 w-4 text-blue-600" />
-                  <p className="text-xs text-blue-700 font-medium">
+              <div className="space-y-4">
+                {/* MFA Info Banner */}
+                <div className="flex items-center gap-2.5 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-[10px]">
+                  <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
+                  <p className="text-xs sm:text-sm text-blue-700 font-medium">
                     Multi-factor authentication required
                   </p>
                 </div>
-                <label className="block text-sm font-medium mb-2">
-                  MFA Code
-                </label>
-                <Input
-                  type="text"
-                  {...register("mfaToken")}
-                  placeholder="000000"
-                  maxLength={6}
-                  className="rounded-[10px] text-center text-lg tracking-widest"
-                  autoFocus
-                />
-                {errors.mfaToken && (
-                  <p className="text-red-600 text-xs mt-1 font-medium">
-                    {errors.mfaToken.message}
+
+                {/* MFA Code Field */}
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="mfaToken"
+                    className="block text-xs sm:text-sm font-medium text-[#0a0a0a] mb-1.5"
+                  >
+                    MFA Code
+                  </label>
+                  <Input
+                    id="mfaToken"
+                    type="text"
+                    {...register("mfaToken")}
+                    placeholder="000000"
+                    maxLength={6}
+                    className="h-12 sm:h-14 px-4 text-lg sm:text-xl text-center tracking-[0.5em] bg-[#fafafa] border border-[#e5e5e5] rounded-[10px] focus:bg-white focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-400"
+                    autoFocus
+                  />
+                  {errors.mfaToken && (
+                    <p className="text-xs sm:text-[13px] text-red-600 font-medium mt-1">
+                      {errors.mfaToken.message}
+                    </p>
+                  )}
+                  <p className="text-xs sm:text-[13px] text-neutral-500 font-medium mt-2 leading-relaxed">
+                    Enter the 6-digit code from your authenticator app or use a
+                    backup code
                   </p>
-                )}
-                <p className="text-xs text-neutral-500 font-medium mt-2">
-                  Enter the 6-digit code from your authenticator app or use a
-                  backup code
-                </p>
+                </div>
               </div>
             )}
 
+            {/* Submit Button */}
             <Button
               type="submit"
-              size="lg"
+              size="default"
               variant="filled"
-              className="w-full rounded-[10px]"
+              className="w-full h-10 sm:h-11 text-sm sm:text-[15px] font-medium bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#fafafa] border-0 rounded-[10px] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-6"
               disabled={isLoading}
             >
-              {isLoading
-                ? "Signing in..."
-                : requiresMFA
-                ? "Verify MFA"
-                : "Sign In"}
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-[#fafafa] border-t-transparent rounded-full animate-spin" />
+                  Signing in...
+                </span>
+              ) : requiresMFA ? (
+                "Verify MFA"
+              ) : (
+                "Sign In"
+              )}
             </Button>
 
+            {/* Back to Login Button (MFA only) */}
             {requiresMFA && (
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
-                className="w-full rounded-[10px]"
+                size="default"
+                className="w-full h-10 sm:h-11 text-sm sm:text-[15px] font-medium border border-[#e5e5e5] hover:border-[#0a0a0a] rounded-[10px] transition-all"
                 onClick={() => {
                   setRequiresMFA(false);
-                  setAdminId(null);
                 }}
               >
                 Back to Login
@@ -212,7 +258,8 @@ export default function AdminLoginPage() {
             )}
           </form>
 
-          <div className="mt-6 text-center">
+          {/* Footer Notice */}
+          <div className="mt-6 sm:mt-8 text-center">
             <p className="text-xs text-neutral-500 font-medium">
               Admin access only. Unauthorized access is prohibited.
             </p>
@@ -222,4 +269,3 @@ export default function AdminLoginPage() {
     </div>
   );
 }
-

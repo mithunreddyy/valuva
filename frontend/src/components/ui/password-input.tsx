@@ -23,20 +23,18 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           {...props}
         />
         {showToggle && (
-          <Button
+          <button
             type="button"
-            variant="ghost"
-            size="sm"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-transparent"
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-neutral-500 hover:text-[#0a0a0a] transition-colors rounded-[6px] hover:bg-[#fafafa] focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-0"
             onClick={() => setShowPassword(!showPassword)}
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
-              <EyeOff className="h-4 w-4 text-neutral-500" />
+              <EyeOff className="h-4 w-4" />
             ) : (
-              <Eye className="h-4 w-4 text-neutral-500" />
+              <Eye className="h-4 w-4" />
             )}
-          </Button>
+          </button>
         )}
       </div>
     );

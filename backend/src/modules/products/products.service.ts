@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
-import { NotFoundError } from "../../utils/error.util";
 import { CacheUtil } from "../../utils/cache.util";
+import { NotFoundError } from "../../utils/error.util";
 import { ProductFilters, ProductsRepository } from "./products.repository";
 
 export class ProductsService {
@@ -153,7 +153,7 @@ export class ProductsService {
 
   async getFeaturedProducts(limit: number = 12) {
     const cacheKey = `products:featured:${limit}`;
-    
+
     return CacheUtil.getOrSet(
       cacheKey,
       async () => {
@@ -184,7 +184,7 @@ export class ProductsService {
 
   async getNewArrivals(limit: number = 12) {
     const cacheKey = `products:new-arrivals:${limit}`;
-    
+
     return CacheUtil.getOrSet(
       cacheKey,
       async () => {
@@ -219,23 +219,26 @@ export class ProductsService {
     }
 
     const cacheKey = `products:search:${query.toLowerCase()}:${limit}`;
-    
+
     return CacheUtil.getOrSet(
       cacheKey,
       async () => {
         const { products } = await this.repository.searchProducts(query, limit);
-        
+
         return products.map((product) => {
+          const reviews = (product as any).reviews || [];
           const avgRating =
-            product.reviews?.length > 0
-              ? product.reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) /
-                product.reviews.length
+            reviews.length > 0
+              ? reviews.reduce(
+                  (sum: number, r: { rating: number }) => sum + r.rating,
+                  0
+                ) / reviews.length
               : 0;
 
           return {
             ...product,
             averageRating: Math.round(avgRating * 10) / 10,
-            reviewCount: product.reviews?.length || 0,
+            reviewCount: reviews.length,
           };
         });
       },

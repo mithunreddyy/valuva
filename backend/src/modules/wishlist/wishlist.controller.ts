@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { ResponseUtil } from "../../utils/response.util";
 import { WishlistService } from "./wishlist.service";
@@ -10,30 +10,30 @@ export class WishlistController {
     this.service = new WishlistService();
   }
 
-  getWishlist = async (req: AuthRequest, res: Response): Promise<Response> => {
-    const wishlist = await this.service.getUserWishlist(req.user!.userId);
+  getWishlist = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
+    const wishlist = await this.service.getUserWishlist(authReq.user!.userId);
     return ResponseUtil.success(res, wishlist);
   };
 
-  addToWishlist = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  addToWishlist = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const { productId } = req.body;
     const wishlist = await this.service.addToWishlist(
-      req.user!.userId,
+      authReq.user!.userId,
       productId
     );
     return ResponseUtil.success(res, wishlist, "Product added to wishlist");
   };
 
   removeFromWishlist = async (
-    req: AuthRequest,
+    req: Request,
     res: Response
   ): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const { productId } = req.params;
     const wishlist = await this.service.removeFromWishlist(
-      req.user!.userId,
+      authReq.user!.userId,
       productId
     );
     return ResponseUtil.success(res, wishlist, "Product removed from wishlist");

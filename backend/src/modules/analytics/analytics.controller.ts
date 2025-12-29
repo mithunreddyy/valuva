@@ -1,5 +1,4 @@
-import { Response } from "express";
-import { AuthRequest } from "../../middleware/auth.middleware";
+import { Request, Response } from "express";
 import { ResponseUtil } from "../../utils/response.util";
 import { AnalyticsService } from "./analytics.service";
 
@@ -10,10 +9,7 @@ export class AnalyticsController {
     this.service = new AnalyticsService();
   }
 
-  getSalesMetrics = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getSalesMetrics = async (req: Request, res: Response): Promise<Response> => {
     const startDate = req.query.startDate
       ? new Date(req.query.startDate as string)
       : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // Default: last 30 days
@@ -26,10 +22,7 @@ export class AnalyticsController {
     return ResponseUtil.success(res, metrics);
   };
 
-  getTopProducts = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getTopProducts = async (req: Request, res: Response): Promise<Response> => {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
 
     const dateRange =
@@ -44,10 +37,7 @@ export class AnalyticsController {
     return ResponseUtil.success(res, products);
   };
 
-  getRevenueTrends = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getRevenueTrends = async (req: Request, res: Response): Promise<Response> => {
     const startDate = req.query.startDate
       ? new Date(req.query.startDate as string)
       : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -66,7 +56,7 @@ export class AnalyticsController {
   };
 
   getCustomerAnalytics = async (
-    req: AuthRequest,
+    req: Request,
     res: Response
   ): Promise<Response> => {
     const startDate = req.query.startDate
@@ -85,7 +75,7 @@ export class AnalyticsController {
   };
 
   getInventoryInsights = async (
-    _req: AuthRequest,
+    _req: Request,
     res: Response
   ): Promise<Response> => {
     const insights = await this.service.getInventoryInsights();
@@ -93,7 +83,7 @@ export class AnalyticsController {
   };
 
   getCategoryPerformance = async (
-    req: AuthRequest,
+    req: Request,
     res: Response
   ): Promise<Response> => {
     const startDate = req.query.startDate

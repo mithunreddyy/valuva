@@ -12,7 +12,7 @@ export interface AuthRequest extends Request {
 }
 
 export const authenticate = async (
-  req: AuthRequest,
+  req: Request,
   _res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -25,7 +25,7 @@ export const authenticate = async (
 
     const token = authHeader.substring(7);
     const decoded = JWTUtil.verifyAccessToken(token);
-    req.user = {
+    (req as AuthRequest).user = {
       userId: decoded.userId,
       email: decoded.email,
       role: decoded.role,

@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { HTTP_STATUS, SUCCESS_MESSAGES } from "../../config/constants";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { PaginationUtil } from "../../utils/pagination.util";
@@ -12,10 +12,11 @@ export class ReviewsController {
     this.service = new ReviewsService();
   }
 
-  createReview = async (req: AuthRequest, res: Response): Promise<Response> => {
+  createReview = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const { productId, rating, title, comment } = req.body;
     const review = await this.service.createReview(
-      req.user!.userId,
+      authReq.user!.userId,
       productId,
       rating,
       comment,
@@ -29,10 +30,7 @@ export class ReviewsController {
     );
   };
 
-  getProductReviews = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getProductReviews = async (req: Request, res: Response): Promise<Response> => {
     const { productId } = req.params;
     const { page, limit } = PaginationUtil.parse(
       typeof req.query.page === "string" || typeof req.query.page === "number"
@@ -61,10 +59,8 @@ export class ReviewsController {
     );
   };
 
-  getUserReviews = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getUserReviews = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const { page, limit } = PaginationUtil.parse(
       typeof req.query.page === "string" || typeof req.query.page === "number"
         ? req.query.page
@@ -74,7 +70,7 @@ export class ReviewsController {
         : undefined
     );
     const result = await this.service.getUserReviews(
-      req.user!.userId,
+      authReq.user!.userId,
       page,
       limit
     );
@@ -87,26 +83,25 @@ export class ReviewsController {
     );
   };
 
-  updateReview = async (req: AuthRequest, res: Response): Promise<Response> => {
+  updateReview = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const { id } = req.params;
     const review = await this.service.updateReview(
       id,
-      req.user!.userId,
+      authReq.user!.userId,
       req.body
     );
     return ResponseUtil.success(res, review, SUCCESS_MESSAGES.UPDATED);
   };
 
-  deleteReview = async (req: AuthRequest, res: Response): Promise<Response> => {
+  deleteReview = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const { id } = req.params;
-    await this.service.deleteReview(id, req.user!.userId);
+    await this.service.deleteReview(id, authReq.user!.userId);
     return ResponseUtil.success(res, null, SUCCESS_MESSAGES.DELETED);
   };
 
-  approveReview = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  approveReview = async (req: Request, res: Response): Promise<Response> => {
     const { id } = req.params;
     const { isApproved } = req.body;
     const review = await this.service.approveReview(id, isApproved);
@@ -118,7 +113,7 @@ export class ReviewsController {
   };
 
   getAllReviewsForAdmin = async (
-    req: AuthRequest,
+    req: Request,
     res: Response
   ): Promise<Response> => {
     const { page, limit } = PaginationUtil.parse(

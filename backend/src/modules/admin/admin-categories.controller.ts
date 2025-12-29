@@ -1,6 +1,5 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { HTTP_STATUS, SUCCESS_MESSAGES } from "../../config/constants";
-import { AuthRequest } from "../../middleware/auth.middleware";
 import { ResponseUtil } from "../../utils/response.util";
 import { AdminCategoriesService } from "./admin-categories.service";
 
@@ -11,26 +10,17 @@ export class AdminCategoriesController {
     this.service = new AdminCategoriesService();
   }
 
-  getAllCategories = async (
-    _req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getAllCategories = async (_req: Request, res: Response): Promise<Response> => {
     const categories = await this.service.getAllCategories();
     return ResponseUtil.success(res, categories);
   };
 
-  getCategoryById = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getCategoryById = async (req: Request, res: Response): Promise<Response> => {
     const category = await this.service.getCategoryById(req.params.id);
     return ResponseUtil.success(res, category);
   };
 
-  createCategory = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  createCategory = async (req: Request, res: Response): Promise<Response> => {
     const category = await this.service.createCategory(req.body);
     return ResponseUtil.success(
       res,
@@ -40,43 +30,28 @@ export class AdminCategoriesController {
     );
   };
 
-  updateCategory = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  updateCategory = async (req: Request, res: Response): Promise<Response> => {
     const category = await this.service.updateCategory(req.params.id, req.body);
     return ResponseUtil.success(res, category, SUCCESS_MESSAGES.UPDATED);
   };
 
-  deleteCategory = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  deleteCategory = async (req: Request, res: Response): Promise<Response> => {
     await this.service.deleteCategory(req.params.id);
     return ResponseUtil.success(res, null, SUCCESS_MESSAGES.DELETED);
   };
 
-  getAllSubCategories = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getAllSubCategories = async (req: Request, res: Response): Promise<Response> => {
     const categoryId = req.query.categoryId as string | undefined;
     const subCategories = await this.service.getAllSubCategories(categoryId);
     return ResponseUtil.success(res, subCategories);
   };
 
-  getSubCategoryById = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getSubCategoryById = async (req: Request, res: Response): Promise<Response> => {
     const subCategory = await this.service.getSubCategoryById(req.params.id);
     return ResponseUtil.success(res, subCategory);
   };
 
-  createSubCategory = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  createSubCategory = async (req: Request, res: Response): Promise<Response> => {
     const subCategory = await this.service.createSubCategory(req.body);
     return ResponseUtil.success(
       res,
@@ -86,10 +61,7 @@ export class AdminCategoriesController {
     );
   };
 
-  updateSubCategory = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  updateSubCategory = async (req: Request, res: Response): Promise<Response> => {
     const subCategory = await this.service.updateSubCategory(
       req.params.id,
       req.body
@@ -97,10 +69,7 @@ export class AdminCategoriesController {
     return ResponseUtil.success(res, subCategory, SUCCESS_MESSAGES.UPDATED);
   };
 
-  deleteSubCategory = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  deleteSubCategory = async (req: Request, res: Response): Promise<Response> => {
     await this.service.deleteSubCategory(req.params.id);
     return ResponseUtil.success(res, null, SUCCESS_MESSAGES.DELETED);
   };

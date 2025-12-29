@@ -54,7 +54,11 @@ export class ShippingService {
     }
 
     // Use real carrier API if configured
-    if (env.SHIPPING_CARRIER === "shiprocket" && env.SHIPROCKET_EMAIL && env.SHIPROCKET_PASSWORD) {
+    if (
+      env.SHIPPING_CARRIER === "shiprocket" &&
+      env.SHIPROCKET_EMAIL &&
+      env.SHIPROCKET_PASSWORD
+    ) {
       try {
         // Extract pincode from address (assuming Indian addresses)
         const pickupPincode = process.env.SHIPPING_PICKUP_PINCODE || "110001"; // Default to Delhi
@@ -141,7 +145,11 @@ export class ShippingService {
    */
   async trackShipment(trackingNumber: string): Promise<TrackingInfo> {
     // Try carrier API first if configured
-    if (env.SHIPPING_CARRIER === "shiprocket" && env.SHIPROCKET_EMAIL && env.SHIPROCKET_PASSWORD) {
+    if (
+      env.SHIPPING_CARRIER === "shiprocket" &&
+      env.SHIPROCKET_EMAIL &&
+      env.SHIPROCKET_PASSWORD
+    ) {
       try {
         return await this.shiprocketService.trackShipment(trackingNumber);
       } catch (error) {
@@ -241,7 +249,11 @@ export class ShippingService {
     }
 
     // Use carrier API if configured
-    if (env.SHIPPING_CARRIER === "shiprocket" && env.SHIPROCKET_EMAIL && env.SHIPROCKET_PASSWORD) {
+    if (
+      env.SHIPPING_CARRIER === "shiprocket" &&
+      env.SHIPROCKET_EMAIL &&
+      env.SHIPROCKET_PASSWORD
+    ) {
       try {
         const items = order.items.map((item) => ({
           name: item.variant.product.name,
@@ -251,7 +263,10 @@ export class ShippingService {
         }));
 
         // Calculate total weight (estimate 0.5kg per item if not available)
-        const weight = items.reduce((sum, item) => sum + item.quantity * 0.5, 0);
+        const weight = items.reduce(
+          (sum, item) => sum + item.quantity * 0.5,
+          0
+        );
 
         const labelData = await this.shiprocketService.generateLabel({
           orderId: order.id,
@@ -259,11 +274,14 @@ export class ShippingService {
           shippingAddress: order.shippingAddress,
           items,
           weight,
-          paymentMethod: order.payment?.method || "Prepaid",
+          paymentMethod: "Prepaid",
         });
 
         // Update order with tracking number from carrier
-        if (labelData.trackingNumber && labelData.trackingNumber !== trackingNumber) {
+        if (
+          labelData.trackingNumber &&
+          labelData.trackingNumber !== trackingNumber
+        ) {
           await prisma.order.update({
             where: { id: orderId },
             data: { trackingNumber: labelData.trackingNumber },

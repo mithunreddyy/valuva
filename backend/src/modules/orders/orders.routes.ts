@@ -13,9 +13,9 @@ router.use(authenticate);
 router.post(
   "/checkout",
   validate(createOrderSchema),
-  asyncHandler(controller.createOrder)
+  asyncHandler(controller.createOrder)  
 );
-router.get("/", asyncHandler(controller.getUserOrders));
+router.get("/", asyncHandler(controller.getUserOrders));  
 router.get(
   "/:id",
   validate(getOrderSchema),

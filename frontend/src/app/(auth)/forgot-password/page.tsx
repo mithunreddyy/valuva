@@ -6,6 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import { authApi } from "@/services/api/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -60,37 +61,66 @@ export default function ForgotPasswordPage() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-6 py-24">
-        <div className="w-full max-w-md">
-          <div className="bg-white border border-[#e5e5e5] p-8 sm:p-12 rounded-[12px] text-center">
-            <div className="mb-6">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+        <div className="w-full max-w-[420px]">
+          {/* Logo and Brand */}
+          <div className="text-center mb-8 sm:mb-10">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-[1px] mb-6 sm:mb-8 hover:opacity-80 transition-opacity justify-center"
+            >
+              <Image
+                src="/valuvaLogo.png"
+                alt="VALUVA"
+                width={48}
+                height={48}
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+                priority
+              />
+              <span className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
+                valuva
+              </span>
+            </Link>
+          </div>
+
+          {/* Success Card */}
+          <div className="bg-white rounded-[16px] sm:rounded-[20px] border border-[#e5e5e5] shadow-sm p-6 sm:p-8 lg:p-10 text-center">
+            <div className="space-y-6">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#f0f9f4] rounded-full flex items-center justify-center mx-auto">
                 <svg
-                  className="w-8 h-8 text-green-600"
+                  className="w-8 h-8 sm:w-10 sm:h-10 text-green-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  strokeWidth={2.5}
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-medium tracking-normal mb-2">
-                Check Your Email
-              </h1>
-              <p className="text-sm text-neutral-500 font-medium">
-                We&apos;ve sent password reset instructions to your email
-              </p>
+              <div className="space-y-2">
+                <h1 className="text-2xl sm:text-[28px] font-medium tracking-normal text-[#0a0a0a]">
+                  Check Your Email
+                </h1>
+                <p className="text-sm sm:text-base text-neutral-600 font-medium leading-relaxed">
+                  We&apos;ve sent password reset instructions to your email
+                  address. Please check your inbox and follow the link to reset
+                  your password.
+                </p>
+              </div>
+              <Link href="/login">
+                <Button
+                  variant="filled"
+                  size="default"
+                  className="w-full h-10 sm:h-11 text-sm sm:text-[15px] font-medium bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#fafafa] border-0 rounded-[10px] transition-all"
+                >
+                  Back to Login
+                </Button>
+              </Link>
             </div>
-            <Link href="/login">
-              <Button variant="filled" className="rounded-[10px]">
-                Back to Login
-              </Button>
-            </Link>
           </div>
         </div>
       </div>
@@ -98,49 +128,84 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-6 py-24">
-      <div className="w-full max-w-md">
-        <div className="bg-white border border-[#e5e5e5] p-8 sm:p-12 rounded-[12px]">
-          <div className="text-center mb-8 space-y-2">
-            <h1 className="text-3xl sm:text-4xl font-medium tracking-normal">
-              Forgot Password?
-            </h1>
-            <p className="text-sm text-neutral-500 font-medium">
-              Enter your email to receive reset instructions
-            </p>
-          </div>
+    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+      <div className="w-full max-w-[420px]">
+        {/* Logo and Brand */}
+        <div className="text-center mb-8 sm:mb-10">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-[1px] mb-6 sm:mb-8 hover:opacity-80 transition-opacity justify-center"
+          >
+            <Image
+              src="/valuvaLogo.png"
+              alt="VALUVA"
+              width={48}
+              height={48}
+              className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              priority
+            />
+            <span className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
+              valuva
+            </span>
+          </Link>
+          <h1 className="text-2xl sm:text-[28px] font-medium tracking-normal text-[#0a0a0a] mb-2">
+            Forgot Password?
+          </h1>
+          <p className="text-sm sm:text-base text-neutral-600 font-medium">
+            Enter your email to receive reset instructions
+          </p>
+        </div>
 
+        {/* Form Card */}
+        <div className="bg-white rounded-[16px] sm:rounded-[20px] border border-[#e5e5e5] shadow-sm p-6 sm:p-8 lg:p-10">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium mb-2">Email</label>
+            {/* Email Field */}
+            <div className="space-y-1.5">
+              <label
+                htmlFor="email"
+                className="block text-xs sm:text-sm font-medium text-[#0a0a0a] mb-1.5"
+              >
+                Email
+              </label>
               <Input
+                id="email"
                 type="email"
                 {...register("email")}
-                placeholder="your@email.com"
-                className="rounded-[10px]"
+                placeholder="name@example.com"
+                className="h-10 sm:h-11 px-4 text-sm sm:text-[15px] bg-[#fafafa] border border-[#e5e5e5] rounded-[10px] focus:bg-white focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-500"
+                autoComplete="email"
               />
               {errors.email && (
-                <p className="text-red-600 text-xs mt-1 font-medium">
+                <p className="text-xs sm:text-[13px] text-red-600 font-medium mt-1">
                   {errors.email.message}
                 </p>
               )}
             </div>
 
+            {/* Submit Button */}
             <Button
               type="submit"
-              size="lg"
+              size="default"
               variant="filled"
-              className="w-full rounded-[10px]"
+              className="w-full h-10 sm:h-11 text-sm sm:text-[15px] font-medium bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#fafafa] border-0 rounded-[10px] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-6"
               disabled={isLoading}
             >
-              {isLoading ? "Sending..." : "Send Reset Link"}
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-[#fafafa] border-t-transparent rounded-full animate-spin" />
+                  Sending...
+                </span>
+              ) : (
+                "Send Reset Link"
+              )}
             </Button>
           </form>
 
-          <div className="mt-6 text-center text-sm">
+          {/* Back to Login Link */}
+          <div className="mt-6 sm:mt-8 text-center">
             <Link
               href="/login"
-              className="text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
+              className="text-xs sm:text-sm text-neutral-600 hover:text-[#0a0a0a] transition-colors font-medium"
             >
               Back to Login
             </Link>
@@ -150,4 +215,3 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
-

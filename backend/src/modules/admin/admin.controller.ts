@@ -1,6 +1,5 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { SUCCESS_MESSAGES } from "../../config/constants";
-import { AuthRequest } from "../../middleware/auth.middleware";
 import { PaginationUtil } from "../../utils/pagination.util";
 import { ResponseUtil } from "../../utils/response.util";
 import { AdminService } from "./admin.service";
@@ -12,21 +11,18 @@ export class AdminController {
     this.service = new AdminService();
   }
 
-  login = async (req: AuthRequest, res: Response): Promise<Response> => {
+  login = async (req: Request, res: Response): Promise<Response> => {
     const { email, password, mfaToken } = req.body;
     const result = await this.service.login(email, password, mfaToken);
     return ResponseUtil.success(res, result, SUCCESS_MESSAGES.LOGIN);
   };
 
-  getDashboard = async (
-    _req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getDashboard = async (_req: Request, res: Response): Promise<Response> => {
     const stats = await this.service.getDashboardStats();
     return ResponseUtil.success(res, stats);
   };
 
-  getOrders = async (req: AuthRequest, res: Response): Promise<Response> => {
+  getOrders = async (req: Request, res: Response): Promise<Response> => {
     const { page, limit } = PaginationUtil.parse(
       typeof req.query.page === "string" || typeof req.query.page === "number"
         ? req.query.page
@@ -45,7 +41,7 @@ export class AdminController {
     );
   };
 
-  getUsers = async (req: AuthRequest, res: Response): Promise<Response> => {
+  getUsers = async (req: Request, res: Response): Promise<Response> => {
     const { page, limit } = PaginationUtil.parse(
       typeof req.query.page === "string" || typeof req.query.page === "number"
         ? req.query.page
@@ -58,18 +54,12 @@ export class AdminController {
     return ResponseUtil.paginated(res, result.users, page, limit, result.total);
   };
 
-  getOrderById = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getOrderById = async (req: Request, res: Response): Promise<Response> => {
     const order = await this.service.getOrderById(req.params.id);
     return ResponseUtil.success(res, order);
   };
 
-  updateOrderStatus = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  updateOrderStatus = async (req: Request, res: Response): Promise<Response> => {
     const { orderId } = req.params;
     const { status, trackingNumber } = req.body;
     await this.service.updateOrderStatus(orderId, status, trackingNumber);

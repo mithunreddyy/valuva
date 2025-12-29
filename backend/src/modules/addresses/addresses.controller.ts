@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { HTTP_STATUS, SUCCESS_MESSAGES } from "../../config/constants";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { ResponseUtil } from "../../utils/response.util";
@@ -11,31 +11,25 @@ export class AddressesController {
     this.service = new AddressesService();
   }
 
-  getUserAddresses = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
-    const addresses = await this.service.getUserAddresses(req.user!.userId);
+  getUserAddresses = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
+    const addresses = await this.service.getUserAddresses(authReq.user!.userId);
     return ResponseUtil.success(res, addresses);
   };
 
-  getAddressById = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getAddressById = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const address = await this.service.getAddressById(
       req.params.id,
-      req.user!.userId
+      authReq.user!.userId
     );
     return ResponseUtil.success(res, address);
   };
 
-  createAddress = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  createAddress = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const address = await this.service.createAddress(
-      req.user!.userId,
+      authReq.user!.userId,
       req.body
     );
     return ResponseUtil.success(
@@ -46,23 +40,19 @@ export class AddressesController {
     );
   };
 
-  updateAddress = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  updateAddress = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
     const address = await this.service.updateAddress(
       req.params.id,
-      req.user!.userId,
+      authReq.user!.userId,
       req.body
     );
     return ResponseUtil.success(res, address, SUCCESS_MESSAGES.UPDATED);
   };
 
-  deleteAddress = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
-    await this.service.deleteAddress(req.params.id, req.user!.userId);
+  deleteAddress = async (req: Request, res: Response): Promise<Response> => {
+    const authReq = req as AuthRequest;
+    await this.service.deleteAddress(req.params.id, authReq.user!.userId);
     return ResponseUtil.success(res, null, SUCCESS_MESSAGES.DELETED);
   };
 }

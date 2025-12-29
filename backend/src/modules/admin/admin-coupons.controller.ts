@@ -1,6 +1,5 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { HTTP_STATUS, SUCCESS_MESSAGES } from "../../config/constants";
-import { AuthRequest } from "../../middleware/auth.middleware";
 import { PaginationUtil } from "../../utils/pagination.util";
 import { ResponseUtil } from "../../utils/response.util";
 import { AdminCouponsService } from "./admin-coupons.service";
@@ -12,10 +11,7 @@ export class AdminCouponsController {
     this.service = new AdminCouponsService();
   }
 
-  getAllCoupons = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getAllCoupons = async (req: Request, res: Response): Promise<Response> => {
     const { page, limit } = PaginationUtil.parse(
       typeof req.query.page === "string" || typeof req.query.page === "number"
         ? req.query.page
@@ -34,18 +30,12 @@ export class AdminCouponsController {
     );
   };
 
-  getCouponById = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  getCouponById = async (req: Request, res: Response): Promise<Response> => {
     const coupon = await this.service.getCouponById(req.params.id);
     return ResponseUtil.success(res, coupon);
   };
 
-  createCoupon = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  createCoupon = async (req: Request, res: Response): Promise<Response> => {
     const coupon = await this.service.createCoupon(req.body);
     return ResponseUtil.success(
       res,
@@ -55,26 +45,17 @@ export class AdminCouponsController {
     );
   };
 
-  updateCoupon = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  updateCoupon = async (req: Request, res: Response): Promise<Response> => {
     const coupon = await this.service.updateCoupon(req.params.id, req.body);
     return ResponseUtil.success(res, coupon, SUCCESS_MESSAGES.UPDATED);
   };
 
-  deleteCoupon = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  deleteCoupon = async (req: Request, res: Response): Promise<Response> => {
     await this.service.deleteCoupon(req.params.id);
     return ResponseUtil.success(res, null, SUCCESS_MESSAGES.DELETED);
   };
 
-  toggleCouponStatus = async (
-    req: AuthRequest,
-    res: Response
-  ): Promise<Response> => {
+  toggleCouponStatus = async (req: Request, res: Response): Promise<Response> => {
     const coupon = await this.service.toggleCouponStatus(req.params.id);
     return ResponseUtil.success(res, coupon, SUCCESS_MESSAGES.UPDATED);
   };

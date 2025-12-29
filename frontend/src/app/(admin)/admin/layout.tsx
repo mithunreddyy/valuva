@@ -15,6 +15,7 @@ import {
   Truck,
   Users,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -69,25 +70,40 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen bg-[#fafafa] flex">
       {/* Sidebar */}
-      <aside className="fixed top-0 left-0 h-full w-64 bg-white/80 backdrop-blur-xl border-r border-[#e5e5e5] z-50">
+      <aside className="fixed top-0 left-0 h-full w-64 bg-white border-r border-[#e5e5e5] z-50 shadow-sm">
         <div className="h-full flex flex-col">
-          {/* Header */}
-          <div className="p-5 border-b border-[#e5e5e5]">
-            <h2 className="text-base font-medium tracking-tight text-[#0a0a0a]">
-              Valuva Admin
-            </h2>
-            <p className="text-xs text-neutral-500 font-medium mt-1.5 truncate">
-              {user.email}
-            </p>
-            {user.role === "SUPER_ADMIN" && (
-              <span className="inline-block mt-2 px-2 py-0.5 text-xs font-medium bg-[#0a0a0a] text-white rounded-[6px]">
-                Super Admin
+          {/* Header with Logo */}
+          <div className="p-5 sm:p-6 border-b border-[#e5e5e5]">
+            <Link
+              href="/admin"
+              className="flex items-center gap-[1px] justify-center mb-4 sm:mb-5 hover:opacity-80 transition-opacity"
+            >
+              <Image
+                src="/valuvaLogo.png"
+                alt="VALUVA"
+                width={32}
+                height={32}
+                className="w-8 h-8 sm:w-9 sm:h-9 object-contain"
+                priority
+              />
+              <span className="text-base sm:text-lg font-medium tracking-tight text-[#0a0a0a]">
+                valuva
               </span>
-            )}
+            </Link>
+            <div className="text-center">
+              <p className="text-xs sm:text-sm text-neutral-600 font-medium truncate mb-1.5">
+                {user.email}
+              </p>
+              {user.role === "SUPER_ADMIN" && (
+                <span className="inline-block px-2.5 py-1 text-xs font-medium bg-[#0a0a0a] text-white rounded-[8px]">
+                  Super Admin
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+          <nav className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-1">
             {navItems.map((item) => {
               const isActive =
                 pathname === item.href || pathname?.startsWith(item.href + "/");
@@ -99,7 +115,7 @@ export default function AdminLayout({
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-[10px] transition-all text-sm font-medium tracking-normal ${
                     isActive
                       ? "bg-[#0a0a0a] text-white"
-                      : "text-neutral-700 hover:bg-[#fafafa] hover:text-[#0a0a0a]"
+                      : "text-neutral-600 hover:bg-[#fafafa] hover:text-[#0a0a0a]"
                   }`}
                 >
                   <Icon className="h-4 w-4 flex-shrink-0" />
@@ -113,7 +129,7 @@ export default function AdminLayout({
           <div className="p-4 border-t border-[#e5e5e5]">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[10px] hover:bg-red-50 text-red-600 transition-all text-sm font-medium tracking-normal"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[10px] hover:bg-red-50 hover:border-red-200 border border-transparent text-red-600 transition-all text-sm font-medium tracking-normal"
             >
               <LogOut className="h-4 w-4" />
               <span>Logout</span>
@@ -124,7 +140,7 @@ export default function AdminLayout({
 
       {/* Main Content */}
       <main className="flex-1 ml-64 min-h-screen">
-        <div className="w-full">{children}</div>
+        <div className="w-full p-4 sm:p-6 lg:p-8 xl:p-10">{children}</div>
       </main>
     </div>
   );
