@@ -4,10 +4,8 @@ import { HomepageSectionFormModal } from "@/components/admin/homepage-section-fo
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "@/hooks/use-toast";
-import { adminApi } from "@/services/api/admin";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { useAdminHomepage } from "@/hooks/use-admin-homepage";
+import { HomepageSection } from "@/types";
 import {
   Edit,
   GripVertical,
@@ -17,72 +15,23 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-interface HomepageSection {
-  id: string;
-  type: string;
-  title: string;
-  subtitle?: string;
-  content?: HomepageSection["config"];
-  isActive: boolean;
-  sortOrder: number;
-  config: Record<string, unknown>;
-}
-
 export default function AdminHomepagePage() {
-  const queryClient = useQueryClient();
+  const {
+    sections,
+    currentSection,
+    isLoading,
+    loadSections,
+    createSection,
+    updateSection,
+    deleteSection,
+    selectSection,
+    clearSelection,
+  } = useAdminHomepage();
+
   const [editingSection, setEditingSection] = useState<HomepageSection | null>(
     null
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["admin-homepage-sections"],
-    queryFn: async () => {
-      const response = await adminApi.getHomepageSections();
-      return response.data;
-    },
-  });
-
-  const deleteSection = useMutation({
-    mutationFn: (id: string) => adminApi.deleteHomepageSection(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-homepage-sections"] });
-      toast({
-        title: "Success",
-        description: "Section deleted successfully",
-      });
-    },
-    onError: (error: AxiosError) => {
-      toast({
-        title: "Error",
-        description:
-          (error.response?.data as { message: string })?.message ||
-          "Failed to delete section",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const toggleSection = useMutation({
-    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
-      adminApi.updateHomepageSection(id, { isActive } as HomepageSection),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-homepage-sections"] });
-      toast({
-        title: "Success",
-        description: "Section status updated",
-      });
-    },
-    onError: (error: AxiosError) => {
-      toast({
-        title: "Error",
-        description:
-          (error.response?.data as { message: string })?.message ||
-          "Failed to update section",
-        variant: "destructive",
-      });
-    },
-  });
 
   const handleCreate = () => {
     setEditingSection(null);
@@ -91,16 +40,30 @@ export default function AdminHomepagePage() {
 
   const handleEdit = (section: HomepageSection) => {
     setEditingSection(section);
+    selectSection(section);
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this section?")) {
-      deleteSection.mutate(id);
+      try {
+        await deleteSection(id);
+      } catch {
+        // Error handled by hook
+      }
     }
   };
 
-  const sections = (data?.data || []) as HomepageSection[];
+  const handleToggle = async (id: string, isActive: boolean) => {
+    try {
+      const section = sections.find((s) => s.id === id);
+      if (section) {
+        await updateSection(id, { ...section, isActive });
+      }
+    } catch {
+      // Error handled by hook
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#fafafa] py-6 sm:py-8">
@@ -132,6 +95,16 @@ export default function AdminHomepagePage() {
             {Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className="h-24 w-full rounded-[12px]" />
             ))}
+          </div>
+        ) : sections.length === 0 ? (
+          <div className="text-center py-16 bg-white border border-[#e5e5e5] rounded-[12px]">
+            <LayoutDashboard className="h-12 w-12 mx-auto mb-4 text-neutral-300" />
+            <p className="text-sm font-medium text-neutral-600 mb-2">
+              No sections found
+            </p>
+            <p className="text-xs text-neutral-500 font-medium">
+              Create your first homepage section
+            </p>
           </div>
         ) : sections.length === 0 ? (
           <div className="text-center py-16 bg-white border border-[#e5e5e5] rounded-[12px]">
@@ -177,12 +150,9 @@ export default function AdminHomepagePage() {
                       <Switch
                         checked={section.isActive}
                         onCheckedChange={(checked) =>
-                          toggleSection.mutate({
-                            id: section.id,
-                            isActive: checked,
-                          })
+                          handleToggle(section.id, checked)
                         }
-                        disabled={toggleSection.isPending}
+                        disabled={isLoading}
                         className="data-[state=checked]:bg-[#0a0a0a]"
                       />
                       <span className="text-xs font-medium text-neutral-600 w-12">
@@ -202,7 +172,7 @@ export default function AdminHomepagePage() {
                       size="sm"
                       onClick={() => handleDelete(section.id)}
                       className="h-8 w-8 p-0 rounded-[8px] text-red-600 hover:text-red-700 hover:bg-red-50"
-                      disabled={deleteSection.isPending}
+                      disabled={isLoading}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>

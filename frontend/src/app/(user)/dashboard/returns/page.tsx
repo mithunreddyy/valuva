@@ -1,17 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
-import { returnsApi } from "@/services/api/returns";
+import { useReturns } from "@/hooks/use-returns";
 import { Package, Clock, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "@/lib/formatters";
 
 export default function ReturnsPage() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["returns"],
-    queryFn: () => returnsApi.getUserReturns(),
-  });
+  const { returns, isLoading } = useReturns();
+  const data = returns;
 
   if (isLoading) {
     return (

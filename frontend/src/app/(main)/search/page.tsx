@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { useSearchProducts } from "@/hooks/use-products";
+import { useSearch } from "@/hooks/use-search";
 import { InputSanitizer } from "@/lib/input-sanitizer";
 import { ArrowUpDown, Search as SearchIcon, TrendingUp, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -24,28 +25,33 @@ export default function SearchPage() {
   const analytics = useAnalytics();
   const initialQuery = searchParams.get("q") || "";
 
-  // Initialize state from URL params using lazy initializers
-  const [query, setQuery] = useState(() => initialQuery);
-  const [searchQuery, setSearchQuery] = useState(() => initialQuery);
+  // Use search hook for state management
+  const {
+    query,
+    recentSearches,
+    updateQuery,
+    performSearch,
+    clearQuery,
+    clearHistory,
+  } = useSearch();
+
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [sortBy, setSortBy] = useState<string>("relevance");
 
-  // Initialize recent searches from localStorage using lazy initializer
-  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const saved = localStorage.getItem("recentSearches");
-      return saved ? (JSON.parse(saved) as string[]) : [];
-    } catch {
-      return [];
+  // Sync with URL params
+  useEffect(() => {
+    if (initialQuery && initialQuery !== query) {
+      updateQuery(initialQuery);
+      setSearchQuery(initialQuery);
     }
-  });
+  }, [initialQuery, query, updateQuery]);
 
   const { data, isLoading } = useSearchProducts(searchQuery);
 
   // Sync query state with URL params when they change
   useEffect(() => {
     if (initialQuery !== query) {
-      setQuery(initialQuery);
+      updateQuery(initialQuery);
       setSearchQuery(initialQuery);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,24 +66,17 @@ export default function SearchPage() {
     const term = InputSanitizer.sanitizeSearchQuery(rawTerm);
     if (!term) return;
 
+    // Use search hook to update state and history
+    performSearch(term);
     setSearchQuery(term);
     router.push(`/search?q=${encodeURIComponent(term)}`);
 
     // Track search analytics
     analytics.trackSearch(term, data?.data?.length || 0);
-
-    // Save to recent searches
-    if (term && !recentSearches.includes(term)) {
-      const updated = [term, ...recentSearches].slice(0, 5);
-      setRecentSearches(updated);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("recentSearches", JSON.stringify(updated));
-      }
-    }
   };
 
   const handleClear = () => {
-    setQuery("");
+    clearQuery();
     setSearchQuery("");
     router.push("/search");
   };
@@ -89,10 +88,7 @@ export default function SearchPage() {
   };
 
   const clearRecentSearches = () => {
-    setRecentSearches([]);
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("recentSearches");
-    }
+    clearHistory();
   };
 
   // Sort products based on selected option
@@ -126,7 +122,7 @@ export default function SearchPage() {
                 <Input
                   type="text"
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={(e) => updateQuery(e.target.value)}
                   placeholder="Search products, brands, categories..."
                   className="pl-11 sm:pl-14 pr-24 sm:pr-28 h-12 sm:h-14 rounded-[16px] border border-[#e5e5e5] focus:border-[#0a0a0a] text-sm sm:text-base shadow-sm hover:shadow-md transition-all"
                   autoFocus
@@ -171,7 +167,7 @@ export default function SearchPage() {
                     <button
                       key={index}
                       onClick={(e) => {
-                        setQuery(search);
+                        updateQuery(search);
                         handleSearch(e, search);
                       }}
                       className="px-3 py-1.5 bg-white border border-[#e5e5e5] hover:border-[#0a0a0a] rounded-[12px] text-xs sm:text-sm font-medium transition-all"
@@ -296,7 +292,7 @@ export default function SearchPage() {
                 <button
                   key={term}
                   onClick={(e) => {
-                    setQuery(term);
+                    updateQuery(term);
                     handleSearch(e, term);
                   }}
                   className="px-3 py-1.5 bg-white border border-[#e5e5e5] hover:border-[#0a0a0a] rounded-[12px] text-xs font-medium transition-all"

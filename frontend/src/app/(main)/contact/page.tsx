@@ -4,10 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { contactApi } from "@/services/api/contact";
+import { useAppDispatch, useAppSelector } from "@/store";
+import {
+  clearError,
+  resetSuccess,
+  submitContactForm,
+} from "@/store/slices/contactSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle, Clock, Mail, Phone, Send } from "lucide-react";
-import { useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -25,8 +30,10 @@ const contactSchema = z.object({
 type ContactForm = z.infer<typeof contactSchema>;
 
 export default function ContactPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const dispatch = useAppDispatch();
+  const { isSubmitting, isSuccess, error } = useAppSelector(
+    (state) => state.contact
+  );
 
   const {
     register,
@@ -40,45 +47,39 @@ export default function ContactPage() {
     },
   });
 
-  const onSubmit = async (data: ContactForm) => {
-    setIsSubmitting(true);
-    setIsSuccess(false);
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: "Message sent!",
+        description: "We'll get back to you soon.",
+      });
+      reset();
+      setTimeout(() => dispatch(resetSuccess()), 5000);
+    }
+  }, [isSuccess, reset, dispatch]);
 
-    try {
-      await contactApi.submitContact({
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error",
+        description: error,
+        variant: "destructive",
+      });
+      dispatch(clearError());
+    }
+  }, [error, dispatch]);
+
+  const onSubmit = async (data: ContactForm) => {
+    await dispatch(
+      submitContactForm({
         name: data.name,
         email: data.email,
         phone: data.phone,
         subject: data.subject,
         message: data.message,
         category: data.category || "general",
-      });
-
-      setIsSuccess(true);
-      toast({
-        title: "Message sent!",
-        description: "We'll get back to you as soon as possible.",
-      });
-
-      reset();
-
-      // Reset success state after 3 seconds
-      setTimeout(() => {
-        setIsSuccess(false);
-      }, 3000);
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to send message. Please try again.";
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+      })
+    );
   };
 
   return (

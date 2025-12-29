@@ -3,75 +3,31 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
-import { supportApi } from "@/services/api/support";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSupport } from "@/hooks/use-support";
 import { MessageSquare, Send } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function SupportPage() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [category, setCategory] = useState("general");
-  const queryClient = useQueryClient();
 
   const {
-    data: tickets,
+    tickets,
     isLoading: isLoadingTickets,
-    error: ticketsError,
-  } = useQuery({
-    queryKey: ["support-tickets"],
-    queryFn: () => supportApi.getUserTickets(),
-    retry: 1,
-  });
+    createSupportTicket,
+  } = useSupport();
 
-  // Show error toast if tickets query fails
-  useEffect(() => {
-    if (ticketsError) {
-      const errorMessage =
-        ticketsError instanceof Error
-          ? ticketsError.message
-          : "Failed to load tickets. Please refresh the page.";
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    }
-  }, [ticketsError]);
-
-  const createTicket = useMutation({
-    mutationFn: (data: {
-      subject: string;
-      message: string;
-      category: string;
-    }) => supportApi.createTicket(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["support-tickets"] });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await createSupportTicket({ subject, message, category });
       setSubject("");
       setMessage("");
       setCategory("general");
-      toast({
-        title: "Ticket Created",
-        description: "Your support ticket has been created",
-      });
-    },
-    onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to create ticket. Please try again.";
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    createTicket.mutate({ subject, message, category });
+    } catch {
+      // Error handled by hook
+    }
   };
 
   return (
@@ -137,10 +93,10 @@ export default function SupportPage() {
                   type="submit"
                   variant="filled"
                   className="w-full rounded-[10px] h-10 text-sm"
-                  disabled={createTicket.isPending}
+                  disabled={isLoadingTickets}
                 >
                   <Send className="w-3.5 h-3.5 mr-2" />
-                  {createTicket.isPending ? "Creating..." : "Create Ticket"}
+                  {isLoadingTickets ? "Creating..." : "Create Ticket"}
                 </Button>
               </form>
             </div>
