@@ -166,11 +166,13 @@ export interface Product {
     title?: string;
     measurements?: Array<{
       size: string;
-      chest?: string;
-      waist?: string;
-      length?: string;
-      sleeve?: string;
-      [key: string]: string | undefined;
+      brandSize?: string; // Brand-specific size (e.g., XS, S, M, L, XL, XXL, 3XL)
+      chest?: string; // Chest measurement in inches
+      frontLength?: string; // Front length measurement in inches
+      waist?: string; // Waist measurement in inches
+      acrossShoulder?: string; // Across shoulder measurement in inches
+      sleeveLength?: string; // Sleeve length measurement in inches
+      collar?: string; // Collar/neck opening measurement in inches
     }>;
     notes?: string;
   };

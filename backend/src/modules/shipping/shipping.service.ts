@@ -141,6 +141,74 @@ export class ShippingService {
   }
 
   /**
+   * Check delivery availability by pincode
+   * Returns delivery information including rate and estimated days
+   */
+  async checkDelivery(
+    pincode: string,
+    weight: number = 0.5,
+    dimensions?: {
+      length: number;
+      width: number;
+      height: number;
+    }
+  ): Promise<{
+    available: boolean;
+    rate?: number;
+    estimatedDays?: number;
+    carrier?: string;
+    service?: string;
+    message?: string;
+  }> {
+    if (!pincode || pincode.length !== 6) {
+      throw new ValidationError("Invalid pincode. Must be 6 digits");
+    }
+
+    // Validate pincode is numeric
+    if (!/^\d{6}$/.test(pincode)) {
+      throw new ValidationError("Pincode must contain only numbers");
+    }
+
+    try {
+      // Use a default address structure for pincode-based checking
+      // In production, you might want to use a pincode lookup service
+      const address = {
+        city: "Unknown", // Will be determined by zone
+        state: "Unknown",
+        postalCode: pincode,
+        country: "India",
+      };
+
+      // Try to calculate shipping rate
+      const rate = await this.calculateShippingRate(
+        address,
+        weight,
+        dimensions
+      );
+
+      return {
+        available: true,
+        rate: rate.rate,
+        estimatedDays: rate.estimatedDays,
+        carrier: rate.carrier,
+        service: rate.service,
+        message: `Delivery available to pincode ${pincode}`,
+      };
+    } catch (error) {
+      logger.warn("Delivery check failed", {
+        pincode,
+        error: error instanceof Error ? error.message : String(error),
+      });
+
+      // Return unavailable if rate calculation fails
+      return {
+        available: false,
+        message: `Delivery not available to pincode ${pincode}`,
+      };
+    }
+  }
+
+  /**
    * Track shipment using carrier API or order tracking updates
    */
   async trackShipment(trackingNumber: string): Promise<TrackingInfo> {

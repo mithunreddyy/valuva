@@ -30,10 +30,13 @@ export const createProductSchema = z.object({
           .array(
             z.object({
               size: z.string(),
+              brandSize: z.string().optional(),
               chest: z.string().optional(),
+              frontLength: z.string().optional(),
               waist: z.string().optional(),
-              length: z.string().optional(),
-              sleeve: z.string().optional(),
+              acrossShoulder: z.string().optional(),
+              sleeveLength: z.string().optional(),
+              collar: z.string().optional(),
             })
           )
           .optional(),
@@ -86,10 +89,13 @@ export const updateProductSchema = z.object({
           .array(
             z.object({
               size: z.string(),
+              brandSize: z.string().optional(),
               chest: z.string().optional(),
+              frontLength: z.string().optional(),
               waist: z.string().optional(),
-              length: z.string().optional(),
-              sleeve: z.string().optional(),
+              acrossShoulder: z.string().optional(),
+              sleeveLength: z.string().optional(),
+              collar: z.string().optional(),
             })
           )
           .optional(),

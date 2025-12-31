@@ -58,10 +58,13 @@ const productSchema = z.object({
         .array(
           z.object({
             size: z.string().min(1, "Size is required"),
+            brandSize: z.string().optional(),
             chest: z.string().optional(),
+            frontLength: z.string().optional(),
             waist: z.string().optional(),
-            length: z.string().optional(),
-            sleeve: z.string().optional(),
+            acrossShoulder: z.string().optional(),
+            sleeveLength: z.string().optional(),
+            collar: z.string().optional(),
           })
         )
         .optional(),
@@ -193,6 +196,16 @@ export function ProductForm({ product, isNew = false }: ProductFormProps) {
     name: "specifications",
   });
 
+  const sizeGuideValue = useWatch({ control, name: "sizeGuide" });
+  const {
+    fields: sizeGuideFields,
+    append: appendSizeGuide,
+    remove: removeSizeGuide,
+  } = useFieldArray({
+    control,
+    name: "sizeGuide.measurements",
+  });
+
   const {
     fields: variantFields,
     append: appendVariant,
@@ -266,6 +279,39 @@ export function ProductForm({ product, isNew = false }: ProductFormProps) {
       specifications:
         data.specifications && data.specifications.length > 0
           ? Object.fromEntries(data.specifications.map((s) => [s.key, s.value]))
+          : undefined,
+      sizeGuide:
+        data.sizeGuide &&
+        (data.sizeGuide.title ||
+          (data.sizeGuide.measurements &&
+            data.sizeGuide.measurements.length > 0) ||
+          data.sizeGuide.notes)
+          ? {
+              title: data.sizeGuide.title || undefined,
+              measurements:
+                data.sizeGuide.measurements &&
+                data.sizeGuide.measurements.length > 0
+                  ? data.sizeGuide.measurements
+                      .filter((m) => m.size) // Only include entries with size
+                      .map((m) => {
+                        // Remove empty fields
+                        const cleaned: Record<string, string> = {
+                          size: m.size,
+                        };
+                        if (m.brandSize) cleaned.brandSize = m.brandSize;
+                        if (m.chest) cleaned.chest = m.chest;
+                        if (m.frontLength) cleaned.frontLength = m.frontLength;
+                        if (m.waist) cleaned.waist = m.waist;
+                        if (m.acrossShoulder)
+                          cleaned.acrossShoulder = m.acrossShoulder;
+                        if (m.sleeveLength)
+                          cleaned.sleeveLength = m.sleeveLength;
+                        if (m.collar) cleaned.collar = m.collar;
+                        return cleaned;
+                      })
+                  : undefined,
+              notes: data.sizeGuide.notes || undefined,
+            }
           : undefined,
       // Don't send variant IDs for new variants
       variants: data.variants.map((v) => ({
@@ -573,6 +619,129 @@ export function ProductForm({ product, isNew = false }: ProductFormProps) {
                     </Button>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Size Guide */}
+            <div className="border-t border-[#e5e5e5] pt-4 mt-4">
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-xs font-medium text-[#0a0a0a]">
+                  Size Guide
+                </label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (!sizeGuideValue) {
+                      setValue("sizeGuide", {
+                        title: "",
+                        measurements: [],
+                        notes: "",
+                      });
+                    }
+                    appendSizeGuide({
+                      size: "",
+                      brandSize: "",
+                      chest: "",
+                      frontLength: "",
+                      waist: "",
+                      acrossShoulder: "",
+                      sleeveLength: "",
+                      collar: "",
+                    });
+                  }}
+                  className="rounded-[8px] h-8 text-xs"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Add Size
+                </Button>
+              </div>
+
+              <div className="space-y-3">
+                <Input
+                  {...register("sizeGuide.title")}
+                  placeholder="Size Guide Title (optional)"
+                  className="rounded-[8px] h-9 text-xs mb-3"
+                />
+
+                {sizeGuideFields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="border border-[#e5e5e5] rounded-[8px] p-3 space-y-2"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-[#0a0a0a]">
+                        Size Entry {index + 1}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeSizeGuide(index)}
+                        className="h-7 w-7 p-0 rounded-[6px] text-red-600"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      <Input
+                        {...register(`sizeGuide.measurements.${index}.size`)}
+                        placeholder="Size (e.g., S, M, L, XL)"
+                        className="rounded-[8px] h-9 text-xs"
+                      />
+                      <Input
+                        {...register(
+                          `sizeGuide.measurements.${index}.brandSize`
+                        )}
+                        placeholder="Brand Size (optional)"
+                        className="rounded-[8px] h-9 text-xs"
+                      />
+                      <Input
+                        {...register(`sizeGuide.measurements.${index}.chest`)}
+                        placeholder="Chest (inches)"
+                        className="rounded-[8px] h-9 text-xs"
+                      />
+                      <Input
+                        {...register(
+                          `sizeGuide.measurements.${index}.frontLength`
+                        )}
+                        placeholder="Front Length (inches)"
+                        className="rounded-[8px] h-9 text-xs"
+                      />
+                      <Input
+                        {...register(`sizeGuide.measurements.${index}.waist`)}
+                        placeholder="Waist (inches)"
+                        className="rounded-[8px] h-9 text-xs"
+                      />
+                      <Input
+                        {...register(
+                          `sizeGuide.measurements.${index}.acrossShoulder`
+                        )}
+                        placeholder="Across Shoulder (inches)"
+                        className="rounded-[8px] h-9 text-xs"
+                      />
+                      <Input
+                        {...register(
+                          `sizeGuide.measurements.${index}.sleeveLength`
+                        )}
+                        placeholder="Sleeve Length (inches)"
+                        className="rounded-[8px] h-9 text-xs"
+                      />
+                      <Input
+                        {...register(`sizeGuide.measurements.${index}.collar`)}
+                        placeholder="Collar (inches)"
+                        className="rounded-[8px] h-9 text-xs"
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                <Textarea
+                  {...register("sizeGuide.notes")}
+                  placeholder="Size guide notes or instructions (optional)"
+                  className="rounded-[8px] text-xs min-h-[80px] mt-3"
+                />
               </div>
             </div>
           </TabsContent>

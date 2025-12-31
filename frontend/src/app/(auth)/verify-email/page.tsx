@@ -72,47 +72,44 @@ export default function VerifyEmailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
-      <div className="w-full max-w-[420px]">
-        {/* Logo and Brand */}
-        <div className="text-center mb-8 sm:mb-10">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4 sm:px-6 py-6 sm:py-8">
+      <div className="w-full max-w-[400px]">
+        {/* Logo */}
+        <div className="text-center mb-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-[1px] mb-6 sm:mb-8 hover:opacity-80 transition-opacity justify-center"
+            className="inline-flex items-center gap-1 mb-2 hover:opacity-80 transition-opacity justify-center"
           >
             <Image
               src="/valuvaLogo.png"
               alt="VALUVA"
-              width={48}
-              height={48}
-              className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              width={50}
+              height={50}
+              className="w-12 h-12 object-contain"
               priority
             />
-            <span className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
-              valuva
-            </span>
           </Link>
         </div>
 
         {/* Content Card */}
-        <div className="bg-white rounded-[16px] sm:rounded-[20px] border border-[#e5e5e5] shadow-sm p-6 sm:p-8 lg:p-10 text-center">
+        <div className="bg-white rounded-[16px] border border-[#e5e5e5] p-5 sm:p-6 text-center">
           {isVerifying ? (
-            <div className="space-y-6">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 border-[3px] border-[#0a0a0a] border-t-transparent rounded-full animate-spin mx-auto" />
-              <div className="space-y-2">
-                <h1 className="text-2xl sm:text-[28px] font-medium tracking-normal text-[#0a0a0a]">
+            <div className="space-y-4">
+              <div className="w-12 h-12 border-2 border-[#0a0a0a] border-t-transparent rounded-full animate-spin mx-auto" />
+              <div className="space-y-1.5">
+                <h1 className="text-xl sm:text-2xl font-light tracking-tight text-[#0a0a0a] leading-[0.95]">
                   Verifying...
                 </h1>
-                <p className="text-sm sm:text-base text-neutral-600 font-medium">
+                <p className="text-xs sm:text-sm text-neutral-400 font-normal">
                   Please wait while we verify your email
                 </p>
               </div>
             </div>
           ) : isVerified ? (
-            <div className="space-y-6">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#f0f9f4] rounded-full flex items-center justify-center mx-auto">
+            <div className="space-y-4">
+              <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mx-auto">
                 <svg
-                  className="w-8 h-8 sm:w-10 sm:h-10 text-green-600"
+                  className="w-6 h-6 text-green-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -125,20 +122,20 @@ export default function VerifyEmailPage() {
                   />
                 </svg>
               </div>
-              <div className="space-y-2">
-                <h1 className="text-2xl sm:text-[28px] font-medium tracking-normal text-[#0a0a0a]">
+              <div className="space-y-1.5">
+                <h1 className="text-xl sm:text-2xl font-light tracking-tight text-[#0a0a0a] leading-[0.95]">
                   Email Verified!
                 </h1>
-                <p className="text-sm sm:text-base text-neutral-600 font-medium">
+                <p className="text-xs sm:text-sm text-neutral-400 font-normal">
                   Redirecting to dashboard...
                 </p>
               </div>
             </div>
           ) : (
-            <div className="space-y-6 sm:space-y-8">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#fafafa] rounded-full flex items-center justify-center mx-auto border border-[#e5e5e5]">
+            <div className="space-y-4">
+              <div className="w-12 h-12 bg-[#fafafa] rounded-full flex items-center justify-center mx-auto border border-[#e5e5e5]">
                 <svg
-                  className="w-8 h-8 sm:w-10 sm:h-10 text-neutral-600"
+                  className="w-6 h-6 text-neutral-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -151,27 +148,27 @@ export default function VerifyEmailPage() {
                   />
                 </svg>
               </div>
-              <div className="space-y-2">
-                <h1 className="text-2xl sm:text-[28px] font-medium tracking-normal text-[#0a0a0a]">
+              <div className="space-y-1.5">
+                <h1 className="text-xl sm:text-2xl font-light tracking-tight text-[#0a0a0a] leading-[0.95]">
                   Verify Your Email
                 </h1>
-                <p className="text-sm sm:text-base text-neutral-600 font-medium leading-relaxed">
+                <p className="text-xs sm:text-sm text-neutral-400 font-normal leading-relaxed">
                   We&apos;ve sent a verification link to your email address.
                   Please check your inbox and click the link to verify your
                   account.
                 </p>
               </div>
-              <div className="space-y-3 pt-2">
+              <div className="space-y-2.5 pt-2">
                 <Button
                   onClick={resendVerification}
                   variant="outline"
-                  size="default"
-                  className="w-full h-10 sm:h-11 text-sm sm:text-[15px] font-medium border border-[#e5e5e5] hover:border-[#0a0a0a] rounded-[10px] transition-all disabled:opacity-50"
+                  size="sm"
+                  className="w-full h-9 text-xs font-medium border border-[#e5e5e5] hover:border-[#0a0a0a] rounded-[12px] transition-all disabled:opacity-50"
                   disabled={isResending}
                 >
                   {isResending ? (
                     <span className="flex items-center justify-center gap-2">
-                      <span className="w-4 h-4 border-2 border-neutral-500 border-t-transparent rounded-full animate-spin" />
+                      <span className="w-3.5 h-3.5 border-2 border-neutral-500 border-t-transparent rounded-full animate-spin" />
                       Sending...
                     </span>
                   ) : (
@@ -181,8 +178,8 @@ export default function VerifyEmailPage() {
                 <Button
                   onClick={() => router.push("/login")}
                   variant="filled"
-                  size="default"
-                  className="w-full h-10 sm:h-11 text-sm sm:text-[15px] font-medium bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#fafafa] border-0 rounded-[10px] transition-all"
+                  size="sm"
+                  className="w-full h-9 text-xs font-medium rounded-[12px]"
                 >
                   Back to Login
                 </Button>

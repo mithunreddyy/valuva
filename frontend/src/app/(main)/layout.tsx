@@ -2,6 +2,7 @@ import { SkipToContent } from "@/components/accessibility/skip-to-content";
 import { CookieConsent } from "@/components/layout/cookie-consent";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { ScrollWidthHandler } from "@/components/layout/scroll-width-handler";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 
@@ -21,6 +22,7 @@ export default function MainLayout({
   return (
     <div className="relative z-10 min-h-screen flex flex-col bg-[#fafafa]">
       <SkipToContent />
+      <ScrollWidthHandler />
       <Header />
       <main
         id="main-content"

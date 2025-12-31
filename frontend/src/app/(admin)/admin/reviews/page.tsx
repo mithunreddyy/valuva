@@ -126,48 +126,45 @@ export default function AdminReviewsPage() {
   const totalPages = data?.meta?.totalPages || 1;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] py-6 sm:py-8">
-      <div className="container-luxury">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 border-b border-[#e5e5e5] pb-5">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-medium tracking-normal mb-1.5">
-              Reviews Management
-            </h1>
-            <p className="text-xs text-neutral-500 font-medium">
-              Approve, reject, or delete product reviews
-            </p>
-          </div>
-        </div>
+    <div className="min-h-screen">
+      {/* Header */}
+      <div className="mb-4 border-b border-[#e5e5e5] pb-4">
+        <h1 className="text-2xl sm:text-3xl font-light tracking-tight mb-1 text-[#0a0a0a] leading-[0.95]">
+          Reviews Management
+        </h1>
+        <p className="text-xs text-neutral-400 font-normal">
+          Approve, reject, or delete product reviews
+        </p>
+      </div>
 
-        {/* Filters */}
-        <div className="bg-white border border-[#e5e5e5] p-4 rounded-[12px] mb-5">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
-              <Input
-                type="text"
-                placeholder="Search reviews..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 rounded-[10px] h-10 text-sm"
-              />
-            </div>
-            <Select value={approvalFilter} onValueChange={setApprovalFilter}>
-              <SelectTrigger className="w-full rounded-[10px] h-10 text-sm">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Reviews</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-              </SelectContent>
-            </Select>
-            <div className="text-xs text-neutral-500 font-medium flex items-center">
-              Total: {data?.meta?.total || 0} reviews
-            </div>
+      {/* Filters */}
+      <div className="bg-white border border-[#e5e5e5] p-3 rounded-[12px] mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-400" />
+            <Input
+              type="text"
+              placeholder="Search reviews..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 rounded-[10px] h-9 text-xs border-[#e5e5e5] focus:border-[#0a0a0a]"
+            />
+          </div>
+          <Select value={approvalFilter} onValueChange={setApprovalFilter}>
+            <SelectTrigger className="w-full rounded-[10px] h-9 text-xs border-[#e5e5e5] focus:border-[#0a0a0a]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Reviews</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="text-xs text-neutral-500 font-normal flex items-center">
+            Total: {data?.meta?.total || 0} reviews
           </div>
         </div>
+      </div>
 
         {/* Reviews List */}
         {isLoading ? (
@@ -177,7 +174,7 @@ export default function AdminReviewsPage() {
             ))}
           </div>
         ) : reviews.length === 0 ? (
-          <div className="text-center py-16 bg-white border border-[#e5e5e5] rounded-[12px]">
+          <div className="text-center py-12 bg-white border border-[#e5e5e5] rounded-[16px]">
             <MessageSquare className="h-12 w-12 mx-auto mb-4 text-neutral-300" />
             <p className="text-sm font-medium text-neutral-600 mb-2">
               No reviews found
@@ -189,36 +186,36 @@ export default function AdminReviewsPage() {
               {reviews.map((review: Review) => (
                 <div
                   key={review.id}
-                  className="bg-white border border-[#e5e5e5] rounded-[12px] p-5 hover:border-[#0a0a0a] transition-all"
+                  className="bg-white border border-[#e5e5e5] rounded-[16px] p-4 hover:border-[#0a0a0a] transition-all"
                 >
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start gap-3 mb-3">
+                      <div className="flex items-start gap-2.5 mb-2.5">
                         <div className="flex-shrink-0">
-                          <div className="w-10 h-10 bg-[#fafafa] border border-[#e5e5e5] rounded-full flex items-center justify-center">
+                          <div className="w-8 h-8 bg-[#fafafa] border border-[#e5e5e5] rounded-full flex items-center justify-center">
                             <span className="text-xs font-medium text-[#0a0a0a]">
                               {review.user?.firstName?.[0] || "U"}
                             </span>
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="text-sm font-medium text-[#0a0a0a]">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <p className="text-xs font-medium text-[#0a0a0a]">
                               {review.user?.firstName} {review.user?.lastName}
                             </p>
                             {review.isVerified && (
-                              <span className="px-1.5 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-[4px]">
+                              <span className="px-1.5 py-0.5 bg-green-100 text-green-700 text-xs font-normal rounded-[6px]">
                                 Verified
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-neutral-500 font-medium mb-2">
+                          <p className="text-xs text-neutral-500 font-normal mb-1.5">
                             {review.user?.email}
                           </p>
                           {review.product && (
                             <Link
                               href={`/products/${review.product.slug}`}
-                              className="text-xs text-[#0a0a0a] hover:underline font-medium"
+                              className="text-xs text-[#0a0a0a] hover:underline font-normal"
                             >
                               {review.product.name}
                             </Link>
@@ -226,12 +223,12 @@ export default function AdminReviewsPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <div className="flex items-center gap-0.5">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star
                               key={i}
-                              className={`h-3.5 w-3.5 ${
+                              className={`h-3 w-3 ${
                                 i < review.rating
                                   ? "fill-[#0a0a0a] text-[#0a0a0a]"
                                   : "text-neutral-300"
@@ -239,27 +236,27 @@ export default function AdminReviewsPage() {
                             />
                           ))}
                         </div>
-                        <span className="text-xs font-medium text-neutral-600">
+                        <span className="text-xs font-normal text-neutral-600">
                           {review.rating}/5
                         </span>
                       </div>
 
                       {review.title && (
-                        <p className="text-sm font-medium text-[#0a0a0a] mb-2">
+                        <p className="text-xs font-medium text-[#0a0a0a] mb-1.5">
                           {review.title}
                         </p>
                       )}
-                      <p className="text-xs text-neutral-600 font-medium leading-relaxed mb-2">
+                      <p className="text-xs text-neutral-600 font-normal leading-relaxed mb-1.5">
                         {review.comment}
                       </p>
-                      <p className="text-xs text-neutral-500 font-medium">
+                      <p className="text-xs text-neutral-500 font-normal">
                         {formatDate(review.createdAt)}
                       </p>
                     </div>
 
-                    <div className="flex flex-col items-end gap-2">
+                    <div className="flex flex-col items-end gap-1.5">
                       <span
-                        className={`px-2.5 py-1 text-xs font-medium rounded-[6px] ${
+                        className={`px-2.5 py-1 text-xs font-normal rounded-[8px] ${
                           review.isApproved
                             ? "bg-green-100 text-green-700"
                             : "bg-yellow-100 text-yellow-700"
@@ -267,13 +264,13 @@ export default function AdminReviewsPage() {
                       >
                         {review.isApproved ? "Approved" : "Pending"}
                       </span>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1">
                         {!review.isApproved && (
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleApprove(review.id)}
-                            className="h-8 w-8 p-0 rounded-[8px] text-green-600 hover:text-green-700 hover:bg-green-50"
+                            className="h-7 w-7 p-0 rounded-[8px] text-green-600 hover:text-green-700 hover:bg-green-50"
                             disabled={approveReview.isPending}
                           >
                             <Check className="h-3.5 w-3.5" />
@@ -284,7 +281,7 @@ export default function AdminReviewsPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleReject(review.id)}
-                            className="h-8 w-8 p-0 rounded-[8px] text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
+                            className="h-7 w-7 p-0 rounded-[8px] text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
                             disabled={approveReview.isPending}
                           >
                             <X className="h-3.5 w-3.5" />
@@ -294,7 +291,7 @@ export default function AdminReviewsPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(review.id)}
-                          className="h-8 w-8 p-0 rounded-[8px] text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="h-7 w-7 p-0 rounded-[8px] text-red-600 hover:text-red-700 hover:bg-red-50"
                           disabled={deleteReview.isPending}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -308,7 +305,7 @@ export default function AdminReviewsPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="mt-5 flex justify-center">
+              <div className="mt-4 flex justify-center">
                 <Pagination
                   currentPage={page}
                   totalPages={totalPages}

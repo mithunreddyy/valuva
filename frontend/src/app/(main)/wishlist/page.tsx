@@ -1,5 +1,6 @@
 "use client";
 
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { ProductCardSkeleton } from "@/components/products/product-card-skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -235,20 +236,29 @@ export default function WishlistPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Header - Modern Design */}
-      <section className="relative border-b border-[#f5f5f5] bg-gradient-to-b from-white via-white to-[#fafafa]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.01),transparent_70%)]" />
-        <div className="container-luxury py-10 sm:py-12 md:py-16 relative z-10">
+      {/* Breadcrumbs */}
+      <div className="container-luxury pt-2 sm:pt-4 pb-2 sm:pb-4">
+        <Breadcrumbs
+          items={[
+            { name: "Home", url: "/" },
+            { name: "Wishlist", url: "/wishlist", isBold: true },
+          ]}
+        />
+      </div>
+
+      {/* Header */}
+      <section className="border-b border-[#e5e5e5] bg-white">
+        <div className="container-luxury py-6 sm:py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="space-y-6"
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="space-y-4"
           >
             {/* Title Section */}
             <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
-              <div className="space-y-2">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight text-[#0a0a0a]">
+              <div className="space-y-1">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-[#0a0a0a] leading-[0.95]">
                   My Wishlist
                 </h1>
                 <p className="text-xs sm:text-sm text-neutral-400 font-normal">
@@ -261,7 +271,7 @@ export default function WishlistPage() {
                     size="sm"
                     variant="outline"
                     onClick={handleShare}
-                    className="gap-1.5 border-[#f5f5f5] hover:border-[#e5e5e5] bg-[#fafafa]"
+                    className="gap-1.5 border-[#e5e5e5] hover:border-[#0a0a0a] bg-white rounded-[12px]"
                   >
                     <Share2 className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Share</span>
@@ -271,7 +281,7 @@ export default function WishlistPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="w-full sm:w-auto border-[#f5f5f5] hover:border-[#e5e5e5] bg-[#fafafa]"
+                    className="w-full sm:w-auto border-[#e5e5e5] hover:border-[#0a0a0a] bg-white rounded-[12px]"
                   >
                     Continue Shopping
                   </Button>
@@ -279,31 +289,31 @@ export default function WishlistPage() {
               </div>
             </div>
 
-            {/* Search and Sort Bar - Refined */}
+            {/* Search and Sort Bar */}
             {items.length > 0 && (
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
                 {/* Search */}
                 <div className="relative flex-1">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
                   <Input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search your wishlist..."
-                    className="pl-11 pr-4 h-10 rounded-[12px] border border-[#f5f5f5] focus:border-[#d0d0d0] bg-[#fafafa] text-xs font-normal shadow-none hover:bg-white"
+                    className="pl-10 pr-4 h-9 rounded-[12px] border border-[#e5e5e5] focus:border-[#0a0a0a] bg-white text-xs font-normal"
                   />
                 </div>
 
                 {/* Sort */}
                 <div className="w-full sm:w-[160px]">
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-full border border-[#f5f5f5] text-xs font-normal h-10 hover:border-[#e5e5e5] transition-all rounded-[12px] bg-[#fafafa] shadow-none hover:bg-white">
+                    <SelectTrigger className="w-full border border-[#e5e5e5] text-xs font-normal h-9 hover:border-[#0a0a0a] transition-all rounded-[12px] bg-white">
                       <div className="flex items-center gap-1.5">
                         <ArrowUpDown className="h-3.5 w-3.5 text-neutral-400" />
                         <SelectValue placeholder="Sort by" />
                       </div>
                     </SelectTrigger>
-                    <SelectContent className="border border-[#f5f5f5] rounded-[14px] shadow-lg bg-white">
+                    <SelectContent className="border border-[#e5e5e5] rounded-[12px] shadow-lg bg-white">
                       <SelectItem
                         value="recent"
                         className="text-xs font-normal rounded-[10px] focus:bg-[#fafafa] py-2"
@@ -345,7 +355,7 @@ export default function WishlistPage() {
                       size="sm"
                       variant="outline"
                       onClick={handleSelectAll}
-                      className="text-xs border-[#f5f5f5] hover:border-[#e5e5e5] bg-[#fafafa]"
+                      className="text-xs border-[#e5e5e5] hover:border-[#0a0a0a] bg-white rounded-[12px]"
                     >
                       {selectedItems.size === sortedItems.length
                         ? "Deselect All"
@@ -372,7 +382,7 @@ export default function WishlistPage() {
                           await Promise.all(promises);
                           setSelectedItems(new Set());
                         }}
-                        className="text-xs text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 flex items-center gap-1.5"
+                        className="text-xs text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 flex items-center gap-1.5 rounded-[12px]"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                         <span>Remove ({selectedItems.size})</span>
@@ -386,24 +396,24 @@ export default function WishlistPage() {
         </div>
       </section>
 
-      {/* Products Grid - Modern Layout */}
-      <section className="container-luxury py-10 sm:py-12 md:py-16">
+      {/* Products Grid */}
+      <section className="container-luxury py-6 sm:py-8">
         {sortedItems.length === 0 && searchQuery ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center py-20 sm:py-24 space-y-4"
+            className="text-center py-12 sm:py-16 space-y-4"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.15, duration: 0.4 }}
-              className="w-16 h-16 rounded-full bg-[#f5f5f5] flex items-center justify-center mx-auto"
+              className="w-12 h-12 rounded-full bg-[#f5f5f5] flex items-center justify-center mx-auto"
             >
-              <Search className="h-7 w-7 text-neutral-400" />
+              <Search className="h-5 w-5 text-neutral-400" />
             </motion.div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <h2 className="text-base font-normal tracking-normal text-[#0a0a0a]">
                 No items found
               </h2>
@@ -416,7 +426,7 @@ export default function WishlistPage() {
                 size="sm"
                 variant="outline"
                 onClick={() => setSearchQuery("")}
-                className="border-[#f5f5f5] hover:border-[#e5e5e5] bg-[#fafafa]"
+                className="border-[#e5e5e5] hover:border-[#0a0a0a] bg-white rounded-[12px]"
               >
                 Clear Search
               </Button>
@@ -427,7 +437,7 @@ export default function WishlistPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6"
           >
             <AnimatePresence>
               {sortedItems.map((item, index) => (

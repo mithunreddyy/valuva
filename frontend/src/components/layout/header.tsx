@@ -100,6 +100,12 @@ export function Header() {
               >
                 About
               </Link>
+              <Link
+                href="/directory"
+                className="text-sm font-medium tracking-normal hover-opacity transition-opacity"
+              >
+                Directory
+              </Link>
             </nav>
 
             {/* Actions */}
@@ -259,6 +265,13 @@ export function Header() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     About
+                  </Link>
+                  <Link
+                    href="/directory"
+                    className="block text-sm font-medium tracking-normal hover-opacity transition-opacity"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Directory
                   </Link>
                   <Link
                     href="/wishlist"

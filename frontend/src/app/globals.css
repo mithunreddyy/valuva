@@ -57,6 +57,17 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Grid Pattern Background */
+  .bg-grid-pattern {
+    background-image: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.03) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
   /* Minimal Luxury Typography - Manrope for all text */
   h1,
   h2,
@@ -110,27 +121,58 @@
   /* Container - Half Width with Responsive Design */
   .container-luxury {
     @apply w-full mx-auto px-4 sm:px-6 lg:px-8;
-    max-width: 50%;
+    /* Start at 80%, animate to 70% on scroll (desktop only) */
+    max-width: var(--container-max-width, 80%);
+    /* Smooth transition for width changes */
+    transition: max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Responsive container widths */
   @media (max-width: 1024px) {
     .container-luxury {
-      max-width: 90%;
+      /* Override scroll-based width on tablet and below */
+      max-width: 90% !important;
+      transition: max-width 0.3s ease-out;
     }
   }
 
   @media (max-width: 768px) {
     .container-luxury {
-      max-width: 95%;
+      /* Override scroll-based width on mobile */
+      max-width: 95% !important;
+      transition: max-width 0.3s ease-out;
     }
   }
 
   @media (max-width: 640px) {
     .container-luxury {
-      max-width: 100%;
+      /* Override scroll-based width on small mobile */
+      max-width: 100% !important;
       padding-left: 1rem;
       padding-right: 1rem;
+      transition: max-width 0.3s ease-out;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container-luxury {
+      max-width: 100%;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+  }
+  @media (max-width: 320px) {
+    .container-luxury {
+      max-width: 100%;
+      padding-left: 0.25rem;
+      padding-right: 0.25rem;
+    }
+  }
+  @media (max-width: 280px) {
+    .container-luxury {
+      max-width: 100%;
+      padding-left: 0.125rem;
+      padding-right: 0.125rem;
     }
   }
 

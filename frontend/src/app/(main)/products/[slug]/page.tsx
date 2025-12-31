@@ -1,12 +1,14 @@
 "use client";
 
 import { ProductCard } from "@/components/products/ProductCard";
+import { DeliveryOptions } from "@/components/products/delivery-options";
 import {
   ProductImageModal,
   ProductImageZoom,
 } from "@/components/products/product-image-zoom";
 import { ProductRecommendations } from "@/components/products/product-recommendations";
 import { ProductReviews } from "@/components/products/product-reviews";
+import { SizeGuide } from "@/components/products/size-guide";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { ShareButtons } from "@/components/social/share-buttons";
 import { Button } from "@/components/ui/button";
@@ -32,7 +34,6 @@ import {
   Minus,
   Package,
   Plus,
-  Ruler,
   ShoppingCart,
   Star,
   Truck,
@@ -226,10 +227,21 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             { name: "Shop", url: "/shop" },
             {
               name: product.category?.name || "Products",
-              url: `/shop?category=${product.category?.slug || ""}`,
+              url: `/shop?categoryId=${product.category?.id || ""}`,
             },
-            { name: product.name, url: productUrl },
+            ...(product.subCategory
+              ? [
+                  {
+                    name: product.subCategory.name,
+                    url: `/shop?categoryId=${
+                      product.category?.id || ""
+                    }&subCategoryId=${product.subCategory.id}`,
+                  },
+                ]
+              : []),
+            { name: product.name, url: productUrl, isBold: true },
           ]}
+          showMoreBy={product.brand || undefined}
         />
       </div>
 
@@ -407,9 +419,17 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
                   >
-                    <label className="block text-xs font-medium tracking-normal mb-2.5 text-[#0a0a0a]">
-                      Size
-                    </label>
+                    <div className="flex items-center justify-between mb-2.5">
+                      <label className="block text-xs font-medium tracking-normal text-[#0a0a0a]">
+                        Size
+                      </label>
+                      <SizeGuide
+                        product={product}
+                        selectedSize={selectedSize}
+                        onSizeSelect={setSelectedSize}
+                        variant="button"
+                      />
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       <AnimatePresence>
                         {availableSizes.map((size, index) => {
@@ -642,155 +662,125 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   </motion.div>
                 )}
 
-                {/* Product Details */}
+                {/* Delivery Options */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.2 }}
-                  className="border-t border-[#e5e5e5] pt-5 space-y-3"
                 >
-                  {product.brand && (
-                    <div className="flex gap-4">
-                      <span className="text-xs font-medium w-20 text-neutral-600">
-                        Brand:
-                      </span>
-                      <span className="text-sm font-medium text-[#0a0a0a]">
-                        {product.brand}
-                      </span>
-                    </div>
-                  )}
-                  {product.material && (
-                    <div className="flex gap-4">
-                      <span className="text-xs font-medium w-20 text-neutral-600">
-                        Material:
-                      </span>
-                      <span className="text-sm font-medium text-[#0a0a0a]">
-                        {product.material}
-                      </span>
-                    </div>
-                  )}
-                  {product.careInstructions && (
-                    <div className="flex gap-4">
-                      <span className="text-xs font-medium w-20 text-neutral-600">
-                        Care:
-                      </span>
-                      <span className="text-sm font-medium text-[#0a0a0a]">
-                        {product.careInstructions}
-                      </span>
-                    </div>
-                  )}
+                  <DeliveryOptions
+                    productId={product.id}
+                    weight={undefined}
+                    dimensions={undefined}
+                  />
                 </motion.div>
               </motion.div>
             </motion.div>
           </div>
         </section>
 
-        {/* Detailed Information Tabs */}
-        {(product.longDescription ||
-          product.specifications ||
-          product.washCareInstructions ||
-          product.shippingInfo ||
-          product.sizeGuide) && (
-          <section className="bg-white border-t border-[#e5e5e5]">
-            <div className="container-luxury py-6 sm:py-8 lg:py-10">
-              {/* Tabs */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="flex flex-wrap gap-2 mb-6 sm:mb-8 border-b border-[#e5e5e5]"
+        {/* Product Details, Material & Care, Specifications */}
+        <section className="bg-white border-t border-[#e5e5e5]">
+          <div className="container-luxury py-6 sm:py-8 lg:py-10">
+            {/* Tabs */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="flex flex-wrap gap-2 mb-6 sm:mb-8 border-b border-[#e5e5e5]"
+            >
+              <button
+                onClick={() => setActiveTab("description")}
+                role="tab"
+                aria-selected={activeTab === "description"}
+                aria-controls="description-panel"
+                id="description-tab"
+                className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
+                  activeTab === "description"
+                    ? "border-[#0a0a0a] text-[#0a0a0a]"
+                    : "border-transparent text-neutral-600 hover:text-[#0a0a0a]"
+                }`}
               >
-                {product.longDescription && (
-                  <button
-                    onClick={() => setActiveTab("description")}
-                    role="tab"
-                    aria-selected={activeTab === "description"}
-                    aria-controls="description-panel"
-                    id="description-tab"
-                    className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
-                      activeTab === "description"
-                        ? "border-[#0a0a0a] text-[#0a0a0a]"
-                        : "border-transparent text-neutral-600 hover:text-[#0a0a0a]"
-                    }`}
-                  >
-                    Description
-                  </button>
-                )}
-                {product.specifications && (
-                  <button
-                    onClick={() => setActiveTab("specs")}
-                    role="tab"
-                    aria-selected={activeTab === "specs"}
-                    aria-controls="specs-panel"
-                    id="specs-tab"
-                    className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
-                      activeTab === "specs"
-                        ? "border-[#0a0a0a] text-[#0a0a0a]"
-                        : "border-transparent text-neutral-600 hover:text-[#0a0a0a]"
-                    }`}
-                  >
-                    <Package
-                      className="h-3.5 w-3.5 inline mr-1.5"
-                      aria-hidden="true"
-                    />
-                    Specifications
-                  </button>
-                )}
-                {(product.washCareInstructions || product.careInstructions) && (
-                  <button
-                    onClick={() => setActiveTab("care")}
-                    role="tab"
-                    aria-selected={activeTab === "care"}
-                    aria-controls="care-panel"
-                    id="care-tab"
-                    className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
-                      activeTab === "care"
-                        ? "border-[#0a0a0a] text-[#0a0a0a]"
-                        : "border-transparent text-neutral-600 hover:text-[#0a0a0a]"
-                    }`}
-                  >
-                    <Info
-                      className="h-3.5 w-3.5 inline mr-1.5"
-                      aria-hidden="true"
-                    />
-                    Care Instructions
-                  </button>
-                )}
-                {(product.shippingInfo || product.sizeGuide) && (
-                  <button
-                    onClick={() => setActiveTab("shipping")}
-                    role="tab"
-                    aria-selected={activeTab === "shipping"}
-                    aria-controls="shipping-panel"
-                    id="shipping-tab"
-                    className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
-                      activeTab === "shipping"
-                        ? "border-[#0a0a0a] text-[#0a0a0a]"
-                        : "border-transparent text-neutral-600 hover:text-[#0a0a0a]"
-                    }`}
-                  >
-                    <Truck
-                      className="h-3.5 w-3.5 inline mr-1.5"
-                      aria-hidden="true"
-                    />
-                    Shipping & Size
-                  </button>
-                )}
-              </motion.div>
+                Product Details
+              </button>
+              {product.specifications && (
+                <button
+                  onClick={() => setActiveTab("specs")}
+                  role="tab"
+                  aria-selected={activeTab === "specs"}
+                  aria-controls="specs-panel"
+                  id="specs-tab"
+                  className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
+                    activeTab === "specs"
+                      ? "border-[#0a0a0a] text-[#0a0a0a]"
+                      : "border-transparent text-neutral-600 hover:text-[#0a0a0a]"
+                  }`}
+                >
+                  <Package
+                    className="h-3.5 w-3.5 inline mr-1.5"
+                    aria-hidden="true"
+                  />
+                  Specifications
+                </button>
+              )}
+              {(product.washCareInstructions ||
+                product.careInstructions ||
+                product.material) && (
+                <button
+                  onClick={() => setActiveTab("care")}
+                  role="tab"
+                  aria-selected={activeTab === "care"}
+                  aria-controls="care-panel"
+                  id="care-tab"
+                  className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
+                    activeTab === "care"
+                      ? "border-[#0a0a0a] text-[#0a0a0a]"
+                      : "border-transparent text-neutral-600 hover:text-[#0a0a0a]"
+                  }`}
+                >
+                  <Info
+                    className="h-3.5 w-3.5 inline mr-1.5"
+                    aria-hidden="true"
+                  />
+                  Material & Care
+                </button>
+              )}
+              {(product.shippingInfo || product.sizeGuide) && (
+                <button
+                  onClick={() => setActiveTab("shipping")}
+                  role="tab"
+                  aria-selected={activeTab === "shipping"}
+                  aria-controls="shipping-panel"
+                  id="shipping-tab"
+                  className={`px-4 py-2 text-xs font-medium transition-colors border-b-2 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
+                    activeTab === "shipping"
+                      ? "border-[#0a0a0a] text-[#0a0a0a]"
+                      : "border-transparent text-neutral-600 hover:text-[#0a0a0a]"
+                  }`}
+                >
+                  <Truck
+                    className="h-3.5 w-3.5 inline mr-1.5"
+                    aria-hidden="true"
+                  />
+                  Shipping & Size
+                </button>
+              )}
+            </motion.div>
 
-              {/* Tab Content */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1, duration: 0.6 }}
-                className="max-w-3xl"
-                role="tabpanel"
-                aria-labelledby={`${activeTab}-tab`}
-              >
-                {activeTab === "description" && product.longDescription && (
-                  <div className="space-y-4" id="description-panel">
+            {/* Tab Content */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+              className="max-w-3xl"
+              role="tabpanel"
+              aria-labelledby={`${activeTab}-tab`}
+            >
+              {activeTab === "description" && (
+                <div className="space-y-4" id="description-panel">
+                  {product.longDescription ? (
                     <div
                       className="text-sm text-neutral-700 leading-relaxed font-medium prose prose-sm max-w-none"
                       dangerouslySetInnerHTML={{
@@ -800,196 +790,164 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                         ),
                       }}
                     />
-                  </div>
-                )}
-
-                {activeTab === "specs" && product.specifications && (
-                  <div className="space-y-3" id="specs-panel">
-                    {Object.entries(product.specifications).map(
-                      ([key, value]) => (
-                        <div
-                          key={key}
-                          className="flex justify-between items-start py-3 border-b border-[#e5e5e5] last:border-0"
-                        >
-                          <span className="text-xs font-medium text-neutral-600 capitalize w-32 flex-shrink-0">
-                            {key.replace(/([A-Z])/g, " $1").trim()}:
-                          </span>
-                          <span className="text-sm font-medium text-[#0a0a0a] text-right flex-1">
-                            {String(value)}
-                          </span>
-                        </div>
-                      )
+                  ) : (
+                    <div className="text-sm text-neutral-700 leading-relaxed font-medium">
+                      {product.description || product.shortDescription}
+                    </div>
+                  )}
+                  {/* Additional Product Details */}
+                  <div className="border-t border-[#e5e5e5] pt-4 mt-4 space-y-3">
+                    {product.brand && (
+                      <div className="flex gap-4">
+                        <span className="text-xs font-medium w-24 text-neutral-600">
+                          Brand:
+                        </span>
+                        <span className="text-sm font-medium text-[#0a0a0a]">
+                          {product.brand}
+                        </span>
+                      </div>
+                    )}
+                    {product.category && (
+                      <div className="flex gap-4">
+                        <span className="text-xs font-medium w-24 text-neutral-600">
+                          Category:
+                        </span>
+                        <span className="text-sm font-medium text-[#0a0a0a]">
+                          {product.category.name}
+                        </span>
+                      </div>
+                    )}
+                    {product.sku && (
+                      <div className="flex gap-4">
+                        <span className="text-xs font-medium w-24 text-neutral-600">
+                          SKU:
+                        </span>
+                        <span className="text-sm font-medium text-[#0a0a0a]">
+                          {product.sku}
+                        </span>
+                      </div>
                     )}
                   </div>
-                )}
+                </div>
+              )}
 
-                {activeTab === "care" &&
-                  (product.washCareInstructions ||
+              {activeTab === "specs" && product.specifications && (
+                <div className="space-y-3" id="specs-panel">
+                  {Object.entries(product.specifications).map(
+                    ([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex justify-between items-start py-3 border-b border-[#e5e5e5] last:border-0"
+                      >
+                        <span className="text-xs font-medium text-neutral-600 capitalize w-32 flex-shrink-0">
+                          {key.replace(/([A-Z])/g, " $1").trim()}:
+                        </span>
+                        <span className="text-sm font-medium text-[#0a0a0a] text-right flex-1">
+                          {String(value)}
+                        </span>
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+
+              {activeTab === "care" && (
+                <div className="space-y-4" id="care-panel">
+                  {product.material && (
+                    <div className="bg-[#fafafa] border border-[#e5e5e5] rounded-[12px] p-5">
+                      <h3 className="text-sm font-medium mb-3 text-[#0a0a0a]">
+                        Material
+                      </h3>
+                      <div className="text-sm text-neutral-700 leading-relaxed font-medium">
+                        {product.material}
+                      </div>
+                    </div>
+                  )}
+                  {(product.washCareInstructions ||
                     product.careInstructions) && (
-                    <div className="space-y-4" id="care-panel">
-                      <div className="bg-[#fafafa] border border-[#e5e5e5] rounded-[12px] p-5">
-                        <h3 className="text-sm font-medium mb-3 text-[#0a0a0a]">
-                          Wash Care Instructions
-                        </h3>
-                        <div className="text-sm text-neutral-700 leading-relaxed font-medium whitespace-pre-line">
-                          {product.washCareInstructions ||
-                            product.careInstructions}
+                    <div className="bg-[#fafafa] border border-[#e5e5e5] rounded-[12px] p-5">
+                      <h3 className="text-sm font-medium mb-3 text-[#0a0a0a]">
+                        Care Instructions
+                      </h3>
+                      <div className="text-sm text-neutral-700 leading-relaxed font-medium whitespace-pre-line">
+                        {product.washCareInstructions ||
+                          product.careInstructions}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === "shipping" && (
+                <div className="space-y-6" id="shipping-panel">
+                  {product.shippingInfo && (
+                    <div className="space-y-4">
+                      <h3 className="text-base font-medium text-[#0a0a0a] flex items-center gap-2">
+                        <Truck className="h-4 w-4" />
+                        Shipping Information
+                      </h3>
+                      <div className="bg-[#fafafa] border border-[#e5e5e5] rounded-[12px] p-5 space-y-3">
+                        {product.shippingInfo.processingTime && (
+                          <div className="flex justify-between">
+                            <span className="text-xs font-medium text-neutral-600">
+                              Processing Time:
+                            </span>
+                            <span className="text-sm font-medium text-[#0a0a0a]">
+                              {product.shippingInfo.processingTime}
+                            </span>
+                          </div>
+                        )}
+                        {product.shippingInfo.shippingTime && (
+                          <div className="flex justify-between">
+                            <span className="text-xs font-medium text-neutral-600">
+                              Shipping Time:
+                            </span>
+                            <span className="text-sm font-medium text-[#0a0a0a]">
+                              {product.shippingInfo.shippingTime}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex justify-between">
+                          <span className="text-xs font-medium text-neutral-600">
+                            Free Shipping:
+                          </span>
+                          <span className="text-sm font-medium text-[#0a0a0a]">
+                            {product.shippingInfo.freeShipping ? "Yes" : "No"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-xs font-medium text-neutral-600">
+                            Returnable:
+                          </span>
+                          <span className="text-sm font-medium text-[#0a0a0a]">
+                            {product.shippingInfo.returnable ? "Yes" : "No"}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-xs font-medium text-neutral-600">
+                            Exchangeable:
+                          </span>
+                          <span className="text-sm font-medium text-[#0a0a0a]">
+                            {product.shippingInfo.exchangeable ? "Yes" : "No"}
+                          </span>
                         </div>
                       </div>
                     </div>
                   )}
 
-                {activeTab === "shipping" && (
-                  <div className="space-y-6" id="shipping-panel">
-                    {product.shippingInfo && (
-                      <div className="space-y-4">
-                        <h3 className="text-base font-medium text-[#0a0a0a] flex items-center gap-2">
-                          <Truck className="h-4 w-4" />
-                          Shipping Information
-                        </h3>
-                        <div className="bg-[#fafafa] border border-[#e5e5e5] rounded-[12px] p-5 space-y-3">
-                          {product.shippingInfo.processingTime && (
-                            <div className="flex justify-between">
-                              <span className="text-xs font-medium text-neutral-600">
-                                Processing Time:
-                              </span>
-                              <span className="text-sm font-medium text-[#0a0a0a]">
-                                {product.shippingInfo.processingTime}
-                              </span>
-                            </div>
-                          )}
-                          {product.shippingInfo.shippingTime && (
-                            <div className="flex justify-between">
-                              <span className="text-xs font-medium text-neutral-600">
-                                Shipping Time:
-                              </span>
-                              <span className="text-sm font-medium text-[#0a0a0a]">
-                                {product.shippingInfo.shippingTime}
-                              </span>
-                            </div>
-                          )}
-                          <div className="flex justify-between">
-                            <span className="text-xs font-medium text-neutral-600">
-                              Free Shipping:
-                            </span>
-                            <span className="text-sm font-medium text-[#0a0a0a]">
-                              {product.shippingInfo.freeShipping ? "Yes" : "No"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-xs font-medium text-neutral-600">
-                              Returnable:
-                            </span>
-                            <span className="text-sm font-medium text-[#0a0a0a]">
-                              {product.shippingInfo.returnable ? "Yes" : "No"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-xs font-medium text-neutral-600">
-                              Exchangeable:
-                            </span>
-                            <span className="text-sm font-medium text-[#0a0a0a]">
-                              {product.shippingInfo.exchangeable ? "Yes" : "No"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {product.sizeGuide && (
-                      <div className="space-y-4">
-                        <h3 className="text-base font-medium text-[#0a0a0a] flex items-center gap-2">
-                          <Ruler className="h-4 w-4" />
-                          Size Guide
-                          {product.sizeGuide.title &&
-                            ` - ${product.sizeGuide.title}`}
-                        </h3>
-                        {product.sizeGuide.measurements && (
-                          <div className="bg-white border border-[#e5e5e5] rounded-[12px] overflow-hidden">
-                            <div className="overflow-x-auto">
-                              <table className="w-full text-sm">
-                                <thead className="bg-[#fafafa] border-b border-[#e5e5e5]">
-                                  <tr>
-                                    <th className="px-4 py-3 text-left text-xs font-medium text-[#0a0a0a]">
-                                      Size
-                                    </th>
-                                    {product.sizeGuide.measurements[0]
-                                      ?.chest && (
-                                      <th className="px-4 py-3 text-left text-xs font-medium text-[#0a0a0a]">
-                                        Chest
-                                      </th>
-                                    )}
-                                    {product.sizeGuide.measurements[0]
-                                      ?.waist && (
-                                      <th className="px-4 py-3 text-left text-xs font-medium text-[#0a0a0a]">
-                                        Waist
-                                      </th>
-                                    )}
-                                    {product.sizeGuide.measurements[0]
-                                      ?.length && (
-                                      <th className="px-4 py-3 text-left text-xs font-medium text-[#0a0a0a]">
-                                        Length
-                                      </th>
-                                    )}
-                                    {product.sizeGuide.measurements[0]
-                                      ?.sleeve && (
-                                      <th className="px-4 py-3 text-left text-xs font-medium text-[#0a0a0a]">
-                                        Sleeve
-                                      </th>
-                                    )}
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {product.sizeGuide.measurements.map(
-                                    (measurement, index) => (
-                                      <tr
-                                        key={index}
-                                        className="border-b border-[#e5e5e5] last:border-0"
-                                      >
-                                        <td className="px-4 py-3 font-medium text-[#0a0a0a]">
-                                          {measurement.size}
-                                        </td>
-                                        {measurement.chest && (
-                                          <td className="px-4 py-3 text-neutral-600 font-medium">
-                                            {measurement.chest}
-                                          </td>
-                                        )}
-                                        {measurement.waist && (
-                                          <td className="px-4 py-3 text-neutral-600 font-medium">
-                                            {measurement.waist}
-                                          </td>
-                                        )}
-                                        {measurement.length && (
-                                          <td className="px-4 py-3 text-neutral-600 font-medium">
-                                            {measurement.length}
-                                          </td>
-                                        )}
-                                        {measurement.sleeve && (
-                                          <td className="px-4 py-3 text-neutral-600 font-medium">
-                                            {measurement.sleeve}
-                                          </td>
-                                        )}
-                                      </tr>
-                                    )
-                                  )}
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-                        )}
-                        {product.sizeGuide.notes && (
-                          <p className="text-xs text-neutral-600 font-medium leading-relaxed">
-                            {product.sizeGuide.notes}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </motion.div>
-            </div>
-          </section>
-        )}
+                  {product.sizeGuide && (
+                    <SizeGuide
+                      product={product}
+                      selectedSize={selectedSize}
+                      onSizeSelect={setSelectedSize}
+                      variant="inline"
+                    />
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </div>
+        </section>
 
         {/* Reviews Section */}
         <section className="section-padding bg-white border-t border-[#e5e5e5]">

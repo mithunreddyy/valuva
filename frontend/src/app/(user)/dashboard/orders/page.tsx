@@ -15,12 +15,12 @@ export default function OrdersPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#fafafa]">
-        <div className="container-luxury py-8 sm:py-12">
-          <div className="space-y-4">
-            <Skeleton className="h-12 w-48" />
+      <div className="min-h-screen bg-white">
+        <div className="container-luxury py-6 sm:py-8">
+          <div className="space-y-3">
+            <Skeleton className="h-8 w-40 rounded-[12px]" />
             {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-32 w-full" />
+              <Skeleton key={i} className="h-28 w-full rounded-[16px]" />
             ))}
           </div>
         </div>
@@ -32,17 +32,17 @@ export default function OrdersPage() {
 
   if (orders.length === 0) {
     return (
-      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
-        <div className="container-luxury text-center py-16 space-y-6">
-          <Package className="h-24 w-24 mx-auto text-neutral-300" />
-          <h2 className="text-3xl sm:text-4xl font-medium tracking-normal">
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="container-luxury text-center py-12 space-y-4">
+          <Package className="h-12 w-12 mx-auto text-neutral-300" />
+          <h2 className="text-2xl sm:text-3xl font-light tracking-tight leading-[0.95]">
             No orders yet
           </h2>
-          <p className="text-sm text-neutral-500 font-medium">
+          <p className="text-xs sm:text-sm text-neutral-400 font-normal">
             Start shopping to see your orders here
           </p>
           <Link href="/shop">
-            <Button size="lg" className="rounded-[10px]">
+            <Button size="sm" className="rounded-[12px]">
               Start Shopping
             </Button>
           </Link>
@@ -52,33 +52,33 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen bg-white">
       {/* Header Section */}
-      <section className="bg-white border-b border-[#e5e5e5]">
-        <div className="container-luxury py-8 sm:py-12">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-normal">
+      <section className="border-b border-[#e5e5e5] bg-white">
+        <div className="container-luxury py-6 sm:py-8">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight leading-[0.95]">
             My Orders
           </h1>
         </div>
       </section>
 
       {/* Orders List */}
-      <section className="container-luxury py-8 sm:py-12">
-        <div className="space-y-4">
+      <section className="container-luxury py-6 sm:py-8">
+        <div className="space-y-3">
           {orders.map((order) => (
             <Link
               key={order.id}
               href={`/dashboard/orders/${order.id}`}
               className="block"
             >
-              <div className="bg-white border border-[#e5e5e5] p-6 hover:border-[#0a0a0a] transition-all rounded-[12px]">
-                <div className="flex items-start justify-between mb-4">
+              <div className="bg-white border border-[#e5e5e5] p-4 hover:border-[#0a0a0a] transition-all rounded-[16px]">
+                <div className="flex items-start justify-between mb-3">
                   <div>
-                    <p className="text-xs text-neutral-500 font-medium mb-1">Order Number</p>
-                    <p className="font-mono text-sm font-medium">{order.orderNumber}</p>
+                    <p className="text-[10px] text-neutral-400 font-normal mb-0.5">Order Number</p>
+                    <p className="font-mono text-xs font-medium">{order.orderNumber}</p>
                   </div>
                   <span
-                    className={`px-3 py-1 rounded-[6px] text-xs font-medium ${
+                    className={`px-2 py-0.5 rounded-[8px] text-[10px] font-medium ${
                       order.status === "DELIVERED"
                         ? "bg-green-100 text-green-800"
                         : order.status === "SHIPPED"
@@ -92,11 +92,11 @@ export default function OrdersPage() {
                   </span>
                 </div>
 
-                <div className="flex gap-3 mb-4">
+                <div className="flex gap-2.5 mb-3">
                   {order.items.slice(0, 3).map((item, idx) => (
                     <div
                       key={idx}
-                      className="relative w-16 h-16 border border-[#e5e5e5] overflow-hidden bg-[#fafafa] rounded-[8px] flex-shrink-0"
+                      className="relative w-14 h-14 border border-[#e5e5e5] overflow-hidden bg-[#fafafa] rounded-[10px] flex-shrink-0"
                     >
                       {item.variant.product.images?.[0]?.url ? (
                         <Image
@@ -107,13 +107,13 @@ export default function OrdersPage() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Package className="h-6 w-6 text-neutral-300" />
+                          <Package className="h-5 w-5 text-neutral-300" />
                         </div>
                       )}
                     </div>
                   ))}
                   {order.items.length > 3 && (
-                    <div className="w-16 h-16 border border-[#e5e5e5] bg-[#fafafa] rounded-[8px] flex items-center justify-center text-xs text-neutral-600 font-medium">
+                    <div className="w-14 h-14 border border-[#e5e5e5] bg-[#fafafa] rounded-[10px] flex items-center justify-center text-[10px] text-neutral-400 font-normal">
                       +{order.items.length - 3}
                     </div>
                   )}
@@ -121,17 +121,17 @@ export default function OrdersPage() {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-neutral-600 font-medium">
+                    <p className="text-xs text-neutral-600 font-normal">
                       {order.items.length}{" "}
                       {order.items.length === 1 ? "item" : "items"}
                     </p>
-                    <p className="text-xs text-neutral-500 font-medium">
+                    <p className="text-[10px] text-neutral-400 font-normal">
                       Placed on {formatDate(order.createdAt)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-neutral-500 font-medium mb-1">Total</p>
-                    <p className="text-lg font-medium">
+                    <p className="text-[10px] text-neutral-400 font-normal mb-0.5">Total</p>
+                    <p className="text-base font-medium">
                       {formatPrice(order.total)}
                     </p>
                   </div>

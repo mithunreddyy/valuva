@@ -1,5 +1,6 @@
 "use client";
 
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import {
   getCookiePreferences,
@@ -14,14 +15,24 @@ import { useState } from "react";
 export default function CookiePolicyPage() {
   return (
     <div className="min-h-screen bg-[#fafafa]">
+      {/* Breadcrumbs */}
+      <div className="container-luxury pt-2 sm:pt-4 pb-2 sm:pb-4">
+        <Breadcrumbs
+          items={[
+            { name: "Home", url: "/" },
+            { name: "Cookie Policy", url: "/cookie-policy", isBold: true },
+          ]}
+        />
+      </div>
+
       {/* Header */}
-      <section className="bg-white border-b border-[#e5e5e5]">
-        <div className="container-luxury py-8 sm:py-10">
+      <section className="border-b border-[#e5e5e5] bg-white">
+        <div className="container-luxury py-6 sm:py-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl font-medium tracking-normal text-[#0a0a0a] mb-2">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-[#0a0a0a] mb-1 leading-[0.95]">
               Cookie Policy
             </h1>
-            <p className="text-xs text-neutral-500 font-medium">
+            <p className="text-xs sm:text-sm text-neutral-400 font-normal">
               Last updated:{" "}
               {new Date().toLocaleDateString("en-IN", {
                 year: "numeric",
@@ -34,9 +45,9 @@ export default function CookiePolicyPage() {
       </section>
 
       {/* Content */}
-      <section className="container-luxury py-8 sm:py-10">
+      <section className="container-luxury py-6 sm:py-8">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white border border-[#e5e5e5] rounded-[16px] p-5 sm:p-6 space-y-6">
+          <div className="bg-white border border-[#e5e5e5] rounded-[16px] p-5 space-y-5">
             {/* Introduction */}
             <div className="space-y-3">
               <h2 className="text-xl font-medium tracking-normal text-[#0a0a0a] flex items-center gap-2.5">

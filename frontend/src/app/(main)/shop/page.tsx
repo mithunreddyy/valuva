@@ -8,6 +8,7 @@ import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { StructuredData } from "@/components/seo/structured-data";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
+import { useCategories } from "@/hooks/use-categories";
 import { useProducts } from "@/hooks/use-products";
 import { formatPrice } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -15,7 +16,7 @@ import { ArrowRight, Grid3x3, LayoutGrid, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export default function ShopPage() {
   const searchParams = useSearchParams();
@@ -50,19 +51,60 @@ export default function ShopPage() {
   };
 
   const { data, isLoading, error } = useProducts(filters);
+  const { data: categoriesData } = useCategories();
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://valuva.in";
+
+  // Build breadcrumb items based on filters
+  const breadcrumbItems = useMemo(() => {
+    const items: Array<{ name: string; url: string; isBold?: boolean }> = [
+      { name: "Home", url: "/" },
+      { name: "Shop", url: "/shop" },
+    ];
+
+    if (filters.categoryId && categoriesData?.data) {
+      const category = categoriesData.data.find(
+        (c) => c.id === filters.categoryId
+      );
+      if (category) {
+        items.push({
+          name: category.name,
+          url: `/shop?categoryId=${category.id}`,
+        });
+
+        // Add subcategory if selected
+        if (filters.subCategoryId && category.subCategories) {
+          const subCategory = category.subCategories.find(
+            (sc) => sc.id === filters.subCategoryId
+          );
+          if (subCategory) {
+            items.push({
+              name: subCategory.name,
+              url: `/shop?categoryId=${category.id}&subCategoryId=${subCategory.id}`,
+              isBold: true,
+            });
+          }
+        } else if (!filters.subCategoryId) {
+          // Make category bold if it's the last item
+          items[items.length - 1] = {
+            ...items[items.length - 1],
+            isBold: true,
+          };
+        }
+      }
+    } else {
+      // Make "Shop" bold if no category selected
+      items[items.length - 1] = { ...items[items.length - 1], isBold: true };
+    }
+
+    return items;
+  }, [filters.categoryId, filters.subCategoryId, categoriesData]);
 
   return (
     <>
       {/* Breadcrumbs */}
-      <div className="container-luxury pt-4 sm:pt-6">
-        <Breadcrumbs
-          items={[
-            { name: "Home", url: "/" },
-            { name: "Shop", url: "/shop" },
-          ]}
-        />
+      <div className="container-luxury pt-2 sm:pt-4 pb-2 sm:pb-4">
+        <Breadcrumbs items={breadcrumbItems} />
       </div>
 
       {/* Collection Structured Data */}

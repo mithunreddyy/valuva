@@ -99,49 +99,46 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
-      <div className="w-full max-w-[420px]">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4 sm:px-6 py-6 sm:py-8">
+      <div className="w-full max-w-[400px]">
         {/* Logo and Brand */}
-        <div className="text-center mb-8 sm:mb-10">
+        <div className="text-center mb-4 sm:mb-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-[1px] mb-6 sm:mb-8 hover:opacity-80 transition-opacity justify-center"
+            className="inline-flex items-center gap-1 mb-2 hover:opacity-80 transition-opacity justify-center"
           >
             <Image
               src="/valuvaLogo.png"
               alt="VALUVA"
-              width={48}
-              height={48}
-              className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              width={50}
+              height={50}
+              className="w-12 h-12 object-contain"
               priority
             />
-            <span className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
-              valuva
-            </span>
           </Link>
-          <div className="flex items-center justify-center mb-4 sm:mb-6">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#0a0a0a] rounded-full flex items-center justify-center">
-              <Shield className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+          <div className="flex items-center justify-center mb-3">
+            <div className="w-10 h-10 bg-[#0a0a0a] rounded-full flex items-center justify-center">
+              <Shield className="h-5 w-5 text-white" />
             </div>
           </div>
-          <h1 className="text-2xl sm:text-[28px] font-medium tracking-normal text-[#0a0a0a] mb-2">
+          <h1 className="text-2xl sm:text-3xl font-light tracking-tight text-[#0a0a0a] mb-1 leading-[0.95]">
             Admin Login
           </h1>
-          <p className="text-sm sm:text-base text-neutral-600 font-medium">
+          <p className="text-xs sm:text-sm text-neutral-400 font-normal">
             Secure admin access portal
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-[16px] sm:rounded-[20px] border border-[#e5e5e5] shadow-sm p-6 sm:p-8 lg:p-10">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div className="bg-white rounded-[16px] border border-[#e5e5e5] p-5 sm:p-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {!requiresMFA ? (
               <>
                 {/* Email Field */}
                 <div className="space-y-1.5">
                   <label
                     htmlFor="email"
-                    className="block text-xs sm:text-sm font-medium text-[#0a0a0a] mb-1.5"
+                    className="block text-xs font-medium text-[#0a0a0a] mb-1.5"
                   >
                     Email
                   </label>
@@ -150,11 +147,11 @@ export default function AdminLoginPage() {
                     type="email"
                     {...register("email")}
                     placeholder="admin@valuva.com"
-                    className="h-10 sm:h-11 px-4 text-sm sm:text-[15px] bg-[#fafafa] border border-[#e5e5e5] rounded-[10px] focus:bg-white focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-500"
+                    className="h-9 px-3 text-xs bg-white border border-[#e5e5e5] rounded-[12px] focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-400"
                     autoComplete="email"
                   />
                   {errors.email && (
-                    <p className="text-xs sm:text-[13px] text-red-600 font-medium mt-1">
+                    <p className="text-[10px] text-red-600 font-medium mt-1">
                       {errors.email.message}
                     </p>
                   )}
@@ -164,7 +161,7 @@ export default function AdminLoginPage() {
                 <div className="space-y-1.5">
                   <label
                     htmlFor="password"
-                    className="block text-xs sm:text-sm font-medium text-[#0a0a0a] mb-1.5"
+                    className="block text-xs font-medium text-[#0a0a0a] mb-1.5"
                   >
                     Password
                   </label>
@@ -172,22 +169,22 @@ export default function AdminLoginPage() {
                     id="password"
                     {...register("password")}
                     placeholder="Enter your password"
-                    className="h-10 sm:h-11 px-4 text-sm sm:text-[15px] bg-[#fafafa] border border-[#e5e5e5] rounded-[10px] focus:bg-white focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-500 pr-12"
+                    className="h-9 px-3 text-xs bg-white border border-[#e5e5e5] rounded-[12px] focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-400 pr-10"
                     autoComplete="current-password"
                   />
                   {errors.password && (
-                    <p className="text-xs sm:text-[13px] text-red-600 font-medium mt-1">
+                    <p className="text-[10px] text-red-600 font-medium mt-1">
                       {errors.password.message}
                     </p>
                   )}
                 </div>
               </>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* MFA Info Banner */}
-                <div className="flex items-center gap-2.5 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-[10px]">
-                  <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
-                  <p className="text-xs sm:text-sm text-blue-700 font-medium">
+                <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-[12px]">
+                  <Lock className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
+                  <p className="text-xs text-blue-700 font-normal">
                     Multi-factor authentication required
                   </p>
                 </div>
@@ -196,7 +193,7 @@ export default function AdminLoginPage() {
                 <div className="space-y-1.5">
                   <label
                     htmlFor="mfaToken"
-                    className="block text-xs sm:text-sm font-medium text-[#0a0a0a] mb-1.5"
+                    className="block text-xs font-medium text-[#0a0a0a] mb-1.5"
                   >
                     MFA Code
                   </label>
@@ -206,15 +203,15 @@ export default function AdminLoginPage() {
                     {...register("mfaToken")}
                     placeholder="000000"
                     maxLength={6}
-                    className="h-12 sm:h-14 px-4 text-lg sm:text-xl text-center tracking-[0.5em] bg-[#fafafa] border border-[#e5e5e5] rounded-[10px] focus:bg-white focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-400"
+                    className="h-10 px-4 text-base text-center tracking-[0.5em] bg-white border border-[#e5e5e5] rounded-[12px] focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-400"
                     autoFocus
                   />
                   {errors.mfaToken && (
-                    <p className="text-xs sm:text-[13px] text-red-600 font-medium mt-1">
+                    <p className="text-[10px] text-red-600 font-medium mt-1">
                       {errors.mfaToken.message}
                     </p>
                   )}
-                  <p className="text-xs sm:text-[13px] text-neutral-500 font-medium mt-2 leading-relaxed">
+                  <p className="text-[10px] text-neutral-400 font-normal mt-1.5 leading-relaxed">
                     Enter the 6-digit code from your authenticator app or use a
                     backup code
                   </p>
@@ -225,14 +222,14 @@ export default function AdminLoginPage() {
             {/* Submit Button */}
             <Button
               type="submit"
-              size="default"
+              size="sm"
               variant="filled"
-              className="w-full h-10 sm:h-11 text-sm sm:text-[15px] font-medium bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#fafafa] border-0 rounded-[10px] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+              className="w-full h-9 text-xs font-medium rounded-[12px] mt-4"
               disabled={isLoading}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-[#fafafa] border-t-transparent rounded-full animate-spin" />
+                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   Signing in...
                 </span>
               ) : requiresMFA ? (
@@ -247,8 +244,8 @@ export default function AdminLoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                size="default"
-                className="w-full h-10 sm:h-11 text-sm sm:text-[15px] font-medium border border-[#e5e5e5] hover:border-[#0a0a0a] rounded-[10px] transition-all"
+                size="sm"
+                className="w-full h-9 text-xs font-medium border border-[#e5e5e5] hover:border-[#0a0a0a] rounded-[12px] transition-all"
                 onClick={() => {
                   setRequiresMFA(false);
                 }}
@@ -259,8 +256,8 @@ export default function AdminLoginPage() {
           </form>
 
           {/* Footer Notice */}
-          <div className="mt-6 sm:mt-8 text-center">
-            <p className="text-xs text-neutral-500 font-medium">
+          <div className="mt-5 text-center">
+            <p className="text-[10px] text-neutral-400 font-normal">
               Admin access only. Unauthorized access is prohibited.
             </p>
           </div>

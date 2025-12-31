@@ -1,5 +1,6 @@
 "use client";
 
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "@/hooks/use-categories";
 import { useProducts } from "@/hooks/use-products";
@@ -125,30 +126,33 @@ export default function AboutPage() {
 
   return (
     <div ref={containerRef} className="min-h-screen bg-[#fafafa]">
-      {/* Hero Section - Compact Design */}
-      <motion.section
-        style={{ opacity: heroOpacity, scale: heroScale }}
-        className="relative bg-gradient-to-b from-white via-white to-[#fafafa] border-b border-[#e5e5e5] overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.015),transparent_70%)]" />
-        <div className="container-luxury py-12 sm:py-16 md:py-20 relative z-10">
+      {/* Breadcrumbs */}
+      <div className="container-luxury pt-2 sm:pt-4 pb-2 sm:pb-4">
+        <Breadcrumbs
+          items={[
+            { name: "Home", url: "/" },
+            { name: "About", url: "/about", isBold: true },
+          ]}
+        />
+      </div>
+
+      {/* Header */}
+      <section className="border-b border-[#e5e5e5] bg-white">
+        <div className="container-luxury py-6 sm:py-8">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.8,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            className="max-w-4xl mx-auto text-center space-y-4 sm:space-y-6"
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto text-center space-y-3"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.15 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/90 backdrop-blur-sm border border-[#e5e5e5] rounded-[20px] mb-3 shadow-sm"
+              className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-[#e5e5e5] rounded-[12px] mb-2"
             >
-              <Sparkles className="h-3.5 w-3.5 text-neutral-500" />
-              <span className="text-[11px] font-medium text-neutral-600 tracking-normal">
+              <Sparkles className="h-3 w-3 text-neutral-500" />
+              <span className="text-[10px] font-medium text-neutral-600 tracking-normal">
                 Our Story
               </span>
             </motion.div>
@@ -160,7 +164,7 @@ export default function AboutPage() {
                 delay: 0.25,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight text-[#0a0a0a] leading-[0.95]"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tight text-[#0a0a0a] leading-[0.95]"
             >
               About VALUVA
             </motion.h1>
@@ -172,7 +176,7 @@ export default function AboutPage() {
                 delay: 0.4,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="text-sm sm:text-base md:text-lg text-neutral-600 leading-relaxed max-w-2xl mx-auto font-medium"
+              className="text-sm sm:text-base text-neutral-600 leading-relaxed max-w-2xl mx-auto font-medium"
             >
               We are passionate about bringing you the best products with
               exceptional service. Our mission is to make quality accessible to
@@ -181,10 +185,10 @@ export default function AboutPage() {
             </motion.p>
           </motion.div>
         </div>
-      </motion.section>
+      </section>
 
-      {/* Mission Section - Compact Layout */}
-      <section className="py-10 sm:py-12 md:py-16 bg-white relative">
+      {/* Mission Section */}
+      <section className="py-6 sm:py-8 lg:py-10 bg-white relative">
         <div className="container-luxury">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 xl:gap-10 items-center">

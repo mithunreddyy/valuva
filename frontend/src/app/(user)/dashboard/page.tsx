@@ -147,20 +147,20 @@ export default function DashboardPage() {
   const stats = statsData?.data;
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen bg-white">
       {/* Header Section */}
-      <section className="bg-white border-b border-[#e5e5e5]">
-        <div className="container-luxury py-6 sm:py-8 lg:py-12">
+      <section className="border-b border-[#e5e5e5] bg-white">
+        <div className="container-luxury py-6 sm:py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-2"
+            className="space-y-1"
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium tracking-normal text-[#0a0a0a]">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-[#0a0a0a] leading-[0.95]">
               My Profile
             </h1>
-            <p className="text-sm sm:text-base text-neutral-500 font-medium">
+            <p className="text-xs sm:text-sm text-neutral-400 font-normal">
               Manage your account information and preferences
             </p>
           </motion.div>
@@ -169,14 +169,14 @@ export default function DashboardPage() {
 
       {/* Stats Section */}
       {stats && (
-        <section className="bg-[#fafafa] border-b border-[#e5e5e5]">
-          <div className="container-luxury py-6 sm:py-8 lg:py-12">
+        <section className="bg-white border-b border-[#e5e5e5]">
+          <div className="container-luxury py-6 sm:py-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6"
+              className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4"
             >
               {[
                 {
@@ -210,16 +210,15 @@ export default function DashboardPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1, duration: 0.5 }}
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  className="bg-white border border-[#e5e5e5] p-5 sm:p-6 rounded-[20px] hover:border-[#0a0a0a] hover:shadow-md transition-all"
+                  className="bg-white border border-[#e5e5e5] p-4 rounded-[16px] hover:border-[#0a0a0a] transition-all"
                 >
-                  <div className="flex items-center gap-3 mb-3">
-                    <stat.icon className={`h-5 w-5 ${stat.color}`} />
-                    <span className="text-xs sm:text-sm text-neutral-500 font-medium">
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                    <span className="text-xs text-neutral-500 font-normal">
                       {stat.label}
                     </span>
                   </div>
-                  <p className="text-xl sm:text-2xl md:text-3xl font-medium text-[#0a0a0a]">
+                  <p className="text-xl sm:text-2xl font-medium text-[#0a0a0a]">
                     {stat.value}
                   </p>
                 </motion.div>
@@ -230,13 +229,13 @@ export default function DashboardPage() {
       )}
 
       {/* Profile Form Section */}
-      <section className="container-luxury py-6 sm:py-8 lg:py-12">
+      <section className="container-luxury py-6 sm:py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12"
+          className="grid md:grid-cols-2 gap-4 sm:gap-6"
         >
           {/* Profile Information */}
           <motion.div
@@ -244,49 +243,49 @@ export default function DashboardPage() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1, duration: 0.6 }}
-            className="bg-white border border-[#e5e5e5] p-5 sm:p-6 lg:p-8 rounded-[20px] hover:shadow-md transition-all"
+            className="bg-white border border-[#e5e5e5] p-5 rounded-[16px]"
           >
-            <div className="flex items-center gap-3 mb-6 sm:mb-8">
-              <div className="w-10 h-10 rounded-[12px] bg-[#fafafa] border border-[#e5e5e5] flex items-center justify-center">
-                <User className="h-5 w-5 text-[#0a0a0a]" />
+            <div className="flex items-center gap-2.5 mb-5">
+              <div className="w-8 h-8 rounded-[10px] bg-[#fafafa] border border-[#e5e5e5] flex items-center justify-center">
+                <User className="h-4 w-4 text-[#0a0a0a]" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-medium tracking-normal text-[#0a0a0a]">
+              <h2 className="text-base font-medium tracking-normal text-[#0a0a0a]">
                 Profile Information
               </h2>
             </div>
             <form
               onSubmit={handleProfileSubmit(onProfileSubmit)}
-              className="space-y-5"
+              className="space-y-4"
             >
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-xs font-medium mb-1.5">
                     First Name
                   </label>
                   <Input
                     {...registerProfile("firstName", {
                       required: "First name is required",
                     })}
-                    className="rounded-[10px]"
+                    className="rounded-[10px] h-9 text-xs border-[#e5e5e5] focus:border-[#0a0a0a]"
                   />
                   {profileErrors.firstName && (
-                    <p className="text-xs text-red-600 mt-1">
+                    <p className="text-[10px] text-red-600 mt-1 font-normal">
                       {profileErrors.firstName.message as string}
                     </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-xs font-medium mb-1.5">
                     Last Name
                   </label>
                   <Input
                     {...registerProfile("lastName", {
                       required: "Last name is required",
                     })}
-                    className="rounded-[10px]"
+                    className="rounded-[10px] h-9 text-xs border-[#e5e5e5] focus:border-[#0a0a0a]"
                   />
                   {profileErrors.lastName && (
-                    <p className="text-xs text-red-600 mt-1">
+                    <p className="text-[10px] text-red-600 mt-1 font-normal">
                       {profileErrors.lastName.message as string}
                     </p>
                   )}
@@ -294,31 +293,31 @@ export default function DashboardPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Email</label>
+                <label className="block text-xs font-medium mb-1.5">Email</label>
                 <Input
                   value={user.email}
                   disabled
-                  className="rounded-[10px] bg-[#fafafa]"
+                  className="rounded-[10px] h-9 text-xs bg-[#fafafa] border-[#e5e5e5]"
                 />
-                <p className="text-xs text-neutral-500 mt-1 font-medium">
+                <p className="text-[10px] text-neutral-500 mt-1 font-normal">
                   Email cannot be changed
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Phone</label>
+                <label className="block text-xs font-medium mb-1.5">Phone</label>
                 <Input
                   {...registerProfile("phone")}
-                  className="rounded-[10px]"
+                  className="rounded-[10px] h-9 text-xs border-[#e5e5e5] focus:border-[#0a0a0a]"
                 />
               </div>
 
               <Button
                 type="submit"
-                size="lg"
+                size="sm"
                 variant="filled"
                 disabled={updateProfile.isPending}
-                className="w-full rounded-[16px] gap-2"
+                className="w-full rounded-[12px] gap-1.5"
               >
                 {updateProfile.isPending ? (
                   <>
@@ -338,138 +337,140 @@ export default function DashboardPage() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="bg-white border border-[#e5e5e5] p-5 sm:p-6 lg:p-8 rounded-[20px] hover:shadow-md transition-all"
+            className="bg-white border border-[#e5e5e5] p-5 rounded-[16px]"
           >
-            <div className="flex items-center gap-3 mb-6 sm:mb-8">
-              <div className="w-10 h-10 rounded-[12px] bg-[#fafafa] border border-[#e5e5e5] flex items-center justify-center">
-                <Lock className="h-5 w-5 text-[#0a0a0a]" />
+            <div className="flex items-center gap-2.5 mb-5">
+              <div className="w-8 h-8 rounded-[10px] bg-[#fafafa] border border-[#e5e5e5] flex items-center justify-center">
+                <Lock className="h-4 w-4 text-[#0a0a0a]" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-medium tracking-normal text-[#0a0a0a]">
+              <h2 className="text-base font-medium tracking-normal text-[#0a0a0a]">
                 Change Password
               </h2>
             </div>
-            <AnimatePresence mode="wait">
-              {!showPasswordForm ? (
-                <motion.div
-                  key="closed"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="space-y-4"
+          <AnimatePresence mode="wait">
+            {!showPasswordForm ? (
+              <motion.div
+                key="closed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="space-y-2.5"
+              >
+                <p className="text-xs text-neutral-600 font-normal leading-relaxed">
+                  Update your password to keep your account secure.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowPasswordForm(true)}
+                  className="w-full rounded-[12px] border-[#e5e5e5] hover:border-[#0a0a0a]"
                 >
-                  <p className="text-sm text-neutral-600 font-medium leading-relaxed">
-                    Update your password to keep your account secure.
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowPasswordForm(true)}
-                    className="w-full rounded-[16px]"
-                  >
-                    Change Password
-                  </Button>
-                </motion.div>
-              ) : (
-                <motion.form
-                  key="open"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  onSubmit={handlePasswordSubmit(
-                    onPasswordSubmit as SubmitHandler<FieldValues>
+                  Change Password
+                </Button>
+              </motion.div>
+            ) : (
+              <motion.form
+                key="open"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                onSubmit={handlePasswordSubmit(
+                  onPasswordSubmit as SubmitHandler<FieldValues>
+                )}
+                className="space-y-3"
+              >
+                <div>
+                  <label className="block text-xs font-medium mb-1.5">
+                    Current Password
+                  </label>
+                  <Input
+                    type="password"
+                    {...registerPassword("currentPassword", {
+                      required: "Current password is required",
+                    })}
+                    className="rounded-[10px] h-9 text-xs border-[#e5e5e5] focus:border-[#0a0a0a]"
+                  />
+                  {passwordErrors.currentPassword && (
+                    <p className="text-[10px] text-red-600 mt-1 font-normal">
+                      {passwordErrors.currentPassword.message as string}
+                    </p>
                   )}
-                  className="space-y-5"
-                >
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Current Password
-                    </label>
-                    <Input
-                      type="password"
-                      {...registerPassword("currentPassword", {
-                        required: "Current password is required",
-                      })}
-                      className="rounded-[10px]"
-                    />
-                    {passwordErrors.currentPassword && (
-                      <p className="text-xs text-red-600 mt-1">
-                        {passwordErrors.currentPassword.message as string}
-                      </p>
-                    )}
-                  </div>
+                </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      New Password
-                    </label>
-                    <Input
-                      type="password"
-                      {...registerPassword("newPassword", {
-                        required: "New password is required",
-                        minLength: {
-                          value: 8,
-                          message: "Password must be at least 8 characters",
-                        },
-                      })}
-                      className="rounded-[10px]"
-                    />
-                    {passwordErrors.newPassword && (
-                      <p className="text-xs text-red-600 mt-1">
-                        {passwordErrors.newPassword.message as string}
-                      </p>
-                    )}
-                  </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1.5">
+                    New Password
+                  </label>
+                  <Input
+                    type="password"
+                    {...registerPassword("newPassword", {
+                      required: "New password is required",
+                      minLength: {
+                        value: 8,
+                        message: "Password must be at least 8 characters",
+                      },
+                    })}
+                    className="rounded-[10px] h-9 text-xs border-[#e5e5e5] focus:border-[#0a0a0a]"
+                  />
+                  {passwordErrors.newPassword && (
+                    <p className="text-[10px] text-red-600 mt-1 font-normal">
+                      {passwordErrors.newPassword.message as string}
+                    </p>
+                  )}
+                </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Confirm New Password
-                    </label>
-                    <Input
-                      type="password"
-                      {...registerPassword("confirmPassword", {
-                        required: "Please confirm your password",
-                      })}
-                      className="rounded-[10px]"
-                    />
-                    {passwordErrors.confirmPassword && (
-                      <p className="text-xs text-red-600 mt-1">
-                        {passwordErrors.confirmPassword.message as string}
-                      </p>
-                    )}
-                  </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1.5">
+                    Confirm New Password
+                  </label>
+                  <Input
+                    type="password"
+                    {...registerPassword("confirmPassword", {
+                      required: "Please confirm your password",
+                    })}
+                    className="rounded-[10px] h-9 text-xs border-[#e5e5e5] focus:border-[#0a0a0a]"
+                  />
+                  {passwordErrors.confirmPassword && (
+                    <p className="text-[10px] text-red-600 mt-1 font-normal">
+                      {passwordErrors.confirmPassword.message as string}
+                    </p>
+                  )}
+                </div>
 
-                  <div className="flex gap-3">
-                    <Button
-                      type="submit"
-                      size="lg"
-                      variant="filled"
-                      disabled={changePassword.isPending}
-                      className="flex-1 rounded-[16px] gap-2"
-                    >
-                      {changePassword.isPending ? (
-                        <>
-                          <LoadingSpinner size="sm" />
-                          Updating...
-                        </>
-                      ) : (
-                        "Update Password"
-                      )}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setShowPasswordForm(false);
-                        resetPassword();
-                      }}
-                      className="rounded-[16px]"
-                      aria-label="Cancel password change"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </motion.form>
-              )}
-            </AnimatePresence>
+                <div className="flex gap-2">
+                  <Button
+                    type="submit"
+                    size="sm"
+                    variant="filled"
+                    disabled={changePassword.isPending}
+                    className="flex-1 rounded-[12px] gap-1.5"
+                  >
+                    {changePassword.isPending ? (
+                      <>
+                        <LoadingSpinner size="sm" />
+                        Updating...
+                      </>
+                    ) : (
+                      "Update Password"
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setShowPasswordForm(false);
+                      resetPassword();
+                    }}
+                    className="rounded-[12px] border-[#e5e5e5] hover:border-[#0a0a0a]"
+                    aria-label="Cancel password change"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </motion.form>
+            )}
+          </AnimatePresence>
           </motion.div>
         </motion.div>
       </section>

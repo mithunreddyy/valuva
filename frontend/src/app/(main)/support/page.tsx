@@ -1,5 +1,6 @@
 "use client";
 
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -68,19 +69,29 @@ export default function SupportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen bg-white">
+      {/* Breadcrumbs */}
+      <div className="container-luxury pt-2 sm:pt-4 pb-2 sm:pb-4">
+        <Breadcrumbs
+          items={[
+            { name: "Home", url: "/" },
+            { name: "Support", url: "/support", isBold: true },
+          ]}
+        />
+      </div>
+
       {/* Header */}
-      <section className="bg-white border-b border-[#e5e5e5]">
+      <section className="border-b border-[#e5e5e5] bg-white">
         <div className="container-luxury py-6 sm:py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-normal text-[#0a0a0a] mb-2">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-[#0a0a0a] mb-1 leading-[0.95]">
               Customer Support
             </h1>
-            <p className="text-sm text-neutral-500 font-medium">
+            <p className="text-xs sm:text-sm text-neutral-400 font-normal">
               Get help with your orders, products, or account
             </p>
           </motion.div>
@@ -88,20 +99,20 @@ export default function SupportPage() {
       </section>
 
       {/* Main Content */}
-      <section className="container-luxury py-6 sm:py-8 lg:py-10">
+      <section className="container-luxury py-6 sm:py-8">
         <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+          <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
             {/* Create Ticket Form */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="bg-white border border-[#e5e5e5] rounded-[20px] p-5 sm:p-6 hover:border-[#0a0a0a] transition-all"
+              className="bg-white border border-[#e5e5e5] rounded-[16px] p-5"
             >
-              <h2 className="text-lg sm:text-xl font-medium tracking-normal mb-4 sm:mb-5 text-[#0a0a0a]">
+              <h2 className="text-base font-medium tracking-normal mb-4 text-[#0a0a0a]">
                 Create Support Ticket
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium mb-1.5 text-[#0a0a0a]">
                     Category
@@ -109,7 +120,7 @@ export default function SupportPage() {
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3 py-2 h-10 text-sm border border-[#e5e5e5] rounded-[12px] focus:outline-none focus:border-[#0a0a0a] bg-transparent transition-colors"
+                    className="w-full px-3 py-2 h-9 text-xs border border-[#e5e5e5] rounded-[12px] focus:outline-none focus:border-[#0a0a0a] bg-white transition-colors"
                   >
                     <option value="general">General</option>
                     <option value="order">Order Issue</option>
@@ -126,7 +137,7 @@ export default function SupportPage() {
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="Brief description of your issue"
-                    className="rounded-[12px] h-10 text-sm border-[#e5e5e5] focus:border-[#0a0a0a]"
+                    className="rounded-[12px] h-9 text-xs border-[#e5e5e5] focus:border-[#0a0a0a]"
                     required
                   />
                 </div>
@@ -139,15 +150,15 @@ export default function SupportPage() {
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Describe your issue in detail..."
                     rows={5}
-                    className="rounded-[12px] text-sm border-[#e5e5e5] focus:border-[#0a0a0a] resize-none"
+                    className="rounded-[12px] text-xs border-[#e5e5e5] focus:border-[#0a0a0a] resize-none"
                     required
                   />
                 </div>
                 <Button
                   type="submit"
                   variant="filled"
-                  size="lg"
-                  className="w-full rounded-[16px] gap-2"
+                  size="sm"
+                  className="w-full rounded-[12px] gap-2"
                   disabled={isLoadingTickets}
                 >
                   {isLoadingTickets ? (
@@ -157,7 +168,7 @@ export default function SupportPage() {
                     </>
                   ) : (
                     <>
-                      <Send className="h-4 w-4" />
+                      <Send className="h-3.5 w-3.5" />
                       Create Ticket
                     </>
                   )}
@@ -169,18 +180,18 @@ export default function SupportPage() {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white border border-[#e5e5e5] rounded-[20px] p-5 sm:p-6 hover:border-[#0a0a0a] transition-all"
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="bg-white border border-[#e5e5e5] rounded-[16px] p-5"
             >
-              <h2 className="text-lg sm:text-xl font-medium tracking-normal mb-4 sm:mb-5 text-[#0a0a0a]">
+              <h2 className="text-base font-medium tracking-normal mb-4 text-[#0a0a0a]">
                 Your Tickets
               </h2>
               {isLoadingTickets ? (
-                <div className="flex items-center justify-center py-12">
+                <div className="flex items-center justify-center py-10">
                   <LoadingSpinner />
                 </div>
               ) : tickets && tickets.length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   <AnimatePresence>
                     {tickets.map((ticket, index) => (
                       <motion.div
@@ -189,19 +200,19 @@ export default function SupportPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ delay: index * 0.05 }}
-                        className="border border-[#e5e5e5] rounded-[16px] p-4 hover:border-[#0a0a0a] transition-all"
+                        className="border border-[#e5e5e5] rounded-[12px] p-3 hover:border-[#0a0a0a] transition-all"
                       >
-                        <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-start justify-between mb-1.5">
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-sm sm:text-base font-medium tracking-normal text-[#0a0a0a] mb-1">
+                            <h3 className="text-sm font-medium tracking-normal text-[#0a0a0a] mb-0.5">
                               {ticket.subject}
                             </h3>
-                            <p className="text-xs text-neutral-500 font-medium">
+                            <p className="text-xs text-neutral-400 font-normal">
                               {ticket.category}
                             </p>
                           </div>
                           <span
-                            className={`px-2.5 py-1 rounded-[10px] text-xs font-medium flex items-center gap-1.5 flex-shrink-0 ml-2 border ${getStatusColor(
+                            className={`px-2 py-0.5 rounded-[10px] text-xs font-medium flex items-center gap-1.5 flex-shrink-0 ml-2 border ${getStatusColor(
                               ticket.status
                             )}`}
                           >
@@ -209,7 +220,7 @@ export default function SupportPage() {
                             {ticket.status}
                           </span>
                         </div>
-                        <p className="text-xs sm:text-sm text-neutral-600 line-clamp-2 font-medium leading-relaxed">
+                        <p className="text-xs text-neutral-600 line-clamp-2 font-normal leading-relaxed">
                           {ticket.message}
                         </p>
                       </motion.div>
@@ -220,12 +231,12 @@ export default function SupportPage() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-center py-12"
+                  className="text-center py-10"
                 >
-                  <div className="w-16 h-16 rounded-[20px] bg-white border border-[#e5e5e5] flex items-center justify-center mx-auto mb-4">
-                    <MessageSquare className="w-8 h-8 text-neutral-300" />
+                  <div className="w-12 h-12 rounded-full bg-[#f5f5f5] flex items-center justify-center mx-auto mb-3">
+                    <MessageSquare className="w-5 h-5 text-neutral-300" />
                   </div>
-                  <p className="text-sm text-neutral-500 font-medium">
+                  <p className="text-xs text-neutral-400 font-normal">
                     No support tickets yet
                   </p>
                 </motion.div>

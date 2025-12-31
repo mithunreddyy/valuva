@@ -20,6 +20,21 @@ export class ShippingController {
     return ResponseUtil.success(res, rate, undefined, HTTP_STATUS.OK);
   };
 
+  checkDelivery = async (req: Request, res: Response): Promise<Response> => {
+    const { pincode, weight, dimensions } = req.body;
+    const deliveryInfo = await this.service.checkDelivery(
+      pincode,
+      weight,
+      dimensions
+    );
+    return ResponseUtil.success(
+      res,
+      deliveryInfo,
+      undefined,
+      HTTP_STATUS.OK
+    );
+  };
+
   trackShipment = async (req: Request, res: Response): Promise<Response> => {
     const { trackingNumber } = req.params;
     const tracking = await this.service.trackShipment(trackingNumber);

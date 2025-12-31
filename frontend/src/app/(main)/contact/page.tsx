@@ -1,5 +1,6 @@
 "use client";
 
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -84,14 +85,24 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
+      {/* Breadcrumbs */}
+      <div className="container-luxury pt-2 sm:pt-4 pb-2 sm:pb-4">
+        <Breadcrumbs
+          items={[
+            { name: "Home", url: "/" },
+            { name: "Contact", url: "/contact", isBold: true },
+          ]}
+        />
+      </div>
+
       {/* Header */}
-      <section className="bg-white border-b border-[#e5e5e5]">
-        <div className="container-luxury py-8 sm:py-10">
+      <section className="border-b border-[#e5e5e5] bg-white">
+        <div className="container-luxury py-6 sm:py-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl font-medium tracking-normal text-[#0a0a0a] mb-2">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-[#0a0a0a] mb-1 leading-[0.95]">
               Get in Touch
             </h1>
-            <p className="text-sm text-neutral-600 font-medium">
+            <p className="text-xs sm:text-sm text-neutral-400 font-normal">
               Have questions? We&apos;d love to hear from you.
             </p>
           </div>
@@ -99,23 +110,23 @@ export default function ContactPage() {
       </section>
 
       {/* Main Content */}
-      <section className="container-luxury py-8 sm:py-10">
+      <section className="container-luxury py-6 sm:py-8">
         <div className="max-w-5xl mx-auto">
-          <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid lg:grid-cols-3 gap-4 lg:gap-6">
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <div className="bg-white border border-[#e5e5e5] rounded-[16px] p-5 sm:p-6">
+              <div className="bg-white border border-[#e5e5e5] rounded-[16px] p-5">
                 {isSuccess && (
-                  <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-[12px] flex items-center gap-2.5">
-                    <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                  <div className="mb-3 p-2.5 bg-green-50 border border-green-200 rounded-[12px] flex items-center gap-2">
+                    <CheckCircle className="h-3.5 w-3.5 text-green-600 flex-shrink-0" />
                     <p className="text-xs font-medium text-green-900">
                       Message sent successfully!
                     </p>
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                  <div className="grid sm:grid-cols-2 gap-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+                  <div className="grid sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-medium text-[#0a0a0a] mb-1.5">
                         Name *
@@ -123,10 +134,10 @@ export default function ContactPage() {
                       <Input
                         {...register("name")}
                         placeholder="Your name"
-                        className="rounded-[10px] border-[#e5e5e5] focus:border-[#0a0a0a] h-10 text-sm"
+                        className="rounded-[12px] border-[#e5e5e5] focus:border-[#0a0a0a] h-9 text-xs"
                       />
                       {errors.name && (
-                        <p className="text-red-600 text-xs mt-1 font-medium">
+                        <p className="text-red-600 text-[10px] mt-1 font-medium">
                           {errors.name.message}
                         </p>
                       )}
@@ -140,10 +151,10 @@ export default function ContactPage() {
                         type="email"
                         {...register("email")}
                         placeholder="your@email.com"
-                        className="rounded-[10px] border-[#e5e5e5] focus:border-[#0a0a0a] h-10 text-sm"
+                        className="rounded-[12px] border-[#e5e5e5] focus:border-[#0a0a0a] h-9 text-xs"
                       />
                       {errors.email && (
-                        <p className="text-red-600 text-xs mt-1 font-medium">
+                        <p className="text-red-600 text-[10px] mt-1 font-medium">
                           {errors.email.message}
                         </p>
                       )}
@@ -158,7 +169,7 @@ export default function ContactPage() {
                       type="tel"
                       {...register("phone")}
                       placeholder="+91 123 456 7890"
-                      className="rounded-[10px] border-[#e5e5e5] focus:border-[#0a0a0a] h-10 text-sm"
+                      className="rounded-[12px] border-[#e5e5e5] focus:border-[#0a0a0a] h-9 text-xs"
                     />
                   </div>
 
@@ -169,10 +180,10 @@ export default function ContactPage() {
                     <Input
                       {...register("subject")}
                       placeholder="How can we help?"
-                      className="rounded-[10px] border-[#e5e5e5] focus:border-[#0a0a0a] h-10 text-sm"
+                      className="rounded-[12px] border-[#e5e5e5] focus:border-[#0a0a0a] h-9 text-xs"
                     />
                     {errors.subject && (
-                      <p className="text-red-600 text-xs mt-1 font-medium">
+                      <p className="text-red-600 text-[10px] mt-1 font-medium">
                         {errors.subject.message}
                       </p>
                     )}
@@ -184,11 +195,11 @@ export default function ContactPage() {
                     </label>
                     <Textarea
                       {...register("message")}
-                      className="min-h-[120px] rounded-[10px] border-[#e5e5e5] focus:border-[#0a0a0a] resize-none text-sm"
+                      className="min-h-[100px] rounded-[12px] border-[#e5e5e5] focus:border-[#0a0a0a] resize-none text-xs"
                       placeholder="Tell us more about your inquiry..."
                     />
                     {errors.message && (
-                      <p className="text-red-600 text-xs mt-1 font-medium">
+                      <p className="text-red-600 text-[10px] mt-1 font-medium">
                         {errors.message.message}
                       </p>
                     )}
@@ -196,9 +207,9 @@ export default function ContactPage() {
 
                   <Button
                     type="submit"
-                    size="lg"
+                    size="sm"
                     variant="filled"
-                    className="w-full rounded-[10px] h-10 text-sm"
+                    className="w-full rounded-[12px] h-9 text-xs"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
@@ -215,7 +226,7 @@ export default function ContactPage() {
             </div>
 
             {/* Contact Information */}
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="bg-white border border-[#e5e5e5] rounded-[16px] p-4 hover:border-[#0a0a0a] transition-all">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 rounded-[10px] bg-[#0a0a0a] flex items-center justify-center flex-shrink-0">

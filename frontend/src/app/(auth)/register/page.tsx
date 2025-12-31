@@ -73,43 +73,40 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-1 sm:px-3 py-3 sm:py-3">
-      <div className="w-full max-w-[420px]">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4 sm:px-6 py-6 sm:py-8">
+      <div className="w-full max-w-[400px]">
         {/* Logo and Brand */}
-        <div className="text-center mb-1 sm:mb-2">
+        <div className="text-center mb-4 sm:mb-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 sm:gap-1 mb-2 sm:mb-4 hover:opacity-80 transition-opacity"
+            className="inline-flex items-center gap-1 mb-2 hover:opacity-80 transition-opacity"
           >
             <Image
               src="/valuvaLogo.png"
               alt="VALUVA"
-              width={60}
-              height={60}
-              className="w-15 h-15 sm:w-15 sm:h-15 object-contain"
+              width={50}
+              height={50}
+              className="w-12 h-12 object-contain"
               priority
             />
-            {/* <span className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
-              valuva
-            </span> */}
           </Link>
-          <h1 className="text-2xl sm:text-[28px] font-medium tracking-normal text-[#0a0a0a] mb-2">
+          <h1 className="text-2xl sm:text-3xl font-light tracking-tight text-[#0a0a0a] mb-1 leading-[0.95]">
             Create your account
           </h1>
-          <p className="text-sm sm:text-base text-neutral-600 font-medium">
+          <p className="text-xs sm:text-sm text-neutral-400 font-normal">
             Join us and start shopping today
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-[16px] sm:rounded-[20px] border border-[#e5e5e5] shadow-sm p-6 sm:p-8 lg:p-10">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div className="bg-white rounded-[16px] border border-[#e5e5e5] p-5 sm:p-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Name Fields */}
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <label
                   htmlFor="firstName"
-                  className="block text-xs sm:text-sm font-medium text-[#0a0a0a] mb-1.5"
+                  className="block text-xs font-medium text-[#0a0a0a] mb-1.5"
                 >
                   First Name
                 </label>
@@ -117,11 +114,11 @@ export default function RegisterPage() {
                   id="firstName"
                   {...register("firstName")}
                   placeholder="John"
-                  className="h-10 sm:h-11 px-4 text-sm sm:text-[15px] bg-[#fafafa] border border-[#e5e5e5] rounded-[10px] focus:bg-white focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-500"
+                  className="h-9 px-3 text-xs bg-white border border-[#e5e5e5] rounded-[12px] focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-400"
                   autoComplete="given-name"
                 />
                 {errors.firstName && (
-                  <p className="text-xs sm:text-[13px] text-red-600 font-medium mt-1">
+                  <p className="text-[10px] text-red-600 font-medium mt-1">
                     {errors.firstName.message}
                   </p>
                 )}
@@ -129,7 +126,7 @@ export default function RegisterPage() {
               <div className="space-y-1.5">
                 <label
                   htmlFor="lastName"
-                  className="block text-xs sm:text-sm font-medium text-[#0a0a0a] mb-1.5"
+                  className="block text-xs font-medium text-[#0a0a0a] mb-1.5"
                 >
                   Last Name
                 </label>
@@ -137,11 +134,11 @@ export default function RegisterPage() {
                   id="lastName"
                   {...register("lastName")}
                   placeholder="Doe"
-                  className="h-10 sm:h-11 px-4 text-sm sm:text-[15px] bg-[#fafafa] border border-[#e5e5e5] rounded-[10px] focus:bg-white focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-500"
+                  className="h-9 px-3 text-xs bg-white border border-[#e5e5e5] rounded-[12px] focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-400"
                   autoComplete="family-name"
                 />
                 {errors.lastName && (
-                  <p className="text-xs sm:text-[13px] text-red-600 font-medium mt-1">
+                  <p className="text-[10px] text-red-600 font-medium mt-1">
                     {errors.lastName.message}
                   </p>
                 )}
@@ -152,7 +149,7 @@ export default function RegisterPage() {
             <div className="space-y-1.5">
               <label
                 htmlFor="email"
-                className="block text-xs sm:text-sm font-medium text-[#0a0a0a] mb-1.5"
+                className="block text-xs font-medium text-[#0a0a0a] mb-1.5"
               >
                 Email
               </label>
@@ -161,11 +158,11 @@ export default function RegisterPage() {
                 type="email"
                 {...register("email")}
                 placeholder="name@example.com"
-                className="h-10 sm:h-11 px-4 text-sm sm:text-[15px] bg-[#fafafa] border border-[#e5e5e5] rounded-[10px] focus:bg-white focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-500"
+                className="h-9 px-3 text-xs bg-white border border-[#e5e5e5] rounded-[12px] focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-400"
                 autoComplete="email"
               />
               {errors.email && (
-                <p className="text-xs sm:text-[13px] text-red-600 font-medium mt-1">
+                <p className="text-[10px] text-red-600 font-medium mt-1">
                   {errors.email.message}
                 </p>
               )}
@@ -175,17 +172,17 @@ export default function RegisterPage() {
             <div className="space-y-1.5">
               <label
                 htmlFor="phone"
-                className="block text-xs sm:text-sm font-medium text-[#0a0a0a] mb-1.5"
+                className="block text-xs font-medium text-[#0a0a0a] mb-1.5"
               >
                 Phone{" "}
-                <span className="text-neutral-500 font-normal">(Optional)</span>
+                <span className="text-neutral-400 font-normal">(Optional)</span>
               </label>
               <Input
                 id="phone"
                 type="tel"
                 {...register("phone")}
                 placeholder="+91 1234567890"
-                className="h-10 sm:h-11 px-4 text-sm sm:text-[15px] bg-[#fafafa] border border-[#e5e5e5] rounded-[10px] focus:bg-white focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-500"
+                className="h-9 px-3 text-xs bg-white border border-[#e5e5e5] rounded-[12px] focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-400"
                 autoComplete="tel"
               />
             </div>
@@ -194,7 +191,7 @@ export default function RegisterPage() {
             <div className="space-y-1.5">
               <label
                 htmlFor="password"
-                className="block text-xs sm:text-sm font-medium text-[#0a0a0a] mb-1.5"
+                className="block text-xs font-medium text-[#0a0a0a] mb-1.5"
               >
                 Password
               </label>
@@ -202,18 +199,18 @@ export default function RegisterPage() {
                 id="password"
                 {...register("password")}
                 placeholder="At least 8 characters"
-                className="h-10 sm:h-11 px-4 text-sm sm:text-[15px] bg-[#fafafa] border border-[#e5e5e5] rounded-[10px] focus:bg-white focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-500 pr-12"
+                className="h-9 px-3 text-xs bg-white border border-[#e5e5e5] rounded-[12px] focus:border-[#0a0a0a] focus:ring-0 transition-all placeholder:text-neutral-400 pr-10"
                 autoComplete="new-password"
               />
               {errors.password && (
-                <p className="text-xs sm:text-[13px] text-red-600 font-medium mt-1">
+                <p className="text-[10px] text-red-600 font-medium mt-1">
                   {errors.password.message}
                 </p>
               )}
             </div>
 
             {/* Terms and Privacy */}
-            <p className="text-xs sm:text-[12px] text-neutral-500 font-medium leading-relaxed pt-2">
+            <p className="text-[10px] text-neutral-400 font-normal leading-relaxed pt-1">
               By creating an account, you agree to our{" "}
               <Link
                 href="/terms-of-service"
@@ -234,14 +231,14 @@ export default function RegisterPage() {
             {/* Submit Button */}
             <Button
               type="submit"
-              size="default"
+              size="sm"
               variant="filled"
-              className="w-full h-10 sm:h-11 text-sm sm:text-[15px] font-medium bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#fafafa] border-0 rounded-[10px] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+              className="w-full h-9 text-xs font-medium rounded-[12px] mt-4"
               disabled={isLoading}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-[#fafafa] border-t-transparent rounded-full animate-spin" />
+                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   Creating account...
                 </span>
               ) : (
@@ -251,13 +248,13 @@ export default function RegisterPage() {
           </form>
 
           {/* OAuth Section */}
-          <div className="mt-8">
+          <div className="mt-5">
             <OAuthButtons />
           </div>
 
           {/* Sign In Link */}
-          <div className="mt-6 sm:mt-8 text-center">
-            <p className="text-xs sm:text-sm text-neutral-600 font-medium">
+          <div className="mt-5 text-center">
+            <p className="text-xs text-neutral-400 font-normal">
               Already have an account?{" "}
               <Link
                 href="/login"

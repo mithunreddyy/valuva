@@ -1,5 +1,6 @@
 "use client";
 
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Textarea } from "@/components/ui/textarea";
@@ -181,52 +182,137 @@ export default function CheckoutPage() {
     }
   };
 
+  // Determine current step based on form state
+  const getCurrentStep = (): "BAG" | "ADDRESS" | "PAYMENT" => {
+    if (!shippingAddressId || !billingAddressId) {
+      return "ADDRESS";
+    }
+    return "PAYMENT";
+  };
+
+  const currentStep = getCurrentStep();
+
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Header - Modern Design */}
-      <section className="relative border-b border-[#f5f5f5] bg-gradient-to-b from-white via-white to-[#fafafa]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.01),transparent_70%)]" />
-        <div className="container-luxury py-10 sm:py-12 md:py-16 relative z-10">
+      {/* Breadcrumbs */}
+      <div className="container-luxury pt-2 sm:pt-4 pb-2 sm:pb-4">
+        <Breadcrumbs
+          items={[
+            { name: "Home", url: "/" },
+            { name: "Cart", url: "/cart" },
+            { name: "Checkout", url: "/checkout", isBold: true },
+          ]}
+        />
+      </div>
+
+      {/* Progress Indicator */}
+      <section className="border-b border-[#e5e5e5] bg-white">
+        <div className="container-luxury py-3 sm:py-4">
+          <div className="flex items-center justify-center gap-2 sm:gap-4">
+            {/* BAG Step */}
+            <div className="flex flex-col items-center">
+              <span
+                className={`text-xs font-medium tracking-normal ${
+                  currentStep === "BAG" ? "text-[#0a0a0a]" : "text-neutral-400"
+                }`}
+              >
+                Bag
+              </span>
+              {currentStep === "BAG" && (
+                <div className="w-full h-0.5 bg-[#0a0a0a] mt-1" />
+              )}
+            </div>
+
+            {/* Connector Line 1 */}
+            <div
+              className="h-px border-t border-dashed border-[#e5e5e5]"
+              style={{ width: "60px", maxWidth: "100px" }}
+            />
+
+            {/* ADDRESS Step */}
+            <div className="flex flex-col items-center">
+              <span
+                className={`text-xs font-medium tracking-normal ${
+                  currentStep === "ADDRESS"
+                    ? "text-[#0a0a0a]"
+                    : "text-neutral-400"
+                }`}
+              >
+                Address
+              </span>
+              {currentStep === "ADDRESS" && (
+                <div className="w-full h-0.5 bg-[#0a0a0a] mt-1" />
+              )}
+            </div>
+
+            {/* Connector Line 2 */}
+            <div
+              className="h-px border-t border-dashed border-[#e5e5e5]"
+              style={{ width: "60px", maxWidth: "100px" }}
+            />
+
+            {/* PAYMENT Step */}
+            <div className="flex flex-col items-center">
+              <span
+                className={`text-xs font-medium tracking-normal ${
+                  currentStep === "PAYMENT"
+                    ? "text-[#0a0a0a]"
+                    : "text-neutral-400"
+                }`}
+              >
+                Payment
+              </span>
+              {currentStep === "PAYMENT" && (
+                <div className="w-full h-0.5 bg-[#0a0a0a] mt-1" />
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Header */}
+      <section className="border-b border-[#e5e5e5] bg-white">
+        <div className="container-luxury py-6 sm:py-8">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight text-[#0a0a0a]"
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-[#0a0a0a] leading-[0.95]"
           >
             Checkout
           </motion.h1>
         </div>
       </section>
 
-      {/* Main Content - Modern Layout */}
-      <section className="container-luxury py-10 sm:py-12 md:py-16">
+      {/* Main Content */}
+      <section className="container-luxury py-6 sm:py-8">
         <form onSubmit={handleSubmit(onSubmit)}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="grid lg:grid-cols-12 gap-5 lg:gap-6"
+            className="grid lg:grid-cols-12 gap-4 lg:gap-6"
           >
             {/* Left Column */}
-            <div className="lg:col-span-8 space-y-4">
-              {/* Shipping Address - Refined */}
+            <div className="lg:col-span-8 space-y-3">
+              {/* Shipping Address */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
-                  delay: 0.2,
+                  delay: 0.1,
                   duration: 0.5,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="bg-white border border-[#f5f5f5] p-6 rounded-[20px] hover:shadow-sm transition-all duration-300"
+                className="bg-white border border-[#e5e5e5] p-5 rounded-[16px]"
               >
-                <h2 className="text-sm font-normal tracking-normal mb-5 border-b border-[#f5f5f5] pb-4 text-[#0a0a0a]">
+                <h2 className="text-sm font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
                   Shipping Address
                 </h2>
 
                 {addresses.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-xs text-neutral-400 font-normal mb-4">
+                  <div className="text-center py-6">
+                    <p className="text-xs text-neutral-400 font-normal mb-3">
                       No addresses found. Please add one.
                     </p>
                     <Button
@@ -234,20 +320,20 @@ export default function CheckoutPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => router.push("/dashboard/addresses")}
-                      className="border-[#f5f5f5] hover:border-[#e5e5e5] bg-[#fafafa]"
+                      className="border-[#e5e5e5] hover:border-[#0a0a0a] bg-white rounded-[12px]"
                     >
                       Add Address
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     {addresses.map((address) => (
                       <label
                         key={address.id}
-                        className={`flex items-start gap-4 p-4 border cursor-pointer transition-all rounded-[14px] ${
+                        className={`flex items-start gap-3 p-3 border cursor-pointer transition-all rounded-[12px] ${
                           shippingAddressId === address.id
                             ? "border-[#0a0a0a] bg-[#fafafa]"
-                            : "border-[#f5f5f5] hover:border-[#e5e5e5]"
+                            : "border-[#e5e5e5] hover:border-[#0a0a0a]"
                         }`}
                       >
                         <input
@@ -283,28 +369,28 @@ export default function CheckoutPage() {
                 )}
               </motion.div>
 
-              {/* Billing Address - Refined */}
+              {/* Billing Address */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
-                  delay: 0.3,
+                  delay: 0.15,
                   duration: 0.5,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="bg-white border border-[#f5f5f5] p-6 rounded-[20px] hover:shadow-sm transition-all duration-300"
+                className="bg-white border border-[#e5e5e5] p-5 rounded-[16px]"
               >
-                <h2 className="text-sm font-normal tracking-normal mb-5 border-b border-[#f5f5f5] pb-4 text-[#0a0a0a]">
+                <h2 className="text-sm font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
                   Billing Address
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {addresses.map((address) => (
                     <label
                       key={address.id}
-                      className={`flex items-start gap-4 p-4 border cursor-pointer transition-all rounded-[14px] ${
+                      className={`flex items-start gap-3 p-3 border cursor-pointer transition-all rounded-[12px] ${
                         billingAddressId === address.id
                           ? "border-[#0a0a0a] bg-[#fafafa]"
-                          : "border-[#f5f5f5] hover:border-[#e5e5e5]"
+                          : "border-[#e5e5e5] hover:border-[#0a0a0a]"
                       }`}
                     >
                       <input
@@ -334,18 +420,18 @@ export default function CheckoutPage() {
                 )}
               </motion.div>
 
-              {/* Payment Method - Refined */}
+              {/* Payment Method */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
-                  delay: 0.4,
+                  delay: 0.2,
                   duration: 0.5,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="bg-white border border-[#f5f5f5] p-6 rounded-[20px] hover:shadow-sm transition-all duration-300"
+                className="bg-white border border-[#e5e5e5] p-5 rounded-[16px]"
               >
-                <h2 className="text-sm font-normal tracking-normal mb-5 border-b border-[#f5f5f5] pb-4 text-[#0a0a0a]">
+                <h2 className="text-sm font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
                   Payment Method
                 </h2>
                 <div className="space-y-2">
@@ -361,11 +447,11 @@ export default function CheckoutPage() {
                   ].map((method) => (
                     <label
                       key={method.value}
-                      className={`flex items-center gap-3 p-3 border cursor-pointer transition-all rounded-[14px] ${
+                      className={`flex items-center gap-3 p-3 border cursor-pointer transition-all rounded-[12px] ${
                         paymentMethod === method.value ||
                         (method.value === "COD" && paymentMethod === "RAZORPAY")
                           ? "border-[#0a0a0a] bg-[#fafafa]"
-                          : "border-[#f5f5f5] hover:border-[#e5e5e5]"
+                          : "border-[#e5e5e5] hover:border-[#0a0a0a]"
                       }`}
                     >
                       <input
@@ -382,51 +468,51 @@ export default function CheckoutPage() {
                 </div>
               </motion.div>
 
-              {/* Order Notes - Refined */}
+              {/* Order Notes */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
-                  delay: 0.5,
+                  delay: 0.25,
                   duration: 0.5,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="bg-white border border-[#f5f5f5] p-6 rounded-[20px] hover:shadow-sm transition-all duration-300"
+                className="bg-white border border-[#e5e5e5] p-5 rounded-[16px]"
               >
-                <h2 className="text-sm font-normal tracking-normal mb-5 border-b border-[#f5f5f5] pb-4 text-[#0a0a0a]">
+                <h2 className="text-sm font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
                   Order Notes (Optional)
                 </h2>
                 <Textarea
                   {...register("notes")}
-                  className="input-luxury min-h-[100px] rounded-[14px] border-[#f5f5f5] bg-[#fafafa] focus:bg-white text-xs font-normal"
+                  className="min-h-[80px] rounded-[12px] border-[#e5e5e5] bg-white focus:border-[#0a0a0a] text-xs font-normal"
                   placeholder="Any special instructions for your order?"
                 />
               </motion.div>
             </div>
 
-            {/* Right Column - Order Summary - Refined */}
+            {/* Right Column - Order Summary */}
             <div className="lg:col-span-4">
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
-                  delay: 0.2,
+                  delay: 0.1,
                   duration: 0.6,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="bg-white border border-[#f5f5f5] p-6 rounded-[20px] sticky top-24 shadow-sm hover:shadow-sm transition-shadow duration-300"
+                className="bg-white border border-[#e5e5e5] p-5 rounded-[16px] sticky top-24"
               >
-                <h2 className="text-sm font-normal tracking-normal mb-5 border-b border-[#f5f5f5] pb-4 text-[#0a0a0a]">
+                <h2 className="text-sm font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
                   Order Summary
                 </h2>
 
-                <div className="space-y-3 mb-4">
+                <div className="space-y-2.5 mb-4">
                   {cart.items.map((item) => (
                     <div
                       key={item.id}
-                      className="flex gap-3 pb-3 border-b border-[#f5f5f5] last:border-0"
+                      className="flex gap-3 pb-2.5 border-b border-[#e5e5e5] last:border-0"
                     >
-                      <div className="relative w-16 h-16 border border-[#f5f5f5] overflow-hidden bg-[#fafafa] flex-shrink-0 rounded-[12px]">
+                      <div className="relative w-14 h-14 border border-[#e5e5e5] overflow-hidden bg-[#fafafa] flex-shrink-0 rounded-[10px]">
                         {item.product.image && (
                           <Image
                             src={item.product.image}
@@ -437,13 +523,13 @@ export default function CheckoutPage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-normal tracking-normal line-clamp-1 mb-1">
+                        <p className="text-xs font-normal tracking-normal line-clamp-1 mb-0.5">
                           {item.product.name}
                         </p>
-                        <p className="text-xs text-neutral-400 font-normal">
+                        <p className="text-xs text-neutral-400 font-normal mb-1">
                           Qty: {item.quantity}
                         </p>
-                        <p className="text-xs font-normal mt-1">
+                        <p className="text-xs font-normal">
                           {formatPrice(item.price * item.quantity)}
                         </p>
                       </div>
@@ -451,12 +537,12 @@ export default function CheckoutPage() {
                   ))}
                 </div>
 
-                <div className="space-y-2.5 mb-4 border-t border-[#f5f5f5] pt-3">
+                <div className="space-y-2 mb-4 border-t border-[#e5e5e5] pt-3">
                   <div className="flex justify-between text-xs">
                     <span className="text-xs font-normal text-neutral-400">
                       Subtotal
                     </span>
-                    <span className="font-normal">
+                    <span className="font-normal text-[#0a0a0a]">
                       {formatPrice(cart.subtotal)}
                     </span>
                   </div>
@@ -464,13 +550,17 @@ export default function CheckoutPage() {
                     <span className="text-xs font-normal text-neutral-400">
                       Shipping
                     </span>
-                    <span className="text-xs font-normal">
+                    <span className="text-xs font-normal text-neutral-400">
                       Calculated at checkout
                     </span>
                   </div>
-                  <div className="border-t border-[#f5f5f5] pt-3 flex justify-between text-sm font-normal">
-                    <span className="text-xs">Total</span>
-                    <span>{formatPrice(cart.subtotal)}</span>
+                  <div className="border-t border-[#e5e5e5] pt-2.5 flex justify-between">
+                    <span className="text-sm font-medium text-[#0a0a0a]">
+                      Total
+                    </span>
+                    <span className="text-base font-medium text-[#0a0a0a]">
+                      {formatPrice(cart.subtotal)}
+                    </span>
                   </div>
                 </div>
 
@@ -496,7 +586,7 @@ export default function CheckoutPage() {
                   type="submit"
                   size="sm"
                   variant="filled"
-                  className="w-full"
+                  className="w-full rounded-[12px]"
                   disabled={createOrder.isPending || isRazorpayLoading}
                 >
                   {createOrder.isPending || isRazorpayLoading

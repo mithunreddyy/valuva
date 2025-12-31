@@ -1,5 +1,6 @@
 "use client";
 
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductCardSkeleton } from "@/components/products/product-card-skeleton";
 import { AdvancedFilters } from "@/components/search/advanced-filters";
@@ -125,51 +126,60 @@ export default function SearchPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Search Section - Modern Design */}
-      <section className="relative border-b border-[#f5f5f5] bg-gradient-to-b from-white via-white to-[#fafafa]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.01),transparent_70%)]" />
-        <div className="container-luxury py-10 sm:py-12 md:py-16 relative z-10">
+      {/* Breadcrumbs */}
+      <div className="container-luxury pt-2 sm:pt-4 pb-2 sm:pb-4">
+        <Breadcrumbs
+          items={[
+            { name: "Home", url: "/" },
+            { name: "Search", url: "/search", isBold: true },
+          ]}
+        />
+      </div>
+
+      {/* Header */}
+      <section className="border-b border-[#e5e5e5] bg-white">
+        <div className="container-luxury py-6 sm:py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-3xl mx-auto space-y-6"
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-3xl mx-auto space-y-4"
           >
             <motion.h1
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.6 }}
-              className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight text-center text-[#0a0a0a]"
+              className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-center text-[#0a0a0a] leading-[0.95]"
             >
               Search
             </motion.h1>
 
-            {/* Search Form - Refined */}
+            {/* Search Form */}
             <div className="relative">
               <form onSubmit={handleSearch} className="relative">
                 <div className="relative">
-                  <SearchIcon className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400 z-10" />
+                  <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 z-10" />
                   <Input
                     type="text"
                     value={query}
                     onChange={(e) => updateQuery(e.target.value)}
                     placeholder="Search products, brands, categories..."
-                    className="pl-14 pr-28 h-12 sm:h-14 rounded-[16px] border border-[#f5f5f5] focus:border-[#d0d0d0] bg-white text-sm font-normal shadow-none hover:shadow-sm transition-all"
+                    className="pl-11 pr-24 h-11 rounded-[12px] border border-[#e5e5e5] focus:border-[#0a0a0a] bg-white text-sm font-normal"
                     autoFocus
                   />
                   {query && (
                     <button
                       type="button"
                       onClick={handleClear}
-                      className="absolute right-24 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center hover:bg-[#f5f5f5] transition-colors rounded-[10px] z-10"
+                      className="absolute right-20 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center hover:bg-[#f5f5f5] transition-colors rounded-[8px] z-10"
                     >
-                      <X className="h-4 w-4 text-neutral-400" />
+                      <X className="h-3.5 w-3.5 text-neutral-400" />
                     </button>
                   )}
                   <Button
                     type="submit"
                     size="sm"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-9 sm:h-10 px-4 rounded-[12px] text-xs font-normal z-10"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 px-3 rounded-[10px] text-xs font-normal z-10"
                   >
                     Search
                   </Button>
@@ -194,11 +204,11 @@ export default function SearchPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="space-y-3 pt-2"
+                className="space-y-2.5 pt-2"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-neutral-400" />
+                    <TrendingUp className="h-3.5 w-3.5 text-neutral-400" />
                     <span className="text-xs font-normal text-neutral-400">
                       Recent Searches
                     </span>
@@ -221,7 +231,7 @@ export default function SearchPage() {
                         updateQuery(search);
                         handleSearch(e, search);
                       }}
-                      className="px-3 py-1.5 bg-[#f5f5f5] border border-transparent hover:border-[#e5e5e5] hover:bg-white rounded-[10px] text-xs font-normal transition-all"
+                      className="px-3 py-1.5 bg-white border border-[#e5e5e5] hover:border-[#0a0a0a] rounded-[10px] text-xs font-normal transition-all"
                     >
                       {search}
                     </motion.button>
@@ -233,22 +243,22 @@ export default function SearchPage() {
         </div>
       </section>
 
-      {/* Results Section - Modern Grid */}
-      <section className="container-luxury py-10 sm:py-12 md:py-16">
+      {/* Results Section */}
+      <section className="container-luxury py-6 sm:py-8">
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
           </div>
         ) : searchQuery && data?.data ? (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Results Header with Sort and Filters */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+              className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5"
             >
               <p className="text-xs text-neutral-400 font-normal">
                 {data.data.length}{" "}
@@ -263,7 +273,7 @@ export default function SearchPage() {
                   size="sm"
                   variant="outline"
                   onClick={() => setIsFiltersOpen(true)}
-                  className="gap-1.5 border-[#f5f5f5] hover:border-[#e5e5e5] bg-[#fafafa]"
+                  className="gap-1.5 border-[#e5e5e5] hover:border-[#0a0a0a] bg-white rounded-[12px]"
                 >
                   <Filter className="h-3.5 w-3.5" />
                   Filters
@@ -274,13 +284,13 @@ export default function SearchPage() {
                   )}
                 </Button>
                 <Select value={sortBy} onValueChange={handleSort}>
-                  <SelectTrigger className="w-full sm:w-[160px] border border-[#f5f5f5] text-xs font-normal h-9 hover:border-[#e5e5e5] transition-all rounded-[12px] bg-[#fafafa] shadow-none hover:bg-white">
+                  <SelectTrigger className="w-full sm:w-[160px] border border-[#e5e5e5] text-xs font-normal h-9 hover:border-[#0a0a0a] transition-all rounded-[12px] bg-white">
                     <div className="flex items-center gap-1.5">
                       <ArrowUpDown className="h-3.5 w-3.5 text-neutral-400" />
                       <SelectValue placeholder="Sort by" />
                     </div>
                   </SelectTrigger>
-                  <SelectContent className="border border-[#f5f5f5] rounded-[14px] shadow-lg bg-white">
+                  <SelectContent className="border border-[#e5e5e5] rounded-[12px] shadow-lg bg-white">
                     <SelectItem
                       value="relevance"
                       className="text-xs font-normal rounded-[10px] focus:bg-[#fafafa] py-2"
@@ -330,17 +340,17 @@ export default function SearchPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="text-center py-20 sm:py-24 space-y-4"
+                className="text-center py-12 sm:py-16 space-y-4"
               >
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.15, duration: 0.4 }}
-                  className="w-16 h-16 rounded-full bg-[#f5f5f5] flex items-center justify-center mx-auto"
+                  className="w-12 h-12 rounded-full bg-[#f5f5f5] flex items-center justify-center mx-auto"
                 >
-                  <SearchIcon className="h-7 w-7 text-neutral-400" />
+                  <SearchIcon className="h-5 w-5 text-neutral-400" />
                 </motion.div>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <h2 className="text-base font-normal tracking-normal text-[#0a0a0a]">
                     No products found
                   </h2>
@@ -349,7 +359,7 @@ export default function SearchPage() {
                   </p>
                 </div>
                 <div className="pt-2">
-                  <Button size="sm" onClick={() => router.push("/shop")}>
+                  <Button size="sm" onClick={() => router.push("/shop")} className="rounded-[12px]">
                     Browse All Products
                   </Button>
                 </div>
@@ -359,7 +369,7 @@ export default function SearchPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6"
               >
                 <AnimatePresence>
                   {sortedProducts.map((product, index) => (

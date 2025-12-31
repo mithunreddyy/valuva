@@ -1,5 +1,6 @@
 "use client";
 
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -207,13 +208,13 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen bg-[#fafafa]">
       {/* Header */}
-      <section className="bg-white border-b border-[#e5e5e5]">
-        <div className="container-luxury py-8 sm:py-10">
+      <section className="border-b border-[#e5e5e5] bg-white">
+        <div className="container-luxury py-6 sm:py-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl font-medium tracking-normal text-[#0a0a0a] mb-2">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-[#0a0a0a] mb-1 leading-[0.95]">
               Frequently Asked Questions
             </h1>
-            <p className="text-xs text-neutral-500 font-medium">
+            <p className="text-xs sm:text-sm text-neutral-400 font-normal">
               Find answers to common questions about orders, shipping, returns,
               and more
             </p>
@@ -222,7 +223,7 @@ export default function FAQPage() {
       </section>
 
       {/* Content */}
-      <section className="container-luxury py-8 sm:py-10">
+      <section className="container-luxury py-6 sm:py-8">
         <div className="max-w-4xl mx-auto">
           {/* Category Filter */}
           <div className="mb-8">
