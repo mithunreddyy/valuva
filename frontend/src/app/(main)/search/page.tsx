@@ -1,10 +1,10 @@
 "use client";
 
-import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductCardSkeleton } from "@/components/products/product-card-skeleton";
 import { AdvancedFilters } from "@/components/search/advanced-filters";
 import { SearchAutocomplete } from "@/components/search/search-autocomplete";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -355,13 +355,8 @@ export default function SearchPage() {
                     No products found
                   </h2>
                   <p className="text-xs text-neutral-400 font-normal">
-                    Try searching with different keywords or browse all products
+                    Try searching with different keywords
                   </p>
-                </div>
-                <div className="pt-2">
-                  <Button size="sm" onClick={() => router.push("/shop")} className="rounded-[12px]">
-                    Browse All Products
-                  </Button>
                 </div>
               </motion.div>
             ) : (

@@ -1,19 +1,22 @@
+import { DEFAULT_QUERY_OPTIONS, QUERY_KEYS } from "@/lib/react-query-config";
 import { toast } from "@/hooks/use-toast";
 import { ordersApi } from "@/services/api/orders";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useOrders(params?: Parameters<typeof ordersApi.getOrders>[0]) {
   return useQuery({
-    queryKey: ["orders", params],
+    queryKey: [...QUERY_KEYS.orders, params],
     queryFn: () => ordersApi.getOrders(params),
+    ...DEFAULT_QUERY_OPTIONS.orders,
   });
 }
 
 export function useOrder(id: string) {
   return useQuery({
-    queryKey: ["order", id],
+    queryKey: QUERY_KEYS.order(id),
     queryFn: () => ordersApi.getOrderById(id),
     enabled: !!id,
+    ...DEFAULT_QUERY_OPTIONS.orders,
   });
 }
 
@@ -23,8 +26,8 @@ export function useCreateOrder() {
   return useMutation({
     mutationFn: ordersApi.createOrder,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.orders });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.cart });
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
@@ -44,7 +47,7 @@ export function useCancelOrder() {
   return useMutation({
     mutationFn: ordersApi.cancelOrder,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.orders });
       toast({
         title: "Success",
         description: "Order cancelled successfully",

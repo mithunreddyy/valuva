@@ -2,15 +2,9 @@
 
 import { ProductCard } from "@/components/products/ProductCard";
 import { DeliveryOptions } from "@/components/products/delivery-options";
-import {
-  ProductImageModal,
-  ProductImageZoom,
-} from "@/components/products/product-image-zoom";
-import { ProductRecommendations } from "@/components/products/product-recommendations";
-import { ProductReviews } from "@/components/products/product-reviews";
+import { ProductImageZoom } from "@/components/products/product-image-zoom";
 import { SizeGuide } from "@/components/products/size-guide";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
-import { ShareButtons } from "@/components/social/share-buttons";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -38,9 +32,47 @@ import {
   Star,
   Truck,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+
+// Lazy load heavy components
+const ProductImageModal = dynamic(
+  () =>
+    import("@/components/products/product-image-zoom").then(
+      (mod) => mod.ProductImageModal
+    ),
+  { ssr: false }
+);
+
+const ProductRecommendations = dynamic(
+  () =>
+    import("@/components/products/product-recommendations").then(
+      (mod) => mod.ProductRecommendations
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-64 w-full rounded-[16px]" />,
+  }
+);
+
+const ProductReviews = dynamic(
+  () =>
+    import("@/components/products/product-reviews").then(
+      (mod) => mod.ProductReviews
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-48 w-full rounded-[16px]" />,
+  }
+);
+
+const ShareButtons = dynamic(
+  () =>
+    import("@/components/social/share-buttons").then((mod) => mod.ShareButtons),
+  { ssr: false }
+);
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
   const { data, isLoading } = useProduct(params.slug);
@@ -59,7 +91,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     "description" | "specs" | "care" | "shipping"
   >("description");
 
-  // Track product view
+  // Track product view - only track once when product data is loaded
   useEffect(() => {
     if (data?.data?.id) {
       analytics.trackProductView(data.data.id, {
@@ -68,13 +100,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         category: data.data.category?.name,
       });
     }
-  }, [
-    data?.data?.id,
-    analytics,
-    data?.data?.name,
-    data?.data?.basePrice,
-    data?.data?.category?.name,
-  ]);
+    // Only track when product ID changes (once per product view)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.data?.id]);
 
   if (isLoading) {
     return (

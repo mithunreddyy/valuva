@@ -9,7 +9,6 @@ import { useAnalytics } from "@/hooks/use-analytics";
 import { useCart } from "@/hooks/use-cart";
 import { useCreateOrder } from "@/hooks/use-orders";
 import { useRazorpay } from "@/hooks/use-razorpay";
-import { InputSanitizer } from "@/lib/input-sanitizer";
 import { formatPrice } from "@/lib/utils";
 import { useAppSelector } from "@/store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,16 +44,6 @@ export default function CheckoutPage() {
   const { data: addressesData, isLoading: addressesLoading } = useAddresses();
   const createOrder = useCreateOrder();
   const { openRazorpayCheckout, isLoading: isRazorpayLoading } = useRazorpay();
-
-  // Track checkout started
-  useEffect(() => {
-    if (cartData?.data && cartData.data.items.length > 0) {
-      analytics.trackCheckoutStarted({
-        itemCount: cartData.data.items.length,
-        subtotal: Number(cartData.data.subtotal),
-      });
-    }
-  }, [cartData, analytics]);
 
   const {
     register,
@@ -96,6 +85,16 @@ export default function CheckoutPage() {
     }
   }, [shippingAddressId, setValue]);
 
+  // Track checkout started - memoized to prevent duplicate tracking
+  useEffect(() => {
+    if (cartData?.data && cartData.data.items.length > 0) {
+      analytics.trackCheckoutStarted({
+        itemCount: cartData.data.items.length,
+        subtotal: Number(cartData.data.subtotal),
+      });
+    }
+  }, [cartData, analytics]);
+
   if (cartLoading || addressesLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center py-24">
@@ -133,12 +132,10 @@ export default function CheckoutPage() {
 
   const onSubmit = async (data: CheckoutForm) => {
     try {
-      // Sanitize form data
+      // Sanitize form data - notes are optional and validated by Zod
       const sanitizedData = {
         ...data,
-        notes: data.notes
-          ? InputSanitizer.sanitizeString(data.notes, { maxLength: 500 })
-          : undefined,
+        notes: data.notes?.trim().substring(0, 500) || undefined,
       };
 
       const order = await createOrder.mutateAsync(sanitizedData);

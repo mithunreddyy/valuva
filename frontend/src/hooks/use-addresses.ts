@@ -1,14 +1,16 @@
 import { toast } from "@/hooks/use-toast";
+import { DEFAULT_QUERY_OPTIONS, QUERY_KEYS } from "@/lib/react-query-config";
 import { addressesApi } from "@/services/api/addresses";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useAddresses() {
   return useQuery({
-    queryKey: ["addresses"],
+    queryKey: QUERY_KEYS.addresses,
     queryFn: async () => {
       const result = await addressesApi.getAddresses();
       return result;
     },
+    ...DEFAULT_QUERY_OPTIONS.addresses,
   });
 }
 
@@ -18,7 +20,7 @@ export function useCreateAddress() {
   return useMutation({
     mutationFn: addressesApi.createAddress,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["addresses"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.addresses });
       toast({
         title: "Success",
         description: "Address added successfully",
@@ -47,7 +49,7 @@ export function useUpdateAddress() {
       data: Parameters<typeof addressesApi.updateAddress>[1];
     }) => addressesApi.updateAddress(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["addresses"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.addresses });
       toast({
         title: "Success",
         description: "Address updated successfully",
@@ -71,7 +73,7 @@ export function useDeleteAddress() {
   return useMutation({
     mutationFn: addressesApi.deleteAddress,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["addresses"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.addresses });
       toast({
         title: "Success",
         description: "Address deleted successfully",

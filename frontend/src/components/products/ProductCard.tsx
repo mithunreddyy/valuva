@@ -12,60 +12,74 @@ import { Product } from "@/types";
 import { Heart, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 interface ProductCardProps {
   product: Product;
 }
 
-export const ProductCard = ({ product }: ProductCardProps) => {
+export const ProductCard = memo(({ product }: ProductCardProps) => {
   const dispatch = useAppDispatch();
   const wishlist = useAppSelector((state) => state.wishlist.items);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const analytics = useAnalytics();
 
-  const isInWishlist = wishlist.some((item) => item.productId === product.id);
-  const primaryImage =
-    product.images.find((img) => img.isPrimary)?.url || product.images[0]?.url;
+  const isInWishlist = useMemo(
+    () => wishlist.some((item) => item.productId === product.id),
+    [wishlist, product.id]
+  );
+  const primaryImage = useMemo(
+    () =>
+      product.images.find((img) => img.isPrimary)?.url ||
+      product.images[0]?.url,
+    [product.images]
+  );
 
-  const handleAddToCart = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (product.variants.length === 0) return;
+  const handleAddToCart = useCallback(
+    async (e: React.MouseEvent) => {
+      e.preventDefault();
+      if (product.variants.length === 0) return;
 
-    setIsAddingToCart(true);
-    try {
-      const variant = product.variants[0];
-      await dispatch(
-        addToCart({
-          variantId: variant.id,
-          quantity: 1,
-        })
-      ).unwrap();
+      setIsAddingToCart(true);
+      try {
+        const variant = product.variants[0];
+        await dispatch(
+          addToCart({
+            variantId: variant.id,
+            quantity: 1,
+          })
+        ).unwrap();
 
-      // Track analytics
-      analytics.trackAddToCart(
-        product.id,
-        variant.id,
-        1,
-        Number(variant.price)
-      );
-    } catch (error) {
-      console.error("Failed to add to cart:", error);
-    } finally {
-      setIsAddingToCart(false);
-    }
-  };
+        // Track analytics
+        analytics.trackAddToCart(
+          product.id,
+          variant.id,
+          1,
+          Number(variant.price)
+        );
+      } catch (error) {
+        // Error is handled by Redux slice
+        console.error("Failed to add to cart:", error);
+      } finally {
+        setIsAddingToCart(false);
+      }
+    },
+    [product.variants, product.id, dispatch, analytics]
+  );
 
-  const handleWishlistToggle = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (isInWishlist) {
-      await dispatch(removeFromWishlist(product.id));
-      analytics.trackWishlistRemove(product.id);
-    } else {
-      await dispatch(addToWishlist(product.id));
-      analytics.trackWishlistAdd(product.id);
-    }
-  };
+  const handleWishlistToggle = useCallback(
+    async (e: React.MouseEvent) => {
+      e.preventDefault();
+      if (isInWishlist) {
+        await dispatch(removeFromWishlist({ productId: product.id }));
+        analytics.trackWishlistRemove(product.id);
+      } else {
+        await dispatch(addToWishlist({ productId: product.id }));
+        analytics.trackWishlistAdd(product.id);
+      }
+    },
+    [isInWishlist, product.id, dispatch, analytics]
+  );
 
   return (
     <Link
@@ -144,4 +158,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       </div>
     </Link>
   );
-};
+});
+
+ProductCard.displayName = "ProductCard";

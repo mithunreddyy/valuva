@@ -1,9 +1,11 @@
+import { createSelector } from "@reduxjs/toolkit";
 import type { RootState } from "./index";
 
 /**
  * Store selectors
  * Reusable selectors for accessing Redux state
  * These help avoid repetitive code and provide type-safe state access
+ * Using createSelector for memoization to prevent unnecessary re-renders
  */
 
 // Auth selectors
@@ -26,11 +28,14 @@ export const selectSearchResults = (state: RootState) =>
 export const selectProductsLoading = (state: RootState) =>
   state.products.isLoading;
 export const selectProductsError = (state: RootState) => state.products.error;
-export const selectProductsPagination = (state: RootState) => ({
-  page: state.products.currentPage,
-  totalPages: state.products.totalPages,
-  total: state.products.total,
-});
+export const selectProductsPagination = createSelector(
+  [
+    (state: RootState) => state.products.currentPage,
+    (state: RootState) => state.products.totalPages,
+    (state: RootState) => state.products.total,
+  ],
+  (page, totalPages, total) => ({ page, totalPages, total })
+);
 
 // Cart selectors
 export const selectCart = (state: RootState) => state.cart;
@@ -61,11 +66,14 @@ export const selectCurrentOrder = (state: RootState) =>
   state.orders.currentOrder;
 export const selectOrdersLoading = (state: RootState) => state.orders.isLoading;
 export const selectOrdersError = (state: RootState) => state.orders.error;
-export const selectOrdersPagination = (state: RootState) => ({
-  page: state.orders.currentPage,
-  totalPages: state.orders.totalPages,
-  total: state.orders.total,
-});
+export const selectOrdersPagination = createSelector(
+  [
+    (state: RootState) => state.orders.currentPage,
+    (state: RootState) => state.orders.totalPages,
+    (state: RootState) => state.orders.total,
+  ],
+  (page, totalPages, total) => ({ page, totalPages, total })
+);
 
 // Categories selectors
 export const selectCategories = (state: RootState) => state.categories;

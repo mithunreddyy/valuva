@@ -1,6 +1,7 @@
 "use client";
 
 import { HorizontalFilters } from "@/app/(main)/shop/horizontal-filters";
+import { MobileFiltersDrawer } from "@/app/(main)/shop/mobile-filters-drawer";
 import { ShopSort } from "@/app/(main)/shop/shop-sort";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductCardSkeleton } from "@/components/products/product-card-skeleton";
@@ -12,7 +13,13 @@ import { useCategories } from "@/hooks/use-categories";
 import { useProducts } from "@/hooks/use-products";
 import { formatPrice } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Grid3x3, LayoutGrid, ShoppingBag } from "lucide-react";
+import {
+  ArrowRight,
+  Filter,
+  Grid3x3,
+  LayoutGrid,
+  ShoppingBag,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -24,6 +31,7 @@ export default function ShopPage() {
     Number(searchParams.get("page")) || 1
   );
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const limit = 24;
 
   const filters = {
@@ -159,6 +167,17 @@ export default function ShopPage() {
 
                 {/* Controls */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
+                  {/* Mobile Filter Button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsMobileFiltersOpen(true)}
+                    className="md:hidden flex items-center gap-2 rounded-[12px] border-[#e5e5e5] hover:border-[#0a0a0a] bg-white h-10"
+                  >
+                    <Filter className="h-4 w-4" />
+                    <span className="text-xs font-medium">Filters</span>
+                  </Button>
+
                   <ShopSort />
                   {/* View Toggle - Refined */}
                   <div
@@ -194,11 +213,19 @@ export default function ShopPage() {
                 </div>
               </div>
 
-              {/* Filters */}
-              <HorizontalFilters />
+              {/* Filters - Desktop Only */}
+              <div className="hidden md:block">
+                <HorizontalFilters />
+              </div>
             </motion.div>
           </div>
         </section>
+
+        {/* Mobile Filters Drawer */}
+        <MobileFiltersDrawer
+          isOpen={isMobileFiltersOpen}
+          onClose={() => setIsMobileFiltersOpen(false)}
+        />
 
         {/* Products Grid - Modern Layout */}
         <section

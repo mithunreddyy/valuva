@@ -1,4 +1,5 @@
 import { toast } from "@/hooks/use-toast";
+import { DEFAULT_QUERY_OPTIONS, QUERY_KEYS } from "@/lib/react-query-config";
 import { cartApi } from "@/services/api/cart";
 import { useCartStore } from "@/store/cart-store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -7,12 +8,13 @@ export function useCart() {
   const { setItemCount } = useCartStore();
 
   return useQuery({
-    queryKey: ["cart"],
+    queryKey: QUERY_KEYS.cart,
     queryFn: async () => {
       const result = await cartApi.getCart();
       setItemCount(result.data.itemCount);
       return result;
     },
+    ...DEFAULT_QUERY_OPTIONS.cart,
   });
 }
 
@@ -28,7 +30,7 @@ export function useAddToCart() {
       quantity: number;
     }) => cartApi.addToCart(variantId, quantity),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.cart });
       toast({
         title: "Success",
         description: "Item added to cart",
@@ -53,7 +55,7 @@ export function useUpdateCartItem() {
     mutationFn: ({ itemId, quantity }: { itemId: string; quantity: number }) =>
       cartApi.updateCartItem(itemId, quantity),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.cart });
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {

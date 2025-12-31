@@ -5,10 +5,57 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCancelOrder, useOrder } from "@/hooks/use-orders";
 import { formatDate, formatPrice } from "@/lib/utils";
+import { OrderStatus } from "@/types";
 import { CheckCircle, Package, Truck, XCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+
+/**
+ * Get status icon based on order status
+ */
+const getStatusIcon = (status: OrderStatus) => {
+  switch (status) {
+    case "DELIVERED":
+      return <CheckCircle className="h-5 w-5 text-green-600" />;
+    case "SHIPPED":
+      return <Truck className="h-5 w-5 text-blue-600" />;
+    case "CANCELLED":
+      return <XCircle className="h-5 w-5 text-red-600" />;
+    default:
+      return <Package className="h-5 w-5 text-yellow-600" />;
+  }
+};
+
+/**
+ * Get status badge class name
+ */
+const getStatusBadgeClass = (status: OrderStatus): string => {
+  switch (status) {
+    case "DELIVERED":
+      return "bg-green-100 text-green-800";
+    case "SHIPPED":
+      return "bg-blue-100 text-blue-800";
+    case "CANCELLED":
+      return "bg-red-100 text-red-800";
+    default:
+      return "bg-yellow-100 text-yellow-800";
+  }
+};
+
+/**
+ * Get payment status class name
+ */
+const getPaymentStatusClass = (status?: string): string => {
+  switch (status) {
+    case "COMPLETED":
+      return "text-green-600";
+    case "FAILED":
+      return "text-red-600";
+    default:
+      return "text-yellow-600";
+  }
+};
 
 export default function OrderDetailPage() {
   const params = useParams();
@@ -16,6 +63,22 @@ export default function OrderDetailPage() {
   const orderId = params.id as string;
   const { data, isLoading } = useOrder(orderId);
   const cancelOrder = useCancelOrder();
+
+  const handleCancel = async () => {
+    if (
+      window.confirm(
+        "Are you sure you want to cancel this order? This action cannot be undone."
+      )
+    ) {
+      try {
+        await cancelOrder.mutateAsync(orderId);
+        router.push("/dashboard/orders");
+      } catch (error) {
+        // Error is handled by the mutation's onError callback
+        console.error("Failed to cancel order:", error);
+      }
+    }
+  };
 
   if (isLoading) {
     return (
@@ -52,34 +115,8 @@ export default function OrderDetailPage() {
   }
 
   const order = data.data;
-
-  const handleCancel = async () => {
-    if (
-      confirm(
-        "Are you sure you want to cancel this order? This action cannot be undone."
-      )
-    ) {
-      try {
-        await cancelOrder.mutateAsync(orderId);
-        router.push("/dashboard/orders");
-      } catch (error) {
-        console.error("Cancel error:", error);
-      }
-    }
-  };
-
-  const getStatusIcon = () => {
-    switch (order.status) {
-      case "DELIVERED":
-        return <CheckCircle className="h-5 w-5 text-green-600" />;
-      case "SHIPPED":
-        return <Truck className="h-5 w-5 text-blue-600" />;
-      case "CANCELLED":
-        return <XCircle className="h-5 w-5 text-red-600" />;
-      default:
-        return <Package className="h-5 w-5 text-yellow-600" />;
-    }
-  };
+  const canCancel =
+    order.status !== "CANCELLED" && order.status !== "DELIVERED";
 
   return (
     <div className="min-h-screen bg-white">
@@ -110,21 +147,15 @@ export default function OrderDetailPage() {
           {/* Order Status */}
           <div className="bg-white border border-[#e5e5e5] p-4 rounded-[16px]">
             <div className="flex items-center gap-3 mb-3">
-              {getStatusIcon()}
+              {getStatusIcon(order.status)}
               <div>
                 <h2 className="text-base font-medium tracking-normal mb-1.5">
                   Order Status
                 </h2>
                 <span
-                  className={`inline-block px-2 py-0.5 text-[10px] font-medium tracking-normal rounded-[8px] ${
-                    order.status === "DELIVERED"
-                      ? "bg-green-100 text-green-800"
-                      : order.status === "SHIPPED"
-                      ? "bg-blue-100 text-blue-800"
-                      : order.status === "CANCELLED"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }`}
+                  className={`inline-block px-2 py-0.5 text-[10px] font-medium tracking-normal rounded-[8px] ${getStatusBadgeClass(
+                    order.status
+                  )}`}
                 >
                   {order.status}
                 </span>
@@ -133,7 +164,7 @@ export default function OrderDetailPage() {
             <p className="text-[10px] text-neutral-400 font-normal mb-3">
               Placed on {formatDate(order.createdAt)}
             </p>
-            {order.status !== "CANCELLED" && order.status !== "DELIVERED" && (
+            {canCancel && (
               <Button
                 variant="outline"
                 size="sm"
@@ -302,13 +333,9 @@ export default function OrderDetailPage() {
                         Status
                       </span>
                       <span
-                        className={`font-medium ${
-                          order.payment?.status === "COMPLETED"
-                            ? "text-green-600"
-                            : order.payment?.status === "FAILED"
-                            ? "text-red-600"
-                            : "text-yellow-600"
-                        }`}
+                        className={`font-medium ${getPaymentStatusClass(
+                          order.payment?.status
+                        )}`}
                       >
                         {order.payment?.status || "PENDING"}
                       </span>

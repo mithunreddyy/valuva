@@ -56,7 +56,6 @@ export default function RootLayout({
               {children}
               <Toaster />
               <Analytics />
-              <Analytics />
             </ReactQueryProvider>
           </ReduxProvider>
         </ErrorBoundary>

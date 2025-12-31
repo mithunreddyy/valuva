@@ -8,13 +8,14 @@ import {
   saveCookiePreferences,
   type CookiePreferences,
 } from "@/lib/cookies";
-import { Info, Settings, Shield, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { Cookie, Info, Settings, Shield, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function CookiePolicyPage() {
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen bg-white">
       {/* Breadcrumbs */}
       <div className="container-luxury pt-2 sm:pt-4 pb-2 sm:pb-4">
         <Breadcrumbs
@@ -25,306 +26,418 @@ export default function CookiePolicyPage() {
         />
       </div>
 
-      {/* Header */}
-      <section className="border-b border-[#e5e5e5] bg-white">
-        <div className="container-luxury py-6 sm:py-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-[#0a0a0a] mb-1 leading-[0.95]">
+      {/* Hero Header - Apple Style */}
+      <section className="relative border-b border-[#f5f5f5] bg-gradient-to-b from-white via-white to-[#fafafa]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.01),transparent_70%)]" />
+        <div className="container-luxury py-10 sm:py-12 md:py-16 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-3xl mx-auto text-center space-y-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.5 }}
+              className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] bg-gradient-to-br from-[#0a0a0a] to-[#1a1a1a] mb-4 shadow-lg"
+            >
+              <Cookie className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight text-[#0a0a0a] leading-[0.95]"
+            >
               Cookie Policy
-            </h1>
-            <p className="text-xs sm:text-sm text-neutral-400 font-normal">
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="text-xs sm:text-sm text-neutral-400 font-normal"
+            >
               Last updated:{" "}
               {new Date().toLocaleDateString("en-IN", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
               })}
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
         </div>
       </section>
 
       {/* Content */}
-      <section className="container-luxury py-6 sm:py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white border border-[#e5e5e5] rounded-[16px] p-5 space-y-5">
-            {/* Introduction */}
-            <div className="space-y-3">
-              <h2 className="text-xl font-medium tracking-normal text-[#0a0a0a] flex items-center gap-2.5">
-                <Info className="h-5 w-5" />
+      <section className="container-luxury py-10 sm:py-12 md:py-16">
+        <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8">
+          {/* Introduction */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="bg-white border border-[#e5e5e5] rounded-[20px] p-6 sm:p-8 lg:p-10 space-y-4"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-[12px] bg-[#fafafa] border border-[#e5e5e5] flex items-center justify-center">
+                <Info className="h-5 w-5 text-[#0a0a0a]" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
                 What Are Cookies?
               </h2>
-              <p className="text-sm text-neutral-700 leading-relaxed font-medium">
-                Cookies are small text files that are placed on your device when
-                you visit our website. They help us provide you with a better
-                experience by remembering your preferences and understanding how
-                you use our site.
-              </p>
             </div>
+            <p className="text-sm sm:text-base text-neutral-700 leading-relaxed font-medium">
+              Cookies are small text files that are placed on your device when
+              you visit our website. They help us provide you with a better
+              experience by remembering your preferences and understanding how
+              you use our site.
+            </p>
+          </motion.div>
 
-            {/* Types of Cookies */}
-            <div className="space-y-3">
-              <h2 className="text-xl font-medium tracking-normal text-[#0a0a0a] flex items-center gap-2.5">
-                <Settings className="h-5 w-5" />
+          {/* Types of Cookies */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="bg-white border border-[#e5e5e5] rounded-[20px] p-6 sm:p-8 lg:p-10 space-y-5"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-[12px] bg-[#fafafa] border border-[#e5e5e5] flex items-center justify-center">
+                <Settings className="h-5 w-5 text-[#0a0a0a]" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
                 Types of Cookies We Use
               </h2>
+            </div>
 
-              <div className="space-y-4">
-                <div className="bg-[#fafafa] rounded-[12px] p-4 border border-[#e5e5e5]">
-                  <h3 className="text-base font-medium text-[#0a0a0a] mb-2">
-                    Essential Cookies
+            <div className="space-y-4">
+              {[
+                {
+                  title: "Essential Cookies",
+                  desc: "These cookies are necessary for the website to function properly. They enable core functionality such as security, network management, and accessibility.",
+                  items: [
+                    "Authentication and session management",
+                    "Shopping cart functionality",
+                    "Security and fraud prevention",
+                    "Load balancing",
+                  ],
+                  note: "These cookies cannot be disabled as they are essential for website operation.",
+                },
+                {
+                  title: "Performance Cookies",
+                  desc: "These cookies help us understand how visitors interact with our website by collecting and reporting information anonymously.",
+                  items: [
+                    "Page views and navigation patterns",
+                    "Time spent on pages",
+                    "Error messages and performance issues",
+                    "Traffic sources",
+                  ],
+                },
+                {
+                  title: "Functionality Cookies",
+                  desc: "These cookies allow the website to remember choices you make and provide enhanced, personalized features.",
+                  items: [
+                    "Language preferences",
+                    "Region and location settings",
+                    "User preferences and settings",
+                    "Recently viewed products",
+                  ],
+                },
+                {
+                  title: "Targeting/Advertising Cookies",
+                  desc: "These cookies are used to deliver advertisements relevant to you and your interests. They also limit the number of times you see an advertisement.",
+                  items: [
+                    "Personalized advertisements",
+                    "Social media integration",
+                    "Marketing campaign tracking",
+                    "Cross-site tracking (with consent)",
+                  ],
+                },
+              ].map((cookieType, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 + index * 0.1, duration: 0.4 }}
+                  className="bg-[#fafafa] rounded-[16px] p-5 border border-[#e5e5e5]"
+                >
+                  <h3 className="text-base sm:text-lg font-medium text-[#0a0a0a] mb-2">
+                    {cookieType.title}
                   </h3>
                   <p className="text-sm text-neutral-700 leading-relaxed font-medium mb-3">
-                    These cookies are necessary for the website to function
-                    properly. They enable core functionality such as security,
-                    network management, and accessibility.
+                    {cookieType.desc}
                   </p>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-neutral-600 font-medium">
-                    <li>Authentication and session management</li>
-                    <li>Shopping cart functionality</li>
-                    <li>Security and fraud prevention</li>
-                    <li>Load balancing</li>
-                  </ul>
-                  <p className="text-xs text-neutral-500 font-medium mt-3">
-                    These cookies cannot be disabled as they are essential for
-                    website operation.
-                  </p>
-                </div>
+                  <div className="space-y-2 mb-3">
+                    {cookieType.items.map((item, itemIndex) => (
+                      <div
+                        key={itemIndex}
+                        className="flex items-start gap-2.5 bg-white rounded-[12px] p-2.5 border border-[#e5e5e5]"
+                      >
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#0a0a0a] mt-1.5 flex-shrink-0" />
+                        <span className="text-sm text-neutral-600 font-medium">
+                          {item}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  {cookieType.note && (
+                    <p className="text-xs text-neutral-500 font-medium">
+                      {cookieType.note}
+                    </p>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
 
-                <div className="bg-[#fafafa] rounded-[12px] p-4 border border-[#e5e5e5]">
-                  <h3 className="text-base font-medium text-[#0a0a0a] mb-2">
-                    Performance Cookies
+          {/* Third-Party Cookies */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0, duration: 0.6 }}
+            className="bg-white border border-[#e5e5e5] rounded-[20px] p-6 sm:p-8 lg:p-10 space-y-4"
+          >
+            <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
+              Third-Party Cookies
+            </h2>
+            <p className="text-sm sm:text-base text-neutral-700 leading-relaxed font-medium mb-3">
+              We may use third-party services that set cookies on your device.
+              These include:
+            </p>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {[
+                {
+                  title: "Analytics Services",
+                  desc: "Google Analytics, to understand website usage",
+                },
+                {
+                  title: "Payment Processors",
+                  desc: "Secure payment gateway cookies for transaction processing",
+                },
+                {
+                  title: "Social Media",
+                  desc: "Facebook, Instagram, Twitter for social sharing features",
+                },
+                {
+                  title: "Advertising Networks",
+                  desc: "For personalized advertising (with your consent)",
+                },
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-[#fafafa] rounded-[12px] p-4 border border-[#e5e5e5]"
+                >
+                  <h3 className="text-sm font-medium text-[#0a0a0a] mb-1">
+                    {item.title}
                   </h3>
-                  <p className="text-sm text-neutral-700 leading-relaxed font-medium mb-3">
-                    These cookies help us understand how visitors interact with
-                    our website by collecting and reporting information
-                    anonymously.
+                  <p className="text-sm text-neutral-600 font-medium">
+                    {item.desc}
                   </p>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-neutral-600 font-medium">
-                    <li>Page views and navigation patterns</li>
-                    <li>Time spent on pages</li>
-                    <li>Error messages and performance issues</li>
-                    <li>Traffic sources</li>
-                  </ul>
                 </div>
+              ))}
+            </div>
+          </motion.div>
 
-                <div className="bg-[#fafafa] rounded-[12px] p-4 border border-[#e5e5e5]">
-                  <h3 className="text-base font-medium text-[#0a0a0a] mb-2">
-                    Functionality Cookies
-                  </h3>
-                  <p className="text-sm text-neutral-700 leading-relaxed font-medium mb-3">
-                    These cookies allow the website to remember choices you make
-                    and provide enhanced, personalized features.
-                  </p>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-neutral-600 font-medium">
-                    <li>Language preferences</li>
-                    <li>Region and location settings</li>
-                    <li>User preferences and settings</li>
-                    <li>Recently viewed products</li>
-                  </ul>
-                </div>
-
-                <div className="bg-[#fafafa] rounded-[12px] p-4 border border-[#e5e5e5]">
-                  <h3 className="text-base font-medium text-[#0a0a0a] mb-2">
-                    Targeting/Advertising Cookies
-                  </h3>
-                  <p className="text-sm text-neutral-700 leading-relaxed font-medium mb-3">
-                    These cookies are used to deliver advertisements relevant to
-                    you and your interests. They also limit the number of times
-                    you see an advertisement.
-                  </p>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-neutral-600 font-medium">
-                    <li>Personalized advertisements</li>
-                    <li>Social media integration</li>
-                    <li>Marketing campaign tracking</li>
-                    <li>Cross-site tracking (with consent)</li>
-                  </ul>
-                </div>
+          {/* Cookie Management */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1, duration: 0.6 }}
+            className="bg-white border border-[#e5e5e5] rounded-[20px] p-6 sm:p-8 lg:p-10 space-y-5"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-[12px] bg-[#fafafa] border border-[#e5e5e5] flex items-center justify-center">
+                <Shield className="h-5 w-5 text-[#0a0a0a]" />
               </div>
-            </div>
-
-            {/* Third-Party Cookies */}
-            <div className="space-y-4">
-              <h2 className="text-2xl font-medium tracking-normal text-[#0a0a0a]">
-                Third-Party Cookies
-              </h2>
-              <p className="text-sm text-neutral-700 leading-relaxed font-medium mb-3">
-                We may use third-party services that set cookies on your device.
-                These include:
-              </p>
-              <ul className="list-disc list-inside space-y-2 text-sm text-neutral-700 font-medium">
-                <li>
-                  <strong>Analytics Services:</strong> Google Analytics, to
-                  understand website usage
-                </li>
-                <li>
-                  <strong>Payment Processors:</strong> Secure payment gateway
-                  cookies for transaction processing
-                </li>
-                <li>
-                  <strong>Social Media:</strong> Facebook, Instagram, Twitter
-                  for social sharing features
-                </li>
-                <li>
-                  <strong>Advertising Networks:</strong> For personalized
-                  advertising (with your consent)
-                </li>
-              </ul>
-            </div>
-
-            {/* Cookie Management */}
-            <div className="space-y-4">
-              <h2 className="text-2xl font-medium tracking-normal text-[#0a0a0a] flex items-center gap-3">
-                <Shield className="h-6 w-6" />
+              <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
                 Managing Cookies
               </h2>
-              <p className="text-sm text-neutral-700 leading-relaxed font-medium">
-                You can control and manage cookies in several ways:
-              </p>
+            </div>
+            <p className="text-sm sm:text-base text-neutral-700 leading-relaxed font-medium">
+              You can control and manage cookies in several ways:
+            </p>
 
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-medium text-[#0a0a0a] mb-2">
-                    Browser Settings
+            <div className="space-y-4">
+              {[
+                {
+                  title: "Browser Settings",
+                  desc: "Most browsers allow you to refuse or accept cookies. You can also delete cookies that have already been set. However, blocking essential cookies may affect website functionality.",
+                  items: [
+                    "Chrome: Settings → Privacy and Security → Cookies",
+                    "Firefox: Options → Privacy & Security → Cookies",
+                    "Safari: Preferences → Privacy → Cookies",
+                    "Edge: Settings → Privacy → Cookies",
+                  ],
+                },
+                {
+                  title: "Cookie Consent Banner",
+                  desc: "When you first visit our website, you'll see a cookie consent banner. You can accept all cookies, reject non-essential cookies, or customize your preferences.",
+                },
+                {
+                  title: "Opt-Out Tools",
+                  desc: "You can opt out of certain third-party cookies through:",
+                  links: [
+                    {
+                      text: "Google Analytics Opt-out",
+                      url: "https://tools.google.com/dlpage/gaoptout",
+                    },
+                    {
+                      text: "Network Advertising Initiative",
+                      url: "https://www.networkadvertising.org/choices/",
+                    },
+                  ],
+                },
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-[#fafafa] rounded-[16px] p-5 border border-[#e5e5e5]"
+                >
+                  <h3 className="text-base sm:text-lg font-medium text-[#0a0a0a] mb-2">
+                    {item.title}
                   </h3>
                   <p className="text-sm text-neutral-700 leading-relaxed font-medium mb-2">
-                    Most browsers allow you to refuse or accept cookies. You can
-                    also delete cookies that have already been set. However,
-                    blocking essential cookies may affect website functionality.
+                    {item.desc}
                   </p>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-neutral-600 font-medium">
-                    <li>Chrome: Settings → Privacy and Security → Cookies</li>
-                    <li>Firefox: Options → Privacy & Security → Cookies</li>
-                    <li>Safari: Preferences → Privacy → Cookies</li>
-                    <li>Edge: Settings → Privacy → Cookies</li>
-                  </ul>
+                  {item.items && (
+                    <div className="space-y-2">
+                      {item.items.map((listItem, itemIndex) => (
+                        <div
+                          key={itemIndex}
+                          className="flex items-start gap-2.5 bg-white rounded-[12px] p-2.5 border border-[#e5e5e5]"
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#0a0a0a] mt-1.5 flex-shrink-0" />
+                          <span className="text-sm text-neutral-600 font-medium">
+                            {listItem}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {item.links && (
+                    <div className="space-y-2">
+                      {item.links.map((link, linkIndex) => (
+                        <a
+                          key={linkIndex}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-sm text-[#0a0a0a] underline font-medium hover:no-underline bg-white rounded-[12px] p-2.5 border border-[#e5e5e5]"
+                        >
+                          {link.text}
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
-
-                <div>
-                  <h3 className="text-lg font-medium text-[#0a0a0a] mb-2">
-                    Cookie Consent Banner
-                  </h3>
-                  <p className="text-sm text-neutral-700 leading-relaxed font-medium">
-                    When you first visit our website, you&apos;ll see a cookie
-                    consent banner. You can accept all cookies, reject
-                    non-essential cookies, or customize your preferences.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium text-[#0a0a0a] mb-2">
-                    Opt-Out Tools
-                  </h3>
-                  <p className="text-sm text-neutral-700 leading-relaxed font-medium">
-                    You can opt out of certain third-party cookies through:
-                  </p>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-neutral-600 font-medium">
-                    <li>
-                      Google Analytics Opt-out:{" "}
-                      <a
-                        href="https://tools.google.com/dlpage/gaoptout"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#0a0a0a] underline"
-                      >
-                        tools.google.com/dlpage/gaoptout
-                      </a>
-                    </li>
-                    <li>
-                      Network Advertising Initiative:{" "}
-                      <a
-                        href="https://www.networkadvertising.org/choices/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#0a0a0a] underline"
-                      >
-                        networkadvertising.org/choices
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+              ))}
             </div>
+          </motion.div>
 
-            {/* Cookie Duration */}
+          {/* Cookie Duration */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+            className="bg-white border border-[#e5e5e5] rounded-[20px] p-6 sm:p-8 lg:p-10 space-y-4"
+          >
+            <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
+              Cookie Duration
+            </h2>
             <div className="space-y-4">
-              <h2 className="text-2xl font-medium tracking-normal text-[#0a0a0a]">
-                Cookie Duration
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <h3 className="text-lg font-medium text-[#0a0a0a] mb-2">
-                    Session Cookies
+              {[
+                {
+                  title: "Session Cookies",
+                  desc: "Temporary cookies that are deleted when you close your browser. Used for session management and shopping cart functionality.",
+                },
+                {
+                  title: "Persistent Cookies",
+                  desc: "Cookies that remain on your device for a set period (typically 30 days to 2 years) or until you delete them. Used for preferences, authentication, and analytics.",
+                },
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-[#fafafa] rounded-[16px] p-5 border border-[#e5e5e5]"
+                >
+                  <h3 className="text-base sm:text-lg font-medium text-[#0a0a0a] mb-2">
+                    {item.title}
                   </h3>
                   <p className="text-sm text-neutral-700 leading-relaxed font-medium">
-                    Temporary cookies that are deleted when you close your
-                    browser. Used for session management and shopping cart
-                    functionality.
+                    {item.desc}
                   </p>
                 </div>
-                <div>
-                  <h3 className="text-lg font-medium text-[#0a0a0a] mb-2">
-                    Persistent Cookies
-                  </h3>
-                  <p className="text-sm text-neutral-700 leading-relaxed font-medium">
-                    Cookies that remain on your device for a set period
-                    (typically 30 days to 2 years) or until you delete them.
-                    Used for preferences, authentication, and analytics.
-                  </p>
-                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Updates */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.3, duration: 0.6 }}
+            className="bg-white border border-[#e5e5e5] rounded-[20px] p-6 sm:p-8 lg:p-10 space-y-4"
+          >
+            <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
+              Updates to This Policy
+            </h2>
+            <p className="text-sm sm:text-base text-neutral-700 leading-relaxed font-medium">
+              We may update this Cookie Policy from time to time. We will notify
+              you of any material changes by posting the updated policy on this
+              page and updating the &quot;Last updated&quot; date.
+            </p>
+          </motion.div>
+
+          {/* Manage Your Cookies */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.4, duration: 0.6 }}
+            className="bg-white border border-[#e5e5e5] rounded-[20px] p-6 sm:p-8 lg:p-10 space-y-5"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-[12px] bg-[#fafafa] border border-[#e5e5e5] flex items-center justify-center">
+                <Settings className="h-5 w-5 text-[#0a0a0a]" />
               </div>
-            </div>
-
-            {/* Updates */}
-            <div className="space-y-4">
-              <h2 className="text-2xl font-medium tracking-normal text-[#0a0a0a]">
-                Updates to This Policy
-              </h2>
-              <p className="text-sm text-neutral-700 leading-relaxed font-medium">
-                We may update this Cookie Policy from time to time. We will
-                notify you of any material changes by posting the updated policy
-                on this page and updating the &quot;Last updated&quot; date.
-              </p>
-            </div>
-
-            {/* Manage Your Cookies */}
-            <div className="space-y-4 pt-8 border-t border-[#e5e5e5]">
-              <h2 className="text-2xl font-medium tracking-normal text-[#0a0a0a] flex items-center gap-3">
-                <Settings className="h-6 w-6" />
+              <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
                 Manage Your Cookie Preferences
               </h2>
-              <p className="text-sm text-neutral-700 leading-relaxed font-medium mb-4">
-                You can update your cookie preferences at any time. Click the
-                button below to open the cookie settings panel.
-              </p>
-              <CookiePreferencesButton />
             </div>
+            <p className="text-sm sm:text-base text-neutral-700 leading-relaxed font-medium">
+              You can update your cookie preferences at any time. Click the
+              button below to open the cookie settings panel.
+            </p>
+            <CookiePreferencesButton />
+          </motion.div>
 
-            {/* Contact */}
-            <div className="space-y-4 pt-8 border-t border-[#e5e5e5]">
-              <h2 className="text-2xl font-medium tracking-normal text-[#0a0a0a]">
-                Questions About Cookies?
-              </h2>
-              <p className="text-sm text-neutral-700 leading-relaxed font-medium">
-                If you have questions about our use of cookies, please contact
-                us at{" "}
-                <a
-                  href="mailto:privacy@valuva.in"
-                  className="text-[#0a0a0a] underline font-medium"
-                >
-                  privacy@valuva.in
-                </a>{" "}
-                or refer to our{" "}
-                <Link
-                  href="/privacy-policy"
-                  className="text-[#0a0a0a] underline font-medium"
-                >
-                  Privacy Policy
-                </Link>
-                .
-              </p>
-            </div>
-          </div>
+          {/* Contact */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.5, duration: 0.6 }}
+            className="bg-white border border-[#e5e5e5] rounded-[20px] p-6 sm:p-8 lg:p-10 space-y-4"
+          >
+            <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
+              Questions About Cookies?
+            </h2>
+            <p className="text-sm sm:text-base text-neutral-700 leading-relaxed font-medium">
+              If you have questions about our use of cookies, please contact us
+              at{" "}
+              <a
+                href="mailto:privacy@valuva.in"
+                className="text-[#0a0a0a] underline font-medium hover:no-underline"
+              >
+                privacy@valuva.in
+              </a>{" "}
+              or refer to our{" "}
+              <Link
+                href="/privacy-policy"
+                className="text-[#0a0a0a] underline font-medium hover:no-underline"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </p>
+          </motion.div>
         </div>
       </section>
     </div>

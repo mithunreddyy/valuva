@@ -122,13 +122,6 @@ const routes: Route[] = [
     icon: HelpCircle,
   },
   {
-    path: "/shipping",
-    title: "Shipping Information",
-    description: "Shipping policies and delivery options",
-    category: "main",
-    icon: Truck,
-  },
-  {
     path: "/returns",
     title: "Returns",
     description: "Return or exchange your orders",
@@ -333,6 +326,13 @@ const routes: Route[] = [
     description: "Information about our use of cookies",
     category: "legal",
     icon: FileText,
+  },
+  {
+    path: "/shipping",
+    title: "Shipping Policy",
+    description: "Shipping policies and delivery options",
+    category: "legal",
+    icon: Truck,
   },
 ];
 
