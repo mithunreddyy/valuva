@@ -1,5 +1,6 @@
-import { returnsApi, ReturnRequest } from "@/services/api/returns";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { returnsApi } from "@/services/api/returns";
+import { ReturnRequest } from "@/types";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 /**
  * Returns slice state interface
@@ -96,4 +97,3 @@ const returnsSlice = createSlice({
 
 export const { clearError, clearCurrentReturn } = returnsSlice.actions;
 export default returnsSlice.reducer;
-

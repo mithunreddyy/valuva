@@ -194,6 +194,7 @@ export interface Product {
   variants: ProductVariant[];
   averageRating?: number;
   reviewCount?: number;
+  reviews?: Review[];
 }
 
 export interface CartItem {
@@ -644,6 +645,7 @@ export interface OrderTracking {
 }
 
 export interface TrackingEvent {
+  id: string | null | undefined;
   status: OrderStatus;
   timestamp: string;
   location?: string;

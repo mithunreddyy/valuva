@@ -111,7 +111,7 @@ class RedisRateLimiter {
       if (!data || data.resetTime < now) {
         // Initialize new window
         const resetTime = now + this.config.windowMs;
-        const newData = { count: 1, resetTime };
+        // const newData = { count: 1, resetTime }; // Unused variable
 
         if (isRedis || getRedis()) {
           await this.setRedisCount(key, 1, resetTime);

@@ -3,8 +3,8 @@ import {
   removeStorageItem,
   setStorageItem,
 } from "@/lib/storage";
-import { LoginData, RegisterData, authService } from "@/services/auth.service";
-import { AuthResponse, User } from "@/types";
+import { authService } from "@/services/auth.service";
+import { AuthResponse, LoginData, RegisterData, User } from "@/types";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 interface AuthState {

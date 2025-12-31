@@ -1,7 +1,10 @@
+import { ClientInit } from "@/components/client-init";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { OfflineIndicator } from "@/components/shared/offline-indicator";
 import { Toaster } from "@/components/ui/toast";
 import { ReactQueryProvider } from "@/lib/react-query";
 import { ReduxProvider } from "@/lib/redux-provider";
+import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Manrope, Noto_Sans_Telugu } from "next/font/google";
 import "./globals.css";
@@ -22,7 +25,7 @@ const notoSansTelugu = Noto_Sans_Telugu({
 
 export const metadata: Metadata = {
   title: "valuva",
-  description: "premium minimal fashion",
+  description: "  ",
   icons: {
     icon: "/favicon/favicon.ico",
     shortcut: "/favicon/favicon.ico",
@@ -40,14 +43,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${manrope.variable} ${notoSansTelugu.variable}`}>
+    <html
+      lang="en"
+      className={`${manrope.variable} ${notoSansTelugu.variable}`}
+    >
       <body className={`${manrope.className} antialiased`}>
-      <ErrorBoundary>
-        <ReduxProvider>
-          <ReactQueryProvider>
-            {children}
-            <Toaster />
-          </ReactQueryProvider>
+        <ErrorBoundary>
+          <ReduxProvider>
+            <ReactQueryProvider>
+              <ClientInit />
+              <OfflineIndicator />
+              {children}
+              <Toaster />
+              <Analytics />
+              <Analytics />
+            </ReactQueryProvider>
           </ReduxProvider>
         </ErrorBoundary>
       </body>

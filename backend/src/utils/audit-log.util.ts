@@ -1,4 +1,4 @@
-import { prisma } from "../config/database";
+// import { prisma } from "../config/database"; // Unused import
 import { logger } from "./logger.util";
 
 export enum AuditAction {

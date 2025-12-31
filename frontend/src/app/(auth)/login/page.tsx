@@ -78,19 +78,19 @@ export default function LoginPage() {
         <div className="text-center mb-2 sm:mb-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 sm:gap-1 mb-2 sm:mb-4 hover:opacity-80 transition-opacity"
+            className="inline-flex items-center gap-1 sm:gap-1 mb-1 sm:mb-2 hover:opacity-80 transition-opacity"
           >
             <Image
               src="/valuvaLogo.png"
               alt="VALUVA"
-              width={48}
-              height={48}
-              className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+              width={60}
+              height={60}
+              className="w-15 h-15 sm:w-15 sm:h-15 object-contain"
               priority
             />
-            <span className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
+            {/* <span className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
               valuva
-            </span>
+            </span> */}
           </Link>
           <h1 className="text-2xl sm:text-[28px] font-medium tracking-normal text-[#0a0a0a] mb-2">
             Welcome back
@@ -177,7 +177,7 @@ export default function LoginPage() {
 
           {/* OAuth Section */}
           <div className="mt-8">
-            <OAuthButtons mode="login" />
+            <OAuthButtons />
           </div>
 
           {/* Sign Up Link */}

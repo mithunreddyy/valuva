@@ -1,8 +1,10 @@
 import Redis from "ioredis";
-import { env } from "./env";
 import { logger } from "../utils/logger.util";
+import { env } from "./env";
 
 let redisClient: Redis | null = null;
+let connectionAttempted = false;
+let connectionFailed = false;
 
 /**
  * Initialize Redis client for caching and background jobs
@@ -13,53 +15,109 @@ export const initRedis = (): Redis | null => {
     return redisClient;
   }
 
+  if (connectionFailed) {
+    return null; // Don't retry if we've already failed
+  }
+
+  // If Redis is not configured, skip initialization
+  if (!env.REDIS_URL && !env.REDIS_HOST) {
+    if (!connectionAttempted) {
+      logger.info(
+        "Redis not configured. Caching and background jobs will be disabled."
+      );
+      connectionAttempted = true;
+    }
+    return null;
+  }
+
   try {
+    connectionAttempted = true;
+
     if (env.REDIS_URL) {
       redisClient = new Redis(env.REDIS_URL, {
-        maxRetriesPerRequest: 3,
+        maxRetriesPerRequest: 1,
         retryStrategy: (times) => {
-          if (times > 3) {
-            logger.warn("Redis connection failed after multiple retries");
+          if (times > 1) {
+            if (!connectionFailed) {
+              logger.warn(
+                "Redis connection failed. Caching and background jobs will be disabled."
+              );
+              connectionFailed = true;
+            }
             return null; // Stop retrying
           }
-          return Math.min(times * 200, 2000);
+          return Math.min(times * 200, 1000);
         },
+        enableOfflineQueue: false, // Don't queue commands when offline
+        connectTimeout: 2000, // 2 second timeout
+        lazyConnect: false, // Connect immediately but handle errors gracefully
       });
     } else if (env.REDIS_HOST) {
       redisClient = new Redis({
         host: env.REDIS_HOST,
         port: env.REDIS_PORT || 6379,
         password: env.REDIS_PASSWORD,
-        maxRetriesPerRequest: 3,
+        maxRetriesPerRequest: 1,
         retryStrategy: (times) => {
-          if (times > 3) {
-            logger.warn("Redis connection failed after multiple retries");
+          if (times > 1) {
+            if (!connectionFailed) {
+              logger.warn(
+                "Redis connection failed. Caching and background jobs will be disabled."
+              );
+              connectionFailed = true;
+            }
             return null;
           }
-          return Math.min(times * 200, 2000);
+          return Math.min(times * 200, 1000);
         },
+        enableOfflineQueue: false,
+        connectTimeout: 2000,
+        lazyConnect: false,
       });
-    } else {
-      logger.warn("Redis not configured. Caching and background jobs will be disabled.");
-      return null;
     }
 
-    redisClient.on("connect", () => {
-      logger.info("Redis connected successfully");
-    });
-
-    redisClient.on("error", (error) => {
-      logger.error("Redis connection error", {
-        error: error.message,
+    if (redisClient) {
+      redisClient.on("connect", () => {
+        logger.info("Redis connected successfully");
+        connectionFailed = false;
       });
-      // Don't throw - allow app to continue without Redis
-    });
+
+      redisClient.on("ready", () => {
+        connectionFailed = false;
+      });
+
+      redisClient.on("error", (error) => {
+        // Only log first error, then suppress
+        if (!connectionFailed) {
+          logger.warn(
+            "Redis connection error. App will continue without Redis.",
+            {
+              error: error.message || "Connection failed",
+            }
+          );
+          connectionFailed = true;
+        }
+        // Don't throw - allow app to continue without Redis
+      });
+
+      redisClient.on("close", () => {
+        if (!connectionFailed) {
+          connectionFailed = true;
+        }
+      });
+    }
 
     return redisClient;
   } catch (error) {
-    logger.error("Failed to initialize Redis", {
-      error: error instanceof Error ? error.message : String(error),
-    });
+    if (!connectionFailed) {
+      logger.warn(
+        "Failed to initialize Redis. App will continue without Redis.",
+        {
+          error: error instanceof Error ? error.message : String(error),
+        }
+      );
+      connectionFailed = true;
+    }
     return null;
   }
 };
@@ -84,4 +142,3 @@ export const closeRedis = async (): Promise<void> => {
     logger.info("Redis connection closed");
   }
 };
-

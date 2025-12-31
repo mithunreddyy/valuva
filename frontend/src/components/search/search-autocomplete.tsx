@@ -12,14 +12,13 @@ import { useEffect, useRef, useState } from "react";
 interface SearchAutocompleteProps {
   query: string;
   onSelect: (query: string) => void;
-  onClear: () => void;
   className?: string;
 }
 
 export function SearchAutocomplete({
   query,
   onSelect,
-  onClear,
+
   className = "",
 }: SearchAutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,4 +1,3 @@
-import { prisma } from "../config/database";
 import { logger } from "./logger.util";
 
 export enum AnalyticsEventType {
@@ -24,7 +23,7 @@ export interface AnalyticsEvent {
   userId?: string;
   sessionId?: string;
   eventType: AnalyticsEventType;
-  properties?: Record<string, any>;
+  properties?: Record<string, unknown>;
   ipAddress?: string;
   userAgent?: string;
   referrer?: string;
@@ -184,7 +183,7 @@ export class AnalyticsUtil {
     step: string,
     userId?: string,
     sessionId?: string,
-    properties?: Record<string, any>
+    properties?: Record<string, unknown>
   ): Promise<void> {
     await this.trackEvent({
       userId,

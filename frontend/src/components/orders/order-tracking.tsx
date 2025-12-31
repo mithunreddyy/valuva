@@ -1,9 +1,9 @@
 "use client";
 
-import { useOrderTracking } from "@/hooks/use-tracking";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Package, Truck, CheckCircle, MapPin, Clock } from "lucide-react";
+import { useOrderTracking } from "@/hooks/use-tracking";
 import { formatDate } from "@/lib/utils";
+import { CheckCircle, Clock, MapPin, Package, Truck } from "lucide-react";
 
 interface OrderTrackingProps {
   orderNumber: string;
@@ -50,26 +50,28 @@ export function OrderTracking({ orderNumber }: OrderTrackingProps) {
       {/* Current Status */}
       <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
         <div className="flex items-center gap-4 mb-4">
-          {getStatusIcon(tracking.currentStatus)}
+          {getStatusIcon(tracking.status)}
           <div>
             <h3 className="text-lg font-medium tracking-normal">
               Current Status
             </h3>
             <p className="text-sm text-neutral-500 font-medium">
-              {tracking.currentStatus}
+              {tracking.status}
             </p>
           </div>
         </div>
         {tracking.estimatedDelivery && (
           <div className="flex items-center gap-2 text-sm text-neutral-600 font-medium">
             <Clock className="h-4 w-4" />
-            <span>Estimated delivery: {formatDate(tracking.estimatedDelivery)}</span>
+            <span>
+              Estimated delivery: {formatDate(tracking.estimatedDelivery)}
+            </span>
           </div>
         )}
       </div>
 
       {/* Tracking Timeline */}
-      {tracking.updates && tracking.updates.length > 0 && (
+      {tracking.events && tracking.events.length > 0 && (
         <div className="bg-white border border-[#e5e5e5] p-6 rounded-[12px]">
           <h3 className="text-lg font-medium tracking-normal mb-6">
             Tracking History
@@ -77,33 +79,33 @@ export function OrderTracking({ orderNumber }: OrderTrackingProps) {
           <div className="relative">
             <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-[#e5e5e5]"></div>
             <div className="space-y-6">
-              {tracking.updates.map((update, index) => (
-                <div key={update.id} className="relative flex gap-4">
+              {tracking.events.map((event) => (
+                <div key={event.id} className="relative flex gap-4">
                   <div className="relative z-10 flex-shrink-0">
                     <div className="w-8 h-8 rounded-full bg-white border-2 border-[#0a0a0a] flex items-center justify-center">
-                      {getStatusIcon(update.status)}
+                      {getStatusIcon(event.status)}
                     </div>
                   </div>
                   <div className="flex-1 pb-6">
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <p className="text-sm font-medium tracking-normal">
-                          {update.status}
+                          {event.status}
                         </p>
-                        {update.location && (
+                        {event.location && (
                           <div className="flex items-center gap-1 mt-1 text-xs text-neutral-500 font-medium">
                             <MapPin className="h-3 w-3" />
-                            <span>{update.location}</span>
+                            <span>{event.location}</span>
                           </div>
                         )}
                       </div>
                       <span className="text-xs text-neutral-500 font-medium">
-                        {formatDate(update.timestamp)}
+                        {formatDate(event.timestamp)}
                       </span>
                     </div>
-                    {update.description && (
+                    {event.description && (
                       <p className="text-xs text-neutral-600 font-medium">
-                        {update.description}
+                        {event.description}
                       </p>
                     )}
                   </div>
@@ -116,4 +118,3 @@ export function OrderTracking({ orderNumber }: OrderTrackingProps) {
     </div>
   );
 }
-

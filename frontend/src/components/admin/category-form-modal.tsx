@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { Upload, X } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { Resolver, useForm } from "react-hook-form";
 import * as z from "zod";
@@ -211,8 +212,8 @@ export function CategoryFormModal({
             <div className="space-y-2">
               {watch("image") && (
                 <div className="relative w-32 h-32 border border-[#e5e5e5] rounded-[10px] overflow-hidden bg-[#fafafa]">
-                  <img
-                    src={watch("image")}
+                  <Image
+                    src={watch("image") || ""}
                     alt="Category"
                     className="w-full h-full object-cover"
                   />

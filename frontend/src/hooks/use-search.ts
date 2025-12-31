@@ -11,10 +11,9 @@ import {
   saveSearch,
   removeSavedSearch,
   clearSavedSearches,
-  SavedSearch,
 } from "@/store/slices/searchSlice";
 import { Product } from "@/types";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 
 /**
  * Hook for search functionality

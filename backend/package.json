@@ -8,14 +8,19 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev:full": "concurrently \"npm run dev\" \"cd ../frontend && npm run dev\"",
     "build": "tsc",
+    "build:full": "npm run build && cd ../frontend && npm run build",
     "start": "node dist/server.js",
+    "start:full": "concurrently \"npm run start\" \"cd ../frontend && npm run start\"",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node prisma/seed.ts",
     "lint": "eslint src --ext .ts",
-    "test": "jest"
+    "test": "jest",
+    "backup:db": "ts-node src/scripts/backup-database.ts",
+    "install:all": "npm install && cd ../frontend && npm install"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.958.0",
@@ -44,6 +49,7 @@
     "jwks-rsa": "^3.2.0",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
+    "node-fetch": "^2.7.0",
     "nodemailer": "^7.0.12",
     "otplib": "^12.0.1",
     "passport": "^0.7.0",
@@ -52,9 +58,12 @@
     "razorpay": "^2.9.6",
     "react": "^19.2.3",
     "react-email": "^5.1.0",
+    "redis": "^5.10.0",
     "sharp": "^0.33.5",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "tslib": "^2.8.1",
+    "web-push": "^3.6.7",
     "zod": "^4.2.1"
   },
   "devDependencies": {
@@ -68,6 +77,8 @@
     "@types/node": "^20.10.6",
     "@types/nodemailer": "^7.0.4",
     "@types/react": "^19.2.7",
+    "@types/web-push": "^3.6.4",
+    "concurrently": "^9.2.1",
     "jest": "^29.7.0",
     "prisma": "^5.22.0",
     "ts-jest": "^29.1.2",

@@ -16,8 +16,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 const checkoutSchema = z.object({
@@ -44,7 +44,6 @@ export default function CheckoutPage() {
   const { data: addressesData, isLoading: addressesLoading } = useAddresses();
   const createOrder = useCreateOrder();
   const { openRazorpayCheckout, isLoading: isRazorpayLoading } = useRazorpay();
-  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
 
   // Track checkout started
   useEffect(() => {
@@ -61,7 +60,7 @@ export default function CheckoutPage() {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
+    control,
   } = useForm<CheckoutForm>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
@@ -69,7 +68,10 @@ export default function CheckoutPage() {
     },
   });
 
-  const shippingAddressId = watch("shippingAddressId");
+  // Use useWatch instead of watch() for React Compiler compatibility
+  const shippingAddressId = useWatch({ control, name: "shippingAddressId" });
+  const billingAddressId = useWatch({ control, name: "billingAddressId" });
+  const paymentMethod = useWatch({ control, name: "paymentMethod" });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -95,7 +97,7 @@ export default function CheckoutPage() {
 
   if (cartLoading || addressesLoading) {
     return (
-      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center py-24">
+      <div className="min-h-screen bg-white flex items-center justify-center py-24">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -103,21 +105,20 @@ export default function CheckoutPage() {
 
   if (!cartData?.data || cartData.data.items.length === 0) {
     return (
-      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center py-24">
+      <div className="min-h-screen bg-white flex items-center justify-center py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="container-luxury text-center space-y-6"
         >
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-normal text-[#0a0a0a]">
+          <h1 className="text-3xl sm:text-4xl font-light tracking-tight text-[#0a0a0a]">
             Your cart is empty
           </h1>
           <Button
             onClick={() => router.push("/shop")}
-            size="lg"
+            size="sm"
             variant="filled"
-            className="rounded-[16px]"
           >
             Continue Shopping
           </Button>
@@ -144,7 +145,6 @@ export default function CheckoutPage() {
 
       // If payment method is Razorpay, open Razorpay checkout
       if (data.paymentMethod === "RAZORPAY") {
-        setCreatedOrderId(orderId);
         await openRazorpayCheckout(
           orderId,
           (successOrderId) => {
@@ -182,48 +182,59 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
-      {/* Header Section */}
-      <section className="bg-white border-b border-[#e5e5e5]">
-        <div className="container-luxury py-6 sm:py-8">
+    <div className="min-h-screen bg-white">
+      {/* Hero Header - Modern Design */}
+      <section className="relative border-b border-[#f5f5f5] bg-gradient-to-b from-white via-white to-[#fafafa]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.01),transparent_70%)]" />
+        <div className="container-luxury py-10 sm:py-12 md:py-16 relative z-10">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-2xl sm:text-3xl md:text-4xl font-medium tracking-normal text-[#0a0a0a]"
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight text-[#0a0a0a]"
           >
             Checkout
           </motion.h1>
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="container-luxury py-6 sm:py-8">
+      {/* Main Content - Modern Layout */}
+      <section className="container-luxury py-10 sm:py-12 md:py-16">
         <form onSubmit={handleSubmit(onSubmit)}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.6 }}
+            transition={{ delay: 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="grid lg:grid-cols-12 gap-5 lg:gap-6"
           >
             {/* Left Column */}
-            <div className="lg:col-span-8 space-y-5">
-              {/* Shipping Address */}
-              <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
-                <h2 className="text-lg font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
+            <div className="lg:col-span-8 space-y-4">
+              {/* Shipping Address - Refined */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  delay: 0.2,
+                  duration: 0.5,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="bg-white border border-[#f5f5f5] p-6 rounded-[20px] hover:shadow-sm transition-all duration-300"
+              >
+                <h2 className="text-sm font-normal tracking-normal mb-5 border-b border-[#f5f5f5] pb-4 text-[#0a0a0a]">
                   Shipping Address
                 </h2>
 
                 {addresses.length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="text-sm text-neutral-500 font-medium mb-4">
+                    <p className="text-xs text-neutral-400 font-normal mb-4">
                       No addresses found. Please add one.
                     </p>
                     <Button
                       type="button"
+                      size="sm"
                       variant="outline"
                       onClick={() => router.push("/dashboard/addresses")}
-                      className="rounded-[10px]"
+                      className="border-[#f5f5f5] hover:border-[#e5e5e5] bg-[#fafafa]"
                     >
                       Add Address
                     </Button>
@@ -233,10 +244,10 @@ export default function CheckoutPage() {
                     {addresses.map((address) => (
                       <label
                         key={address.id}
-                        className={`flex items-start gap-4 p-4 border cursor-pointer transition-all rounded-[10px] ${
+                        className={`flex items-start gap-4 p-4 border cursor-pointer transition-all rounded-[14px] ${
                           shippingAddressId === address.id
                             ? "border-[#0a0a0a] bg-[#fafafa]"
-                            : "border-[#e5e5e5] hover:border-[#0a0a0a]"
+                            : "border-[#f5f5f5] hover:border-[#e5e5e5]"
                         }`}
                       >
                         <input
@@ -246,18 +257,18 @@ export default function CheckoutPage() {
                           className="mt-1"
                         />
                         <div className="flex-1">
-                          <p className="text-sm font-medium tracking-normal mb-2">
+                          <p className="text-sm font-normal tracking-normal mb-1.5">
                             {address.fullName}
                           </p>
-                          <p className="text-xs text-neutral-600 font-medium">
+                          <p className="text-xs text-neutral-400 font-normal">
                             {address.addressLine1}
                             {address.addressLine2 &&
                               `, ${address.addressLine2}`}
                           </p>
-                          <p className="text-xs text-neutral-600 font-medium">
+                          <p className="text-xs text-neutral-400 font-normal">
                             {address.city}, {address.state} {address.postalCode}
                           </p>
-                          <p className="text-xs text-neutral-600 font-medium">
+                          <p className="text-xs text-neutral-400 font-normal">
                             {address.phone}
                           </p>
                         </div>
@@ -266,25 +277,34 @@ export default function CheckoutPage() {
                   </div>
                 )}
                 {errors.shippingAddressId && (
-                  <p className="text-red-600 text-xs mt-2 font-medium">
+                  <p className="text-red-600 text-[10px] mt-2 font-normal">
                     {errors.shippingAddressId.message}
                   </p>
                 )}
-              </div>
+              </motion.div>
 
-              {/* Billing Address */}
-              <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
-                <h2 className="text-lg font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
+              {/* Billing Address - Refined */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  delay: 0.3,
+                  duration: 0.5,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="bg-white border border-[#f5f5f5] p-6 rounded-[20px] hover:shadow-sm transition-all duration-300"
+              >
+                <h2 className="text-sm font-normal tracking-normal mb-5 border-b border-[#f5f5f5] pb-4 text-[#0a0a0a]">
                   Billing Address
                 </h2>
                 <div className="space-y-3">
                   {addresses.map((address) => (
                     <label
                       key={address.id}
-                      className={`flex items-start gap-4 p-4 border cursor-pointer transition-all rounded-[10px] ${
-                        watch("billingAddressId") === address.id
+                      className={`flex items-start gap-4 p-4 border cursor-pointer transition-all rounded-[14px] ${
+                        billingAddressId === address.id
                           ? "border-[#0a0a0a] bg-[#fafafa]"
-                          : "border-[#e5e5e5] hover:border-[#0a0a0a]"
+                          : "border-[#f5f5f5] hover:border-[#e5e5e5]"
                       }`}
                     >
                       <input
@@ -294,13 +314,13 @@ export default function CheckoutPage() {
                         className="mt-1"
                       />
                       <div className="flex-1">
-                        <p className="text-sm font-medium tracking-normal mb-2">
+                        <p className="text-sm font-normal tracking-normal mb-1.5">
                           {address.fullName}
                         </p>
-                        <p className="text-xs text-neutral-600 font-medium">
+                        <p className="text-xs text-neutral-400 font-normal">
                           {address.addressLine1}
                         </p>
-                        <p className="text-xs text-neutral-600 font-medium">
+                        <p className="text-xs text-neutral-400 font-normal">
                           {address.city}, {address.state} {address.postalCode}
                         </p>
                       </div>
@@ -308,18 +328,27 @@ export default function CheckoutPage() {
                   ))}
                 </div>
                 {errors.billingAddressId && (
-                  <p className="text-red-600 text-xs mt-2 font-medium">
+                  <p className="text-red-600 text-[10px] mt-2 font-normal">
                     {errors.billingAddressId.message}
                   </p>
                 )}
-              </div>
+              </motion.div>
 
-              {/* Payment Method */}
-              <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
-                <h2 className="text-lg font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
+              {/* Payment Method - Refined */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  delay: 0.4,
+                  duration: 0.5,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="bg-white border border-[#f5f5f5] p-6 rounded-[20px] hover:shadow-sm transition-all duration-300"
+              >
+                <h2 className="text-sm font-normal tracking-normal mb-5 border-b border-[#f5f5f5] pb-4 text-[#0a0a0a]">
                   Payment Method
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {[
                     {
                       value: "RAZORPAY",
@@ -332,43 +361,62 @@ export default function CheckoutPage() {
                   ].map((method) => (
                     <label
                       key={method.value}
-                      className={`flex items-center gap-4 p-4 border cursor-pointer transition-all rounded-[10px] ${
-                        watch("paymentMethod") === method.value
+                      className={`flex items-center gap-3 p-3 border cursor-pointer transition-all rounded-[14px] ${
+                        paymentMethod === method.value ||
+                        (method.value === "COD" && paymentMethod === "RAZORPAY")
                           ? "border-[#0a0a0a] bg-[#fafafa]"
-                          : "border-[#e5e5e5] hover:border-[#0a0a0a]"
+                          : "border-[#f5f5f5] hover:border-[#e5e5e5]"
                       }`}
                     >
                       <input
                         type="radio"
                         {...register("paymentMethod")}
                         value={method.value}
-                        className="w-4 h-4"
+                        className="w-3.5 h-3.5"
                       />
-                      <span className="text-sm font-medium tracking-normal">
+                      <span className="text-xs font-normal tracking-normal">
                         {method.label}
                       </span>
                     </label>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
-              {/* Order Notes */}
-              <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px]">
-                <h2 className="text-lg font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
+              {/* Order Notes - Refined */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  delay: 0.5,
+                  duration: 0.5,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="bg-white border border-[#f5f5f5] p-6 rounded-[20px] hover:shadow-sm transition-all duration-300"
+              >
+                <h2 className="text-sm font-normal tracking-normal mb-5 border-b border-[#f5f5f5] pb-4 text-[#0a0a0a]">
                   Order Notes (Optional)
                 </h2>
                 <Textarea
                   {...register("notes")}
-                  className="input-luxury min-h-[100px] rounded-[10px]"
+                  className="input-luxury min-h-[100px] rounded-[14px] border-[#f5f5f5] bg-[#fafafa] focus:bg-white text-xs font-normal"
                   placeholder="Any special instructions for your order?"
                 />
-              </div>
+              </motion.div>
             </div>
 
-            {/* Right Column - Order Summary */}
+            {/* Right Column - Order Summary - Refined */}
             <div className="lg:col-span-4">
-              <div className="bg-white border border-[#e5e5e5] p-5 rounded-[12px] sticky top-24">
-                <h2 className="text-sm font-medium tracking-normal mb-4 border-b border-[#e5e5e5] pb-3 text-[#0a0a0a]">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  delay: 0.2,
+                  duration: 0.6,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="bg-white border border-[#f5f5f5] p-6 rounded-[20px] sticky top-24 shadow-sm hover:shadow-sm transition-shadow duration-300"
+              >
+                <h2 className="text-sm font-normal tracking-normal mb-5 border-b border-[#f5f5f5] pb-4 text-[#0a0a0a]">
                   Order Summary
                 </h2>
 
@@ -376,9 +424,9 @@ export default function CheckoutPage() {
                   {cart.items.map((item) => (
                     <div
                       key={item.id}
-                      className="flex gap-3 pb-3 border-b border-[#e5e5e5] last:border-0"
+                      className="flex gap-3 pb-3 border-b border-[#f5f5f5] last:border-0"
                     >
-                      <div className="relative w-16 h-16 border border-[#e5e5e5] overflow-hidden bg-[#fafafa] flex-shrink-0 rounded-[8px]">
+                      <div className="relative w-16 h-16 border border-[#f5f5f5] overflow-hidden bg-[#fafafa] flex-shrink-0 rounded-[12px]">
                         {item.product.image && (
                           <Image
                             src={item.product.image}
@@ -389,13 +437,13 @@ export default function CheckoutPage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium tracking-normal line-clamp-1 mb-1">
+                        <p className="text-xs font-normal tracking-normal line-clamp-1 mb-1">
                           {item.product.name}
                         </p>
-                        <p className="text-xs text-neutral-500 font-medium">
+                        <p className="text-xs text-neutral-400 font-normal">
                           Qty: {item.quantity}
                         </p>
-                        <p className="text-sm font-medium mt-1">
+                        <p className="text-xs font-normal mt-1">
                           {formatPrice(item.price * item.quantity)}
                         </p>
                       </div>
@@ -403,30 +451,30 @@ export default function CheckoutPage() {
                   ))}
                 </div>
 
-                <div className="space-y-3 mb-4 border-t border-[#e5e5e5] pt-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-xs font-medium text-neutral-500">
+                <div className="space-y-2.5 mb-4 border-t border-[#f5f5f5] pt-3">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-xs font-normal text-neutral-400">
                       Subtotal
                     </span>
-                    <span className="font-medium">
+                    <span className="font-normal">
                       {formatPrice(cart.subtotal)}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-xs font-medium text-neutral-500">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-xs font-normal text-neutral-400">
                       Shipping
                     </span>
-                    <span className="text-xs font-medium">
+                    <span className="text-xs font-normal">
                       Calculated at checkout
                     </span>
                   </div>
-                  <div className="border-t border-[#e5e5e5] pt-4 flex justify-between text-lg font-medium">
-                    <span className="text-sm">Total</span>
+                  <div className="border-t border-[#f5f5f5] pt-3 flex justify-between text-sm font-normal">
+                    <span className="text-xs">Total</span>
                     <span>{formatPrice(cart.subtotal)}</span>
                   </div>
                 </div>
 
-                <p className="text-xs text-neutral-500 font-medium text-center mb-4 leading-relaxed">
+                <p className="text-[10px] text-neutral-400 font-normal text-center mb-4 leading-relaxed">
                   By placing your order, you agree to our{" "}
                   <Link
                     href="/terms-of-service"
@@ -446,18 +494,18 @@ export default function CheckoutPage() {
 
                 <Button
                   type="submit"
-                  size="lg"
+                  size="sm"
                   variant="filled"
-                  className="w-full rounded-[10px]"
+                  className="w-full"
                   disabled={createOrder.isPending || isRazorpayLoading}
                 >
                   {createOrder.isPending || isRazorpayLoading
                     ? "Processing..."
-                    : watch("paymentMethod") === "RAZORPAY"
+                    : paymentMethod === "RAZORPAY"
                     ? "Proceed to Payment"
                     : "Place Order"}
                 </Button>
-              </div>
+              </motion.div>
             </div>
           </motion.div>
         </form>

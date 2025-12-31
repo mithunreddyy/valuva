@@ -204,11 +204,11 @@ export function HorizontalFilters() {
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity md:hidden"
+            className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm transition-opacity md:hidden"
             onClick={() => setIsMobileFilterOpen(false)}
           />
           {/* Drawer */}
-          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-[24px] shadow-2xl md:hidden max-h-[85vh] flex flex-col animate-slide-up">
+          <div className="fixed bottom-0 left-0 right-0 z-[101] bg-white rounded-t-[24px] shadow-2xl md:hidden max-h-[85vh] flex flex-col">
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-2">
               <div className="w-12 h-1 bg-[#e5e5e5] rounded-full" />

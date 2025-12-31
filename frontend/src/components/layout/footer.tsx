@@ -314,7 +314,7 @@ export function Footer() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="EMAIL ADDRESS"
+                      placeholder="your@email.com"
                       className="h-9 sm:h-10 md:h-11 rounded-[10px] border border-[#e5e5e5] focus:border-[#0a0a0a] text-xs sm:text-sm bg-transparent focus:bg-transparent transition-colors w-full placeholder:text-neutral-400 pr-10 sm:pr-12"
                       required
                       disabled={isSubmitting}

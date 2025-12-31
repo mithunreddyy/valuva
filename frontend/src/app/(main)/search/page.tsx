@@ -124,45 +124,52 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
-      {/* Header Section */}
-      <section className="bg-white border-b border-[#e5e5e5]">
-        <div className="container-luxury py-6 sm:py-8">
+    <div className="min-h-screen bg-white">
+      {/* Hero Search Section - Modern Design */}
+      <section className="relative border-b border-[#f5f5f5] bg-gradient-to-b from-white via-white to-[#fafafa]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.01),transparent_70%)]" />
+        <div className="container-luxury py-10 sm:py-12 md:py-16 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-4xl mx-auto space-y-4"
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-3xl mx-auto space-y-6"
           >
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-normal text-center text-[#0a0a0a]">
+            <motion.h1
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+              className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight text-center text-[#0a0a0a]"
+            >
               Search
-            </h1>
+            </motion.h1>
 
-            {/* Search Form */}
+            {/* Search Form - Refined */}
             <div className="relative">
               <form onSubmit={handleSearch} className="relative">
                 <div className="relative">
-                  <SearchIcon className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-neutral-400 z-10" />
+                  <SearchIcon className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400 z-10" />
                   <Input
                     type="text"
                     value={query}
                     onChange={(e) => updateQuery(e.target.value)}
                     placeholder="Search products, brands, categories..."
-                    className="pl-11 sm:pl-14 pr-24 sm:pr-28 h-12 sm:h-14 rounded-[16px] border border-[#e5e5e5] focus:border-[#0a0a0a] text-sm sm:text-base shadow-sm hover:shadow-md transition-all"
+                    className="pl-14 pr-28 h-12 sm:h-14 rounded-[16px] border border-[#f5f5f5] focus:border-[#d0d0d0] bg-white text-sm font-normal shadow-none hover:shadow-sm transition-all"
                     autoFocus
                   />
                   {query && (
                     <button
                       type="button"
                       onClick={handleClear}
-                      className="absolute right-20 sm:right-24 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center hover:bg-[#fafafa] transition-colors rounded-[12px] z-10"
+                      className="absolute right-24 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center hover:bg-[#f5f5f5] transition-colors rounded-[10px] z-10"
                     >
                       <X className="h-4 w-4 text-neutral-400" />
                     </button>
                   )}
                   <Button
                     type="submit"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-9 sm:h-10 px-4 sm:px-5 rounded-[12px] text-sm font-medium z-10"
+                    size="sm"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-9 sm:h-10 px-4 rounded-[12px] text-xs font-normal z-10"
                   >
                     Search
                   </Button>
@@ -177,118 +184,131 @@ export default function SearchPage() {
                     selectedQuery
                   );
                 }}
-                onClear={handleClear}
                 className="w-full"
               />
             </div>
 
             {/* Recent Searches - Only show when no results */}
             {!searchQuery && recentSearches.length > 0 && (
-              <div className="space-y-3">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="space-y-3 pt-2"
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-neutral-500" />
-                    <span className="text-xs sm:text-sm font-medium text-neutral-500">
+                    <TrendingUp className="h-4 w-4 text-neutral-400" />
+                    <span className="text-xs font-normal text-neutral-400">
                       Recent Searches
                     </span>
                   </div>
                   <button
                     onClick={clearRecentSearches}
-                    className="text-xs text-neutral-400 hover:text-[#0a0a0a] font-medium transition-colors"
+                    className="text-xs text-neutral-400 hover:text-[#0a0a0a] font-normal transition-colors"
                   >
                     Clear
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {recentSearches.map((search, index) => (
-                    <button
+                    <motion.button
                       key={index}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.1 * index, duration: 0.3 }}
                       onClick={(e) => {
                         updateQuery(search);
                         handleSearch(e, search);
                       }}
-                      className="px-3 py-1.5 bg-white border border-[#e5e5e5] hover:border-[#0a0a0a] rounded-[12px] text-xs sm:text-sm font-medium transition-all"
+                      className="px-3 py-1.5 bg-[#f5f5f5] border border-transparent hover:border-[#e5e5e5] hover:bg-white rounded-[10px] text-xs font-normal transition-all"
                     >
                       {search}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             )}
           </motion.div>
         </div>
       </section>
 
-      {/* Results Section */}
-      <section className="container-luxury py-6 sm:py-8">
+      {/* Results Section - Modern Grid */}
+      <section className="container-luxury py-10 sm:py-12 md:py-16">
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
             {Array.from({ length: 8 }).map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
           </div>
         ) : searchQuery && data?.data ? (
-          <div className="space-y-5 sm:space-y-6">
+          <div className="space-y-6">
             {/* Results Header with Sort and Filters */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <p className="text-sm text-neutral-500 font-medium tracking-normal">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+            >
+              <p className="text-xs text-neutral-400 font-normal">
                 {data.data.length}{" "}
                 {data.data.length === 1 ? "result" : "results"} for &quot;
-                <span className="text-[#0a0a0a] font-medium">
+                <span className="text-[#0a0a0a] font-normal">
                   {searchQuery}
                 </span>
                 &quot;
               </p>
-              <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Button
+                  size="sm"
                   variant="outline"
                   onClick={() => setIsFiltersOpen(true)}
-                  className="rounded-[16px] gap-2 border border-[#e5e5e5] hover:border-[#0a0a0a]"
+                  className="gap-1.5 border-[#f5f5f5] hover:border-[#e5e5e5] bg-[#fafafa]"
                 >
-                  <Filter className="h-4 w-4" />
+                  <Filter className="h-3.5 w-3.5" />
                   Filters
                   {Object.keys(appliedFilters).length > 0 && (
-                    <span className="w-5 h-5 rounded-full bg-[#0a0a0a] text-[#fafafa] text-xs font-medium flex items-center justify-center">
+                    <span className="w-4 h-4 rounded-full bg-[#0a0a0a] text-white text-[10px] font-normal flex items-center justify-center">
                       {Object.keys(appliedFilters).length}
                     </span>
                   )}
                 </Button>
                 <Select value={sortBy} onValueChange={handleSort}>
-                  <SelectTrigger className="w-full sm:w-[180px] border border-[#e5e5e5] text-sm font-medium h-10 sm:h-11 hover:border-[#0a0a0a] transition-all rounded-[16px] bg-white shadow-sm hover:shadow-md">
-                    <div className="flex items-center gap-2">
-                      <ArrowUpDown className="h-4 w-4 text-neutral-500" />
+                  <SelectTrigger className="w-full sm:w-[160px] border border-[#f5f5f5] text-xs font-normal h-9 hover:border-[#e5e5e5] transition-all rounded-[12px] bg-[#fafafa] shadow-none hover:bg-white">
+                    <div className="flex items-center gap-1.5">
+                      <ArrowUpDown className="h-3.5 w-3.5 text-neutral-400" />
                       <SelectValue placeholder="Sort by" />
                     </div>
                   </SelectTrigger>
-                  <SelectContent className="border border-[#e5e5e5] rounded-[16px] shadow-lg bg-white">
+                  <SelectContent className="border border-[#f5f5f5] rounded-[14px] shadow-lg bg-white">
                     <SelectItem
                       value="relevance"
-                      className="text-sm font-medium rounded-[12px] focus:bg-[#fafafa] py-2.5"
+                      className="text-xs font-normal rounded-[10px] focus:bg-[#fafafa] py-2"
                     >
                       Relevance
                     </SelectItem>
                     <SelectItem
                       value="price_asc"
-                      className="text-sm font-medium rounded-[12px] focus:bg-[#fafafa] py-2.5"
+                      className="text-xs font-normal rounded-[10px] focus:bg-[#fafafa] py-2"
                     >
                       Price: Low to High
                     </SelectItem>
                     <SelectItem
                       value="price_desc"
-                      className="text-sm font-medium rounded-[12px] focus:bg-[#fafafa] py-2.5"
+                      className="text-xs font-normal rounded-[10px] focus:bg-[#fafafa] py-2"
                     >
                       Price: High to Low
                     </SelectItem>
                     <SelectItem
                       value="newest"
-                      className="text-sm font-medium rounded-[12px] focus:bg-[#fafafa] py-2.5"
+                      className="text-xs font-normal rounded-[10px] focus:bg-[#fafafa] py-2"
                     >
                       Newest First
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+            </motion.div>
 
             {/* Advanced Filters Modal */}
             <AdvancedFilters
@@ -306,34 +326,40 @@ export default function SearchPage() {
             />
 
             {sortedProducts.length === 0 ? (
-              <div className="text-center py-12 sm:py-16 space-y-5">
-                <div className="flex justify-center">
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-[20px] bg-white border border-[#e5e5e5] flex items-center justify-center">
-                    <SearchIcon className="h-10 w-10 sm:h-12 sm:w-12 text-neutral-300" />
-                  </div>
-                </div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-center py-20 sm:py-24 space-y-4"
+              >
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.15, duration: 0.4 }}
+                  className="w-16 h-16 rounded-full bg-[#f5f5f5] flex items-center justify-center mx-auto"
+                >
+                  <SearchIcon className="h-7 w-7 text-neutral-400" />
+                </motion.div>
                 <div className="space-y-2">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-medium tracking-normal text-[#0a0a0a]">
+                  <h2 className="text-base font-normal tracking-normal text-[#0a0a0a]">
                     No products found
                   </h2>
-                  <p className="text-sm text-neutral-500 font-medium">
+                  <p className="text-xs text-neutral-400 font-normal">
                     Try searching with different keywords or browse all products
                   </p>
                 </div>
-                <Button
-                  size="lg"
-                  onClick={() => router.push("/shop")}
-                  className="rounded-[16px]"
-                >
-                  Browse All Products
-                </Button>
-              </div>
+                <div className="pt-2">
+                  <Button size="sm" onClick={() => router.push("/shop")}>
+                    Browse All Products
+                  </Button>
+                </div>
+              </motion.div>
             ) : (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.6 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8"
               >
                 <AnimatePresence>
                   {sortedProducts.map((product, index) => (
@@ -341,8 +367,12 @@ export default function SearchPage() {
                       key={product.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ delay: index * 0.05, duration: 0.3 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      transition={{
+                        delay: index * 0.03,
+                        duration: 0.5,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
                     >
                       <ProductCard product={product} />
                     </motion.div>
@@ -355,24 +385,27 @@ export default function SearchPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center py-12 sm:py-16 space-y-5"
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center py-20 sm:py-24 space-y-4"
           >
-            <div className="flex justify-center">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-[20px] bg-white border border-[#e5e5e5] flex items-center justify-center">
-                <SearchIcon className="h-10 w-10 sm:h-12 sm:w-12 text-neutral-300" />
-              </div>
-            </div>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.15, duration: 0.4 }}
+              className="w-16 h-16 rounded-full bg-[#f5f5f5] flex items-center justify-center mx-auto"
+            >
+              <SearchIcon className="h-7 w-7 text-neutral-400" />
+            </motion.div>
             <div className="space-y-2">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-medium tracking-normal text-[#0a0a0a]">
+              <h2 className="text-base font-normal tracking-normal text-[#0a0a0a]">
                 Start searching
               </h2>
-              <p className="text-sm text-neutral-500 font-medium">
+              <p className="text-xs text-neutral-400 font-normal">
                 Enter a search term to find products
               </p>
             </div>
-            <div className="flex flex-wrap justify-center gap-2 pt-4">
-              <span className="text-xs text-neutral-400 font-medium">Try:</span>
+            <div className="flex flex-wrap justify-center gap-2 pt-2">
+              <span className="text-xs text-neutral-400 font-normal">Try:</span>
               {["T-Shirts", "Jeans", "Dresses", "Accessories"].map((term) => (
                 <button
                   key={term}
@@ -380,7 +413,7 @@ export default function SearchPage() {
                     updateQuery(term);
                     handleSearch(e, term);
                   }}
-                  className="px-3 py-1.5 bg-white border border-[#e5e5e5] hover:border-[#0a0a0a] rounded-[12px] text-xs font-medium transition-all"
+                  className="px-2.5 py-1 bg-[#f5f5f5] border border-transparent hover:border-[#e5e5e5] hover:bg-white rounded-[10px] text-xs font-normal transition-all"
                 >
                   {term}
                 </button>

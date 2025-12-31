@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { prisma } from "../config/database";
 import { logger } from "./logger.util";
 
@@ -36,6 +35,7 @@ export class FullTextSearchUtil {
       // Use raw query for full-text search
       // PostgreSQL full-text search requires a tsvector column or generated column
       // For now, we'll use a combination of ILIKE and ranking
+      if (!prisma) throw new Error("Prisma client not initialized");
       const products = await prisma.$queryRaw<any[]>`
         SELECT 
           p.*,
@@ -62,6 +62,7 @@ export class FullTextSearchUtil {
         OFFSET ${offset}
       `;
 
+      if (!prisma) throw new Error("Prisma client not initialized");
       const totalResult = await prisma.$queryRaw<Array<{ count: bigint }>>`
         SELECT COUNT(*)::int as count
         FROM products p
@@ -79,6 +80,7 @@ export class FullTextSearchUtil {
 
       // Fetch full product data with relations
       const productIds = products.map((p) => p.id);
+      if (!prisma) throw new Error("Prisma client not initialized");
       const fullProducts = await prisma.product.findMany({
         where: {
           id: { in: productIds },
@@ -133,6 +135,7 @@ export class FullTextSearchUtil {
     try {
       // Create GIN index for full-text search
       // This should be run as a database migration
+      if (!prisma) throw new Error("Prisma client not initialized");
       await prisma.$executeRaw`
         CREATE INDEX IF NOT EXISTS products_search_idx 
         ON products 

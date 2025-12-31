@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { HTTP_STATUS } from "../../config/constants";
+import { AuthRequest } from "../../middleware/auth.middleware";
 import { ResponseUtil } from "../../utils/response.util";
 import { SupportService } from "./support.service";
 
@@ -11,7 +12,7 @@ export class SupportController {
   }
 
   createTicket = async (req: Request, res: Response): Promise<Response> => {
-    const userId = req.user?.userId;
+    const userId = (req as AuthRequest).user?.userId;
     if (!userId) {
       return ResponseUtil.error(res, "Unauthorized", HTTP_STATUS.UNAUTHORIZED);
     }
@@ -32,7 +33,7 @@ export class SupportController {
   };
 
   getUserTickets = async (req: Request, res: Response): Promise<Response> => {
-    const userId = req.user?.userId;
+    const userId = (req as AuthRequest).user?.userId;
     if (!userId) {
       return ResponseUtil.error(res, "Unauthorized", HTTP_STATUS.UNAUTHORIZED);
     }
@@ -42,21 +43,22 @@ export class SupportController {
   };
 
   getTicketById = async (req: Request, res: Response): Promise<Response> => {
-    const userId = req.user?.userId;
+    const userId = (req as AuthRequest).user?.userId;
     const { id } = req.params;
     const ticket = await this.service.getTicketById(id, userId);
     return ResponseUtil.success(res, ticket, undefined, HTTP_STATUS.OK);
   };
 
   addReply = async (req: Request, res: Response): Promise<Response> => {
-    const userId = req.user?.userId;
+    const userId = (req as AuthRequest).user?.userId;
     if (!userId) {
       return ResponseUtil.error(res, "Unauthorized", HTTP_STATUS.UNAUTHORIZED);
     }
 
     const { id } = req.params;
     const { message } = req.body;
-    const isAdmin = req.user?.role === "ADMIN" || req.user?.role === "SUPER_ADMIN";
+    const userRole = (req as AuthRequest).user?.role;
+    const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN";
     const reply = await this.service.addReply(id, userId, message, isAdmin);
     return ResponseUtil.success(res, reply, "Reply added", HTTP_STATUS.CREATED);
   };

@@ -51,12 +51,12 @@ export default function ShopPage() {
 
   const { data, isLoading, error } = useProducts(filters);
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://valuva.com";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://valuva.in";
 
   return (
     <>
       {/* Breadcrumbs */}
-      <div className="container-luxury pt-6">
+      <div className="container-luxury pt-4 sm:pt-6">
         <Breadcrumbs
           items={[
             { name: "Home", url: "/" },
@@ -76,62 +76,73 @@ export default function ShopPage() {
         }}
       />
 
-      <div className="min-h-screen bg-[#fafafa]">
-        {/* Header Section */}
-        <section className="bg-white border-b border-[#e5e5e5]">
-          <div className="container-luxury py-6 sm:py-8">
+      <div className="min-h-screen bg-white">
+        {/* Hero Header - Modern Minimalist */}
+        <section className="relative border-b border-[#f5f5f5] bg-gradient-to-b from-white via-white to-[#fafafa]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.01),transparent_70%)]" />
+          <div className="container-luxury py-8 sm:py-10 md:py-12 relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-5 sm:space-y-6"
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-6"
             >
-              {/* Title and Controls */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="space-y-1.5 sm:space-y-2"
-                >
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-normal text-[#0a0a0a]">
+              {/* Title Section */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
+                <div className="space-y-2">
+                  <motion.h1
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{
+                      delay: 0.1,
+                      duration: 0.6,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight text-[#0a0a0a] leading-[0.95]"
+                  >
                     Shop
-                  </h1>
+                  </motion.h1>
                   {data && (
-                    <p className="text-xs sm:text-sm text-neutral-500 font-medium tracking-normal">
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.5 }}
+                      className="text-xs sm:text-sm text-neutral-400 font-normal"
+                    >
                       {data.meta.total}{" "}
-                      {data.meta.total === 1 ? "product" : "products"} found
-                    </p>
+                      {data.meta.total === 1 ? "product" : "products"} available
+                    </motion.p>
                   )}
-                </motion.div>
-                <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                </div>
+
+                {/* Controls */}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
                   <ShopSort />
-                  {/* View Toggle */}
+                  {/* View Toggle - Refined */}
                   <div
-                    className="hidden md:flex items-center border border-[#e5e5e5] rounded-[16px] overflow-hidden bg-white shadow-sm"
+                    className="hidden md:flex items-center bg-[#f5f5f5] rounded-[14px] p-1.5 gap-1"
                     role="group"
                     aria-label="View mode"
                   >
                     <button
                       onClick={() => setViewMode("grid")}
                       aria-pressed={viewMode === "grid"}
-                      className={`p-2.5 sm:p-3 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
+                      className={`p-2.5 transition-all duration-300 rounded-[10px] ${
                         viewMode === "grid"
-                          ? "bg-[#0a0a0a] text-[#fafafa]"
-                          : "hover:bg-[#fafafa] text-[#0a0a0a]"
+                          ? "bg-white text-[#0a0a0a] shadow-sm"
+                          : "text-neutral-400 hover:text-[#0a0a0a]"
                       }`}
                       aria-label="Grid view"
                     >
                       <Grid3x3 className="h-4 w-4" aria-hidden="true" />
                     </button>
-                    <div className="w-px h-6 bg-[#e5e5e5]" aria-hidden="true" />
                     <button
                       onClick={() => setViewMode("list")}
                       aria-pressed={viewMode === "list"}
-                      className={`p-2.5 sm:p-3 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#0a0a0a] focus:ring-offset-2 ${
+                      className={`p-2.5 transition-all duration-300 rounded-[10px] ${
                         viewMode === "list"
-                          ? "bg-[#0a0a0a] text-[#fafafa]"
-                          : "hover:bg-[#fafafa] text-[#0a0a0a]"
+                          ? "bg-white text-[#0a0a0a] shadow-sm"
+                          : "text-neutral-400 hover:text-[#0a0a0a]"
                       }`}
                       aria-label="List view"
                     >
@@ -147,14 +158,14 @@ export default function ShopPage() {
           </div>
         </section>
 
-        {/* Products Section */}
+        {/* Products Grid - Modern Layout */}
         <section
-          className="container-luxury py-6 sm:py-8"
+          className="container-luxury py-10 sm:py-12 md:py-16"
           aria-label="Products"
         >
           {isLoading ? (
             <div
-              className={`grid gap-4 sm:gap-6 lg:gap-8 ${
+              className={`grid gap-2 sm:gap-3 lg:gap-4 ${
                 viewMode === "grid"
                   ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
                   : "grid-cols-1"
@@ -168,15 +179,21 @@ export default function ShopPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center py-12 sm:py-16 space-y-4"
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="text-center py-20 sm:py-24 space-y-4"
             >
-              <div className="w-16 h-16 rounded-[20px] bg-white border border-[#e5e5e5] flex items-center justify-center mx-auto mb-4">
-                <ShoppingBag className="h-8 w-8 text-neutral-300" />
-              </div>
-              <p className="text-lg font-medium text-[#0a0a0a]">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.15, duration: 0.4 }}
+                className="w-16 h-16 rounded-full bg-[#f5f5f5] flex items-center justify-center mx-auto"
+              >
+                <ShoppingBag className="h-7 w-7 text-neutral-400" />
+              </motion.div>
+              <p className="text-base font-normal text-[#0a0a0a]">
                 Error loading products
               </p>
-              <p className="text-sm text-neutral-500 font-medium">
+              <p className="text-xs text-neutral-400 font-normal">
                 Please try again later
               </p>
             </motion.div>
@@ -185,8 +202,8 @@ export default function ShopPage() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.6 }}
-                className={`grid gap-4 sm:gap-6 lg:gap-8 ${
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className={`grid gap-2 sm:gap-3 lg:gap-4 ${
                   viewMode === "grid"
                     ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
                     : "grid-cols-1"
@@ -200,8 +217,12 @@ export default function ShopPage() {
                       key={product.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ delay: index * 0.05, duration: 0.3 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      transition={{
+                        delay: index * 0.03,
+                        duration: 0.5,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
                       role="listitem"
                     >
                       {viewMode === "grid" ? (
@@ -209,49 +230,49 @@ export default function ShopPage() {
                       ) : (
                         <Link
                           href={`/products/${product.slug}`}
-                          className="block bg-white border border-[#e5e5e5] rounded-[20px] p-4 sm:p-6 hover:border-[#0a0a0a] hover:shadow-md transition-all group"
+                          className="group block bg-white border border-[#f5f5f5] rounded-[20px] p-6 hover:border-[#e5e5e5] hover:shadow-sm transition-all duration-300"
                         >
-                          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                            <div className="relative w-full sm:w-32 h-48 sm:h-32 rounded-[12px] overflow-hidden bg-[#fafafa] flex-shrink-0">
+                          <div className="flex flex-col sm:flex-row gap-5 sm:gap-6">
+                            <div className="relative w-full sm:w-36 h-56 sm:h-36 rounded-[16px] overflow-hidden bg-[#fafafa] flex-shrink-0">
                               {product.images[0]?.url ? (
                                 <Image
                                   src={product.images[0].url}
                                   alt={product.name}
                                   fill
-                                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                  className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
                                   loading="lazy"
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <ShoppingBag className="h-8 w-8 text-neutral-300" />
+                                  <ShoppingBag className="h-7 w-7 text-neutral-300" />
                                 </div>
                               )}
                             </div>
-                            <div className="flex-1 min-w-0 space-y-2">
+                            <div className="flex-1 min-w-0 space-y-3">
                               <div className="flex items-start justify-between gap-4">
                                 <div className="flex-1 min-w-0">
-                                  <h3 className="text-base sm:text-lg font-medium tracking-normal text-[#0a0a0a] line-clamp-2 group-hover:opacity-70 transition-opacity">
+                                  <h3 className="text-base sm:text-lg font-normal tracking-normal text-[#0a0a0a] line-clamp-2 group-hover:opacity-70 transition-opacity">
                                     {product.name}
                                   </h3>
                                   {product.shortDescription && (
-                                    <p className="text-xs sm:text-sm text-neutral-600 font-medium line-clamp-2 mt-1">
+                                    <p className="text-xs sm:text-sm text-neutral-400 font-normal line-clamp-2 mt-2">
                                       {product.shortDescription}
                                     </p>
                                   )}
                                 </div>
                                 <div className="text-right flex-shrink-0">
-                                  <p className="text-base sm:text-lg font-medium text-[#0a0a0a]">
+                                  <p className="text-base sm:text-lg font-normal text-[#0a0a0a]">
                                     {formatPrice(product.basePrice)}
                                   </p>
                                   {product.compareAtPrice && (
-                                    <p className="text-xs text-neutral-500 line-through">
+                                    <p className="text-xs text-neutral-400 line-through mt-0.5">
                                       {formatPrice(product.compareAtPrice)}
                                     </p>
                                   )}
                                 </div>
                               </div>
                               {product.isNewArrival && (
-                                <span className="inline-block px-2 py-0.5 text-xs font-medium bg-[#0a0a0a] text-[#fafafa] rounded-[8px]">
+                                <span className="inline-block px-2.5 py-1 text-[10px] font-normal bg-[#0a0a0a] text-white rounded-[8px] tracking-wide uppercase">
                                   New
                                 </span>
                               )}
@@ -266,36 +287,54 @@ export default function ShopPage() {
 
               {/* Pagination */}
               {data.meta.totalPages > 1 && (
-                <div className="mt-8 sm:mt-12">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                  className="mt-12 sm:mt-16"
+                >
                   <Pagination
                     currentPage={page}
                     totalPages={data.meta.totalPages}
                     onPageChange={setPage}
                   />
-                </div>
+                </motion.div>
               )}
             </>
           ) : (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center py-12 sm:py-16 space-y-4"
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="text-center py-20 sm:py-24 space-y-4"
             >
-              <div className="w-16 h-16 rounded-[20px] bg-white border border-[#e5e5e5] flex items-center justify-center mx-auto mb-4">
-                <ShoppingBag className="h-8 w-8 text-neutral-300" />
-              </div>
-              <p className="text-lg font-medium text-[#0a0a0a]">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.15, duration: 0.4 }}
+                className="w-16 h-16 rounded-full bg-[#f5f5f5] flex items-center justify-center mx-auto"
+              >
+                <ShoppingBag className="h-7 w-7 text-neutral-400" />
+              </motion.div>
+              <p className="text-base font-normal text-[#0a0a0a]">
                 No products found
               </p>
-              <p className="text-sm text-neutral-500 font-medium">
+              <p className="text-xs text-neutral-400 font-normal">
                 Try adjusting your filters
               </p>
-              <Link href="/shop">
-                <Button variant="outline" className="rounded-[16px] gap-2 mt-4">
-                  Clear Filters
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Button>
-              </Link>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+                className="pt-3"
+              >
+                <Link href="/shop">
+                  <Button size="sm" variant="outline" className="gap-1.5">
+                    Clear Filters
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Button>
+                </Link>
+              </motion.div>
             </motion.div>
           )}
         </section>

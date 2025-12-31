@@ -4,7 +4,11 @@
  * Compliant with Indian data protection regulations
  */
 
-export type CookieCategory = "essential" | "performance" | "functionality" | "targeting";
+export type CookieCategory =
+  | "essential"
+  | "performance"
+  | "functionality"
+  | "targeting";
 
 export interface CookiePreferences {
   essential: boolean; // Always true, cannot be disabled
@@ -20,6 +24,7 @@ const COOKIE_CONSENT_KEY = "valuva_cookie_consent";
 
 /**
  * Get cookie preferences from localStorage
+ * @returns Cookie preferences or null if not found
  */
 export function getCookiePreferences(): CookiePreferences | null {
   if (typeof window === "undefined") return null;
@@ -37,6 +42,7 @@ export function getCookiePreferences(): CookiePreferences | null {
 
 /**
  * Save cookie preferences to localStorage
+ * @param preferences - Cookie preferences to save
  */
 export function saveCookiePreferences(preferences: CookiePreferences): void {
   if (typeof window === "undefined") return;
@@ -45,16 +51,21 @@ export function saveCookiePreferences(preferences: CookiePreferences): void {
     preferences.consentDate = new Date().toISOString();
     localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(preferences));
     localStorage.setItem(COOKIE_CONSENT_KEY, "true");
-    
+
     // Dispatch custom event for other components to listen
-    window.dispatchEvent(new CustomEvent("cookiePreferencesUpdated", { detail: preferences }));
+    window.dispatchEvent(
+      new CustomEvent("cookiePreferencesUpdated", { detail: preferences })
+    );
   } catch (error) {
-    console.error("Failed to save cookie preferences:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Failed to save cookie preferences:", error);
+    }
   }
 }
 
 /**
  * Check if user has given consent
+ * @returns true if consent has been given, false otherwise
  */
 export function hasCookieConsent(): boolean {
   if (typeof window === "undefined") return false;
@@ -63,6 +74,7 @@ export function hasCookieConsent(): boolean {
 
 /**
  * Get default cookie preferences (all false except essential)
+ * @returns Default cookie preferences object
  */
 export function getDefaultCookiePreferences(): CookiePreferences {
   return {
@@ -76,6 +88,7 @@ export function getDefaultCookiePreferences(): CookiePreferences {
 
 /**
  * Accept all cookies
+ * @returns Updated cookie preferences with all categories enabled
  */
 export function acceptAllCookies(): CookiePreferences {
   const preferences: CookiePreferences = {
@@ -91,6 +104,7 @@ export function acceptAllCookies(): CookiePreferences {
 
 /**
  * Reject non-essential cookies
+ * @returns Updated cookie preferences with only essential cookies enabled
  */
 export function rejectNonEssentialCookies(): CookiePreferences {
   const preferences: CookiePreferences = {
@@ -106,6 +120,8 @@ export function rejectNonEssentialCookies(): CookiePreferences {
 
 /**
  * Check if a specific cookie category is enabled
+ * @param category - Cookie category to check
+ * @returns true if category is enabled, false otherwise
  */
 export function isCookieCategoryEnabled(category: CookieCategory): boolean {
   const preferences = getCookiePreferences();
@@ -116,6 +132,7 @@ export function isCookieCategoryEnabled(category: CookieCategory): boolean {
 
 /**
  * Clear all cookie preferences (for testing/debugging)
+ * Removes all stored cookie preferences and consent
  */
 export function clearCookiePreferences(): void {
   if (typeof window === "undefined") return;
@@ -126,6 +143,7 @@ export function clearCookiePreferences(): void {
 
 /**
  * Initialize analytics and tracking based on preferences
+ * Should be called after cookie preferences are loaded
  */
 export function initializeTrackingBasedOnPreferences(): void {
   if (typeof window === "undefined") return;
@@ -145,4 +163,3 @@ export function initializeTrackingBasedOnPreferences(): void {
     // Example: gtag('consent', 'update', { ad_storage: 'granted' });
   }
 }
-

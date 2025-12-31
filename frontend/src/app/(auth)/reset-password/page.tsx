@@ -85,25 +85,25 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-1 sm:px-3 py-3 sm:py-3">
         <div className="w-full max-w-[420px]">
           {/* Logo and Brand */}
-          <div className="text-center mb-8 sm:mb-10">
+          <div className="text-center mb-1 sm:mb-2">
             <Link
               href="/"
-              className="inline-flex items-center gap-[1px] mb-6 sm:mb-8 hover:opacity-80 transition-opacity justify-center"
+              className="inline-flex items-center gap-1 sm:gap-1 mb-1 sm:mb-2 hover:opacity-80 transition-opacity justify-center"
             >
               <Image
                 src="/valuvaLogo.png"
                 alt="VALUVA"
-                width={48}
-                height={48}
-                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+                width={60}
+                height={60}
+                className="w-15 h-15 sm:w-15 sm:h-15 object-contain"
                 priority
               />
-              <span className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
+              {/* <span className="text-xl sm:text-2xl font-medium tracking-tight text-[#0a0a0a]">
                 valuva
-              </span>
+              </span> */}
             </Link>
           </div>
 

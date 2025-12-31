@@ -163,7 +163,7 @@ export class ProductsController {
    * Get available filter options (sizes and colors)
    * Production-ready: Returns real data from product variants
    */
-  getFilterOptions = async (req: Request, res: Response): Promise<Response> => {
+  getFilterOptions = async (_req: Request, res: Response): Promise<Response> => {
     const options = await this.service.getFilterOptions();
     return ResponseUtil.success(res, options);
   };

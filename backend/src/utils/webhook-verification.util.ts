@@ -1,5 +1,4 @@
 import crypto from "crypto";
-import { env } from "../config/env";
 import { logger } from "./logger.util";
 
 /**
@@ -8,47 +7,6 @@ import { logger } from "./logger.util";
  * Production-ready security for webhook endpoints
  */
 export class WebhookVerificationUtil {
-  /**
-   * Verify Shopify webhook signature
-   */
-  static verifyShopifyWebhook(
-    body: string | Buffer,
-    signature: string
-  ): boolean {
-    if (!env.SHOPIFY_WEBHOOK_SECRET) {
-      logger.warn("Shopify webhook secret not configured");
-      return false;
-    }
-
-    try {
-      const hmac = crypto
-        .createHmac("sha256", env.SHOPIFY_WEBHOOK_SECRET)
-        .update(body as string, "utf8")
-        .digest("base64");
-
-      const providedSignature = signature.replace("sha256=", "");
-
-      // Use constant-time comparison to prevent timing attacks
-      const isValid = crypto.timingSafeEqual(
-        Buffer.from(hmac),
-        Buffer.from(providedSignature)
-      );
-
-      if (!isValid) {
-        logger.warn("Invalid Shopify webhook signature", {
-          provided: providedSignature.substring(0, 10) + "...",
-        });
-      }
-
-      return isValid;
-    } catch (error) {
-      logger.error("Webhook verification error", {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      return false;
-    }
-  }
-
   /**
    * Verify generic HMAC signature
    */

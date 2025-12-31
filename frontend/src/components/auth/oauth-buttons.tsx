@@ -2,17 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { OAuthErrorBoundary } from "./oauth-error-boundary";
 
 interface OAuthButtonsProps {
-  mode?: "login" | "register";
   className?: string;
 }
 
-export function OAuthButtons({ mode = "login", className = "" }: OAuthButtonsProps) {
-  const router = useRouter();
+export function OAuthButtons({ className = "" }: OAuthButtonsProps) {
   const [isLoading, setIsLoading] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,15 +26,18 @@ export function OAuthButtons({ mode = "login", className = "" }: OAuthButtonsPro
       }
       const apiUrlFinal = apiUrl || "http://localhost:5000";
       const redirectUrl = `${apiUrlFinal}/api/v1/auth/oauth/google`;
-      
+
       // Store the current page for redirect after OAuth
       if (typeof window !== "undefined") {
         sessionStorage.setItem("oauth_redirect", window.location.pathname);
       }
-      
+
       window.location.href = redirectUrl;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to initiate Google sign in";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to initiate Google sign in";
       setError(errorMessage);
       setIsLoading(null);
       toast({
@@ -162,4 +162,3 @@ export function OAuthButtons({ mode = "login", className = "" }: OAuthButtonsPro
     </OAuthErrorBoundary>
   );
 }
-

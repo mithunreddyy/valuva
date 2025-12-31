@@ -137,6 +137,6 @@ export function measurePerformance(name: string, fn: () => void) {
     const measure = performance.getEntriesByName(name)[0];
     console.log(`${name}: ${measure.duration.toFixed(2)}ms`);
   } catch (error) {
-    // Performance measurement failed
+    console.error(`Performance measurement failed: ${error}`);
   }
 }

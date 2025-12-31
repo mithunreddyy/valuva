@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { X } from "lucide-react";
-import { Resolver, useForm } from "react-hook-form";
+import { Resolver, useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 
 const sectionSchema = z.object({
@@ -52,12 +52,16 @@ interface HomepageSectionFormModalProps {
   } | null;
   isOpen: boolean;
   onClose: () => void;
+  onCreateSection?: (data: HomepageSection) => Promise<unknown>;
+  onUpdateSection?: (id: string, data: HomepageSection) => Promise<unknown>;
 }
 
 export function HomepageSectionFormModal({
   section,
   isOpen,
   onClose,
+  onCreateSection,
+  onUpdateSection,
 }: HomepageSectionFormModalProps) {
   const queryClient = useQueryClient();
   const isEditing = !!section;
@@ -67,7 +71,7 @@ export function HomepageSectionFormModal({
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
+    control,
   } = useForm<SectionFormData>({
     resolver: zodResolver(
       sectionSchema
@@ -83,7 +87,12 @@ export function HomepageSectionFormModal({
   });
 
   const createSection = useMutation({
-    mutationFn: (data: HomepageSection) => adminApi.createHomepageSection(data),
+    mutationFn: (data: HomepageSection) => {
+      if (onCreateSection) {
+        return onCreateSection(data);
+      }
+      return adminApi.createHomepageSection(data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-homepage-sections"] });
       toast({
@@ -104,8 +113,12 @@ export function HomepageSectionFormModal({
   });
 
   const updateSection = useMutation({
-    mutationFn: (data: HomepageSection) =>
-      adminApi.updateHomepageSection(section!.id, data),
+    mutationFn: (data: HomepageSection) => {
+      if (onUpdateSection && section) {
+        return onUpdateSection(section.id, data);
+      }
+      return adminApi.updateHomepageSection(section!.id, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-homepage-sections"] });
       toast({
@@ -142,6 +155,10 @@ export function HomepageSectionFormModal({
     }
   };
 
+  // Use useWatch at top level before any early returns
+  const sectionType = useWatch({ control, name: "type" });
+  const isActive = useWatch({ control, name: "isActive" });
+
   if (!isOpen) return null;
 
   return (
@@ -172,7 +189,7 @@ export function HomepageSectionFormModal({
               Section Type *
             </label>
             <Select
-              value={watch("type")}
+              value={sectionType}
               onValueChange={(value) =>
                 setValue("type", value as SectionFormData["type"])
               }
@@ -248,7 +265,7 @@ export function HomepageSectionFormModal({
               </p>
             </div>
             <Switch
-              checked={watch("isActive")}
+              checked={isActive ?? false}
               onCheckedChange={(checked) => setValue("isActive", checked)}
               className="data-[state=checked]:bg-[#0a0a0a]"
             />

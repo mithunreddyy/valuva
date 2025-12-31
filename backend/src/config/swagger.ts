@@ -1,4 +1,6 @@
+// @ts-ignore - Missing type definitions
 import swaggerJsdoc from "swagger-jsdoc";
+// @ts-ignore - Missing type definitions
 import swaggerUi from "swagger-ui-express";
 import { Application } from "express";
 import { env } from "./env";
@@ -12,13 +14,13 @@ const options: swaggerJsdoc.Options = {
       description: "API documentation for Valuva e-commerce platform",
       contact: {
         name: "Valuva Support",
-        email: "support@valuva.com",
+        email: "support@valuva.in",
       },
     },
     servers: [
       {
         url: env.NODE_ENV === "production" 
-          ? "https://api.valuva.com" 
+          ? (process.env.API_URL || "https://valuva.in")
           : `http://localhost:${env.PORT || 5000}`,
         description: env.NODE_ENV === "production" ? "Production server" : "Development server",
       },

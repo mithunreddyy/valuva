@@ -36,7 +36,7 @@ export class UsersService {
       throw new NotFoundError("User not found");
     }
 
-    const isValid = await PasswordUtil.compare(currentPassword, user.password);
+    const isValid = await PasswordUtil.compare(currentPassword, user.password || "");
     if (!isValid) {
       throw new UnauthorizedError("Current password is incorrect");
     }

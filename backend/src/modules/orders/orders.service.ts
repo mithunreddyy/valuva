@@ -30,7 +30,7 @@ export class OrdersService {
     couponCode?: string,
     notes?: string,
     ipAddress?: string,
-    userAgent?: string
+    _userAgent?: string
   ) {
     const shippingAddress = await this.repository.getAddress(
       shippingAddressId,

@@ -19,7 +19,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { X } from "lucide-react";
 import { useEffect } from "react";
-import { Resolver, useForm } from "react-hook-form";
+import { Resolver, useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 
 const couponSchema = z.object({
@@ -75,8 +75,8 @@ export function CouponFormModal({
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
     setValue,
+    control,
   } = useForm<CouponFormData>({
     resolver: zodResolver(couponSchema) as unknown as Resolver<CouponFormData>,
     defaultValues: {
@@ -186,7 +186,8 @@ export function CouponFormModal({
     }
   };
 
-  const discountType = watch("discountType");
+  const discountType = useWatch({ control, name: "discountType" });
+  const isActive = useWatch({ control, name: "isActive" });
 
   if (!isOpen) return null;
 
@@ -248,7 +249,7 @@ export function CouponFormModal({
                 Discount Type *
               </label>
               <Select
-                value={watch("discountType")}
+                value={discountType}
                 onValueChange={(value: "PERCENTAGE" | "FIXED_AMOUNT") =>
                   setValue("discountType", value)
                 }
@@ -378,7 +379,7 @@ export function CouponFormModal({
               </p>
             </div>
             <Switch
-              checked={watch("isActive")}
+              checked={isActive ?? false}
               onCheckedChange={(checked) => setValue("isActive", checked)}
               className="data-[state=checked]:bg-[#0a0a0a]"
             />

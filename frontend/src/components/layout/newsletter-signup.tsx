@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { newsletterService } from "@/services";
 import { useState } from "react";
-import { Mail, CheckCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 
 export function NewsletterSignup() {
   const [email, setEmail] = useState("");

@@ -12,7 +12,7 @@ const buttonVariants = cva(
         outline:
           "border-[#e5e5e5] bg-transparent text-[#0a0a0a] hover:border-[#0a0a0a]",
         filled:
-          "border-[#0a0a0a] bg-[#0a0a0a] text-[#fafafa] hover:bg-transparent hover:text-[#0a0a0a]",
+          "border-[#0a0a0a] bg-[#0a0a0a] text-[#fafafa] hover:bg-[#1a1a1a] hover:text-[#fafafa]",
         ghost:
           "border-transparent bg-transparent text-[#0a0a0a] hover:border-[#e5e5e5]",
         link: "border-0 text-[#0a0a0a] underline-offset-4 hover:underline tracking-normal rounded-none",

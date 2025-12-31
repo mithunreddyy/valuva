@@ -1,5 +1,5 @@
 import { wishlistService } from "@/services/wishlist.service";
-import { WishlistItem } from "@/types";
+import { AddToWishlistData, WishlistItem } from "@/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 interface WishlistState {
@@ -20,29 +20,35 @@ export const fetchWishlist = createAsyncThunk(
     try {
       return await wishlistService.getWishlist();
     } catch (error: unknown) {
-      return rejectWithValue((error as Error).message || "Failed to fetch wishlist");
+      return rejectWithValue(
+        (error as Error).message || "Failed to fetch wishlist"
+      );
     }
   }
 );
 
 export const addToWishlist = createAsyncThunk(
   "wishlist/add",
-  async (productId: string, { rejectWithValue }) => {
+  async (data: AddToWishlistData, { rejectWithValue }) => {
     try {
-      return await wishlistService.addToWishlist(productId);
+      return await wishlistService.addToWishlist(data);
     } catch (error: unknown) {
-      return rejectWithValue((error as Error).message || "Failed to add to wishlist");
+      return rejectWithValue(
+        (error as Error).message || "Failed to add to wishlist"
+      );
     }
   }
 );
 
 export const removeFromWishlist = createAsyncThunk(
   "wishlist/remove",
-  async (productId: string, { rejectWithValue }) => {
+  async (data: AddToWishlistData, { rejectWithValue }) => {
     try {
-      return await wishlistService.removeFromWishlist(productId);
+      return await wishlistService.removeFromWishlist(data.productId);
     } catch (error: unknown) {
-      return rejectWithValue((error as Error).message || "Failed to remove from wishlist");
+      return rejectWithValue(
+        (error as Error).message || "Failed to remove from wishlist"
+      );
     }
   }
 );

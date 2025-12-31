@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { asyncHandler } from "../../middleware/async.middleware";
 import { authenticate } from "../../middleware/auth.middleware";
 import { PushNotificationController } from "./push.controller";
 

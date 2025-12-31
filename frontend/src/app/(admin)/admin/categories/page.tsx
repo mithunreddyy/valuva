@@ -76,6 +76,19 @@ export default function AdminCategoriesPage() {
   };
 
   const handleCreateSubCategory = (categoryId: string) => {
+    setEditingSubCategory({
+      subCategory: {
+        id: "",
+        name: "",
+        description: "",
+        image: "",
+        categoryId,
+        slug: "",
+        isActive: true,
+        sortOrder: 0,
+      },
+      categoryId,
+    });
     setEditingSubCategory(null);
     setIsSubCategoryModalOpen(true);
   };

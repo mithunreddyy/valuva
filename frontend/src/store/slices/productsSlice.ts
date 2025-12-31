@@ -1,6 +1,5 @@
-import type { ProductFilters } from "@/services/products.service";
 import { productsService } from "@/services/products.service";
-import type { Product } from "@/types";
+import type { Product, ProductFilters } from "@/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 interface ProductsState {

@@ -1,11 +1,13 @@
 /**
  * Storage Utility
  * Production-ready storage helper with SSR safety
- * Handles localStorage access safely in Next.js
+ * Handles localStorage and sessionStorage access safely in Next.js
  */
 
 /**
  * Safely get item from localStorage
+ * @param key - Storage key
+ * @returns Stored value or null if not found or error
  */
 export function getStorageItem(key: string): string | null {
   if (typeof window === "undefined") {
@@ -14,13 +16,17 @@ export function getStorageItem(key: string): string | null {
   try {
     return localStorage.getItem(key);
   } catch (error) {
-    console.warn(`Failed to get ${key} from localStorage:`, error);
+    if (process.env.NODE_ENV === "development") {
+      console.warn(`Failed to get ${key} from localStorage:`, error);
+    }
     return null;
   }
 }
 
 /**
  * Safely set item in localStorage
+ * @param key - Storage key
+ * @param value - Value to store
  */
 export function setStorageItem(key: string, value: string): void {
   if (typeof window === "undefined") {
@@ -35,6 +41,7 @@ export function setStorageItem(key: string, value: string): void {
 
 /**
  * Safely remove item from localStorage
+ * @param key - Storage key to remove
  */
 export function removeStorageItem(key: string): void {
   if (typeof window === "undefined") {
@@ -43,12 +50,16 @@ export function removeStorageItem(key: string): void {
   try {
     localStorage.removeItem(key);
   } catch (error) {
-    console.warn(`Failed to remove ${key} from localStorage:`, error);
+    if (process.env.NODE_ENV === "development") {
+      console.warn(`Failed to remove ${key} from localStorage:`, error);
+    }
   }
 }
 
 /**
  * Safely get item from sessionStorage
+ * @param key - Storage key
+ * @returns Stored value or null if not found or error
  */
 export function getSessionItem(key: string): string | null {
   if (typeof window === "undefined") {
@@ -64,6 +75,8 @@ export function getSessionItem(key: string): string | null {
 
 /**
  * Safely set item in sessionStorage
+ * @param key - Storage key
+ * @param value - Value to store
  */
 export function setSessionItem(key: string, value: string): void {
   if (typeof window === "undefined") {
@@ -78,6 +91,7 @@ export function setSessionItem(key: string, value: string): void {
 
 /**
  * Safely remove item from sessionStorage
+ * @param key - Storage key to remove
  */
 export function removeSessionItem(key: string): void {
   if (typeof window === "undefined") {

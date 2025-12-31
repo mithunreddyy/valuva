@@ -23,6 +23,7 @@ import { Upload, X } from "lucide-react";
 import { useState } from "react";
 import { Resolver, useForm } from "react-hook-form";
 import * as z from "zod";
+import Image from "next/image";
 
 const subCategorySchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -253,8 +254,8 @@ export function SubCategoryFormModal({
             <div className="space-y-2">
               {watch("image") && (
                 <div className="relative w-32 h-32 border border-[#e5e5e5] rounded-[10px] overflow-hidden bg-[#fafafa]">
-                  <img
-                    src={watch("image")}
+                  <Image  
+                    src={watch("image") || ""}    
                     alt="Subcategory"
                     className="w-full h-full object-cover"
                   />

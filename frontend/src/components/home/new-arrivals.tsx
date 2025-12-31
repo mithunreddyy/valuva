@@ -2,7 +2,6 @@
 
 import { ProductCardSkeleton } from "@/components/products/product-card-skeleton";
 import { ProductCard } from "@/components/products/ProductCard";
-import { Button } from "@/components/ui/button";
 import { useProducts } from "@/hooks/use-products";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -38,21 +37,23 @@ export function NewArrivals() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {isLoading
-              ? Array.from({ length: 4 }).map((_, i) => (
-                  <ProductCardSkeleton key={i} />
-                ))
-              : data?.data && data.data.length > 0 ? (
-                data.data.slice(0, 4).map((product) => (
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))
+            ) : data?.data && data.data.length > 0 ? (
+              data.data
+                .slice(0, 4)
+                .map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))
-              ) : (
-                <div className="col-span-full text-center py-12">
-                  <p className="text-neutral-500 font-medium">
-                    No new arrivals available.
-                  </p>
-                </div>
-              )}
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-neutral-500 font-medium">
+                  No new arrivals available.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -14,6 +14,7 @@ import { requestIdMiddleware } from "./middleware/request-id.middleware";
 
 // Existing routes
 import addressesRoutes from "./modules/addresses/addresses.routes";
+import adminBulkRoutes from "./modules/admin/admin-bulk.routes";
 import adminCategoriesRoutes from "./modules/admin/admin-categories.routes";
 import adminCouponsRoutes from "./modules/admin/admin-coupons.routes";
 import adminHomepageRoutes from "./modules/admin/admin-homepage.routes";
@@ -34,7 +35,7 @@ import wishlistRoutes from "./modules/wishlist/wishlist.routes";
 
 // New routes
 import analyticsRoutes from "./modules/analytics/analytics.routes";
-import blogRoutes from "./modules/blog/blog.routes";
+// import blogRoutes from "./modules/blog/blog.routes"; // Blog module not implemented yet
 import newsletterRoutes from "./modules/newsletter/newsletter.routes";
 import pushNotificationRoutes from "./modules/notifications/push.routes";
 import orderTrackingRoutes from "./modules/order-tracking/tracking.routes";
@@ -51,8 +52,31 @@ export const createApp = (): Application => {
   // Request ID middleware (must be first)
   app.use(requestIdMiddleware);
 
+  // Request logging middleware
+  const {
+    requestLoggingMiddleware,
+  } = require("./middleware/request-logging.middleware");
+  app.use(requestLoggingMiddleware);
+
   // Performance monitoring middleware
   app.use(performanceMiddleware);
+
+  // Metrics middleware (track HTTP requests)
+  const { metricsMiddleware } = require("./middleware/metrics.middleware");
+  app.use(metricsMiddleware);
+
+  // Response caching middleware (for public GET endpoints)
+  const {
+    responseCacheMiddleware,
+  } = require("./middleware/response-cache.middleware");
+  app.use(
+    [
+      `${API_PREFIX}/products`,
+      `${API_PREFIX}/categories`,
+      `${API_PREFIX}/homepage`,
+    ],
+    responseCacheMiddleware({ ttl: 300 }) // 5 minutes cache
+  );
 
   // Security middleware
   app.use(helmet());
@@ -107,7 +131,6 @@ export const createApp = (): Application => {
       environment: env.NODE_ENV,
       version: "2.0.0",
       features: {
-        shopifyPayments: true,
         analytics: true,
         notifications: true,
       },
@@ -124,6 +147,13 @@ export const createApp = (): Application => {
   app.get("/ready", readinessCheck);
   app.get("/live", livenessCheck);
 
+  // Metrics endpoint (Prometheus format)
+  app.get("/metrics", (_req, res) => {
+    const { MetricsUtil } = require("./utils/metrics.util");
+    res.setHeader("Content-Type", "text/plain; version=0.0.4");
+    res.send(MetricsUtil.getPrometheusMetrics());
+  });
+
   // API Documentation
   app.get("/", (_req, res) => {
     res.json({
@@ -132,7 +162,6 @@ export const createApp = (): Application => {
       documentation: "/api/v1/docs",
       health: "/health",
       features: [
-        "Shopify Payment Integration",
         "Advanced Analytics",
         "Multi-channel Notifications",
         "Product Management",
@@ -183,6 +212,7 @@ export const createApp = (): Application => {
   app.use(`${API_PREFIX}/admin/categories`, adminCategoriesRoutes);
   app.use(`${API_PREFIX}/admin/coupons`, adminCouponsRoutes);
   app.use(`${API_PREFIX}/admin/homepage`, adminHomepageRoutes);
+  app.use(`${API_PREFIX}/admin/bulk`, adminBulkRoutes);
 
   // Analytics routes (admin only)
   app.use(`${API_PREFIX}/analytics`, analyticsRoutes);
@@ -210,9 +240,6 @@ export const createApp = (): Application => {
 
   // Notification routes
   app.use(`${API_PREFIX}/notifications/push`, pushNotificationRoutes);
-
-  // Blog routes
-  app.use(`${API_PREFIX}/blog`, blogRoutes);
 
   // Error handling
   app.use(notFoundHandler);

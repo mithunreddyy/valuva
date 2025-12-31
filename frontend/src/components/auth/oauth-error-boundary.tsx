@@ -1,8 +1,7 @@
 "use client";
 
-import { Component, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { Component, ReactNode } from "react";
 
 interface Props {
   children: ReactNode;
@@ -24,13 +23,8 @@ export class OAuthErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("OAuth Error:", error, errorInfo);
-    toast({
-      title: "Authentication Error",
-      description: error.message || "Something went wrong during authentication",
-      variant: "destructive",
-    });
   }
 
   handleReset = () => {
@@ -68,4 +62,3 @@ export class OAuthErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
-

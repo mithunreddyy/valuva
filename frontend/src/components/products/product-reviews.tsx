@@ -1,14 +1,15 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { useProductReviews, useCreateReview } from "@/hooks/use-reviews";
+import { Textarea } from "@/components/ui/textarea";
+import { useCreateReview, useProductReviews } from "@/hooks/use-reviews";
+import { toast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/error-handler";
+import { formatDate } from "@/lib/utils";
 import { useAppSelector } from "@/store";
 import { Star, User } from "lucide-react";
 import { useState } from "react";
-import { formatDate } from "@/lib/utils";
-import { toast } from "@/hooks/use-toast";
 
 interface ProductReviewsProps {
   productId: string;
@@ -53,6 +54,12 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
       });
     } catch (error) {
       // Error handled by mutation
+      toast({
+        title: "Error",
+        description: getErrorMessage(error),
+        variant: "destructive",
+      });
+      throw error;
     }
   };
 
@@ -60,7 +67,10 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
     return (
       <div className="space-y-5">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="bg-white border border-[#e5e5e5] p-6 lg:p-8 rounded-[20px] animate-pulse">
+          <div
+            key={i}
+            className="bg-white border border-[#e5e5e5] p-6 lg:p-8 rounded-[20px] animate-pulse"
+          >
             <div className="h-4 bg-[#e5e5e5] w-1/4 rounded-[8px] mb-2"></div>
             <div className="h-4 bg-[#e5e5e5] w-1/2 rounded-[8px] mb-4"></div>
             <div className="h-20 bg-[#e5e5e5] rounded-[12px]"></div>
@@ -255,4 +265,3 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
     </div>
   );
 }
-

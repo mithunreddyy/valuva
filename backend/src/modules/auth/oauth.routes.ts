@@ -78,7 +78,7 @@ router.get(
 // Apple OAuth Routes (placeholder - requires additional implementation)
 router.get(
   "/apple",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (_req, res) => {
     // Apple Sign In requires client-side implementation
     // This endpoint can be used for server-side verification
     res.status(501).json({
@@ -93,7 +93,7 @@ router.post(
   asyncHandler(async (req, res) => {
     // Handle Apple Sign In callback
     // Apple uses POST requests for callbacks
-    const { identityToken, authorizationCode, user } = req.body;
+    const { identityToken, user } = req.body;
 
     if (!identityToken) {
       return res.status(400).json({
@@ -130,7 +130,8 @@ router.post(
           message: "Server configuration error",
         });
       }
-      const frontendUrlFinal = frontendUrl || "http://localhost:3000";
+      const frontendUrlFinal =
+        frontendUrl || process.env.FRONTEND_URL || "http://localhost:3000";
       const redirectUrl = new URL(`${frontendUrlFinal}/auth/callback`);
       redirectUrl.searchParams.set("accessToken", result.accessToken);
       redirectUrl.searchParams.set("refreshToken", result.refreshToken);
@@ -145,7 +146,8 @@ router.post(
           message: "Server configuration error",
         });
       }
-      const frontendUrlFinal = frontendUrl || "http://localhost:3000";
+      const frontendUrlFinal =
+        frontendUrl || process.env.FRONTEND_URL || "http://localhost:3000";
       const redirectUrl = new URL(`${frontendUrlFinal}/auth/callback`);
       redirectUrl.searchParams.set("success", "false");
       redirectUrl.searchParams.set(

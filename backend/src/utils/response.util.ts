@@ -1,7 +1,10 @@
 import { Response } from "express";
 import { HTTP_STATUS } from "../config/constants";
 
-interface ApiResponse<T = any> {
+/**
+ * API response interface
+ */
+interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;

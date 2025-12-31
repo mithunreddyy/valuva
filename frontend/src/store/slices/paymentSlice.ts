@@ -78,4 +78,3 @@ export const {
   clearError,
 } = paymentSlice.actions;
 export default paymentSlice.reducer;
-

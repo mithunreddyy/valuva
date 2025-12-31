@@ -18,9 +18,7 @@ import { useState } from "react";
 export default function AdminHomepagePage() {
   const {
     sections,
-    currentSection,
     isLoading,
-    loadSections,
     createSection,
     updateSection,
     deleteSection,
@@ -191,7 +189,10 @@ export default function AdminHomepagePage() {
             onClose={() => {
               setIsModalOpen(false);
               setEditingSection(null);
+              clearSelection();
             }}
+            onCreateSection={createSection}
+            onUpdateSection={updateSection}
           />
         )}
       </div>

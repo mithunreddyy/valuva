@@ -1,22 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { usePushNotifications } from "@/hooks/use-push-notifications";
 import { Bell, BellOff } from "lucide-react";
+import { useState } from "react";
 
 export function PushSettings() {
-  const { isSupported, isSubscribed, subscribe, unsubscribe } =
-    usePushNotifications();
+  const [isSubscribed, setIsSubscribed] = useState(false);
 
-  if (!isSupported) {
-    return (
-      <div className="bg-[#fafafa] border border-[#e5e5e5] rounded-[16px] p-4">
-        <p className="text-sm text-neutral-500 font-medium">
-          Push notifications are not supported in your browser
-        </p>
-      </div>
-    );
-  }
+  const unsubscribe = () => {
+    setIsSubscribed(false);
+  };
+
+  const subscribe = () => {
+    setIsSubscribed(true);
+  };
 
   return (
     <div className="bg-white border border-[#e5e5e5] rounded-[20px] p-5 sm:p-6 space-y-4">
@@ -52,4 +49,3 @@ export function PushSettings() {
     </div>
   );
 }
-

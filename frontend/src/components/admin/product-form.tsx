@@ -22,8 +22,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { Plus, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Resolver, useFieldArray, useForm } from "react-hook-form";
+import { useMemo } from "react";
+import { Resolver, useFieldArray, useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
 
 const productSchema = z.object({
@@ -113,20 +113,16 @@ export function ProductForm({ product, isNew = false }: ProductFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: categoriesData } = useCategories();
-  const categories = categoriesData?.data || [];
-
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
-    product?.categoryId || ""
+  const categories = useMemo(
+    () => categoriesData?.data || [],
+    [categoriesData?.data]
   );
-  const subCategories =
-    categories.find((c) => c.id === selectedCategoryId)?.subCategories || [];
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     control,
-    watch,
     setValue,
   } = useForm<ProductFormData>({
     resolver: zodResolver(
@@ -206,11 +202,15 @@ export function ProductForm({ product, isNew = false }: ProductFormProps) {
     name: "variants",
   });
 
-  useEffect(() => {
-    if (product) {
-      setSelectedCategoryId(product.categoryId);
-    }
-  }, [product]);
+  // Watch categoryId from form instead of maintaining separate state
+  const categoryId = useWatch({ control, name: "categoryId" });
+
+  // Derive subCategories from the watched categoryId
+  const subCategories = useMemo(() => {
+    if (!categoryId) return [];
+    const category = categories.find((c) => c.id === categoryId);
+    return category?.subCategories || [];
+  }, [categoryId, categories]);
 
   const createProduct = useMutation({
     mutationFn: (data: Product) => adminApi.createProduct(data),
@@ -281,7 +281,7 @@ export function ProductForm({ product, isNew = false }: ProductFormProps) {
     }
   };
 
-  const images = watch("images") as ProductImage[];
+  const images = useWatch({ control, name: "images" }) as ProductImage[];
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -425,10 +425,9 @@ export function ProductForm({ product, isNew = false }: ProductFormProps) {
                   Category *
                 </label>
                 <Select
-                  value={watch("categoryId")}
+                  value={categoryId || ""}
                   onValueChange={(value) => {
                     setValue("categoryId", value);
-                    setSelectedCategoryId(value);
                     setValue("subCategoryId", "");
                   }}
                 >
@@ -455,9 +454,9 @@ export function ProductForm({ product, isNew = false }: ProductFormProps) {
                   Subcategory
                 </label>
                 <Select
-                  value={watch("subCategoryId") || ""}
+                  value={useWatch({ control, name: "subCategoryId" }) || ""}
                   onValueChange={(value) => setValue("subCategoryId", value)}
-                  disabled={!selectedCategoryId || subCategories.length === 0}
+                  disabled={!categoryId || subCategories.length === 0}
                 >
                   <SelectTrigger className="rounded-[10px] h-10 text-sm">
                     <SelectValue placeholder="Select subcategory" />
@@ -702,7 +701,7 @@ export function ProductForm({ product, isNew = false }: ProductFormProps) {
                   </p>
                 </div>
                 <Switch
-                  checked={watch("isActive")}
+                  checked={useWatch({ control, name: "isActive" }) ?? false}
                   onCheckedChange={(checked) => setValue("isActive", checked)}
                   className="data-[state=checked]:bg-[#0a0a0a]"
                 />
@@ -718,7 +717,7 @@ export function ProductForm({ product, isNew = false }: ProductFormProps) {
                   </p>
                 </div>
                 <Switch
-                  checked={watch("isFeatured")}
+                  checked={useWatch({ control, name: "isFeatured" }) ?? false}
                   onCheckedChange={(checked) => setValue("isFeatured", checked)}
                   className="data-[state=checked]:bg-[#0a0a0a]"
                 />
@@ -734,7 +733,7 @@ export function ProductForm({ product, isNew = false }: ProductFormProps) {
                   </p>
                 </div>
                 <Switch
-                  checked={watch("isNewArrival")}
+                  checked={useWatch({ control, name: "isNewArrival" }) ?? false}
                   onCheckedChange={(checked) =>
                     setValue("isNewArrival", checked)
                   }

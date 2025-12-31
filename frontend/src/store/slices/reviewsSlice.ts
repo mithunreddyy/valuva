@@ -1,6 +1,10 @@
 import { reviewsApi } from "@/services/api/reviews";
 import type { Review } from "@/types";
-import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 
 /**
  * Reviews slice state interface
@@ -35,7 +39,10 @@ interface CreateReviewData {
 export const fetchProductReviews = createAsyncThunk(
   "reviews/fetchProductReviews",
   async (
-    { productId, params }: { productId: string; params?: { page?: number; limit?: number } },
+    {
+      productId,
+      params,
+    }: { productId: string; params?: { page?: number; limit?: number } },
     { rejectWithValue }
   ) => {
     try {
@@ -141,11 +148,13 @@ const reviewsSlice = createSlice({
       })
       .addCase(createReview.fulfilled, (state, action) => {
         state.isLoading = false;
-        const productId = action.payload.productId;
-        if (!state.productReviews[productId]) {
+        const productId = action.payload?.productId;
+        if (productId && !state.productReviews[productId]) {
           state.productReviews[productId] = [];
         }
-        state.productReviews[productId].push(action.payload);
+        if (productId && action.payload) {
+          state.productReviews[productId].push(action.payload);
+        }
       })
       .addCase(createReview.rejected, (state, action) => {
         state.isLoading = false;
@@ -158,16 +167,19 @@ const reviewsSlice = createSlice({
       })
       .addCase(updateReview.fulfilled, (state, action) => {
         state.isLoading = false;
-        const productId = action.payload.productId;
-        if (state.productReviews[productId]) {
+        const productId = action.payload?.productId;
+        if (productId && state.productReviews[productId]) {
           const index = state.productReviews[productId].findIndex(
-            (r) => r.id === action.payload.id
+            (r) => r.id === action.payload?.id
           );
           if (index !== -1) {
-            state.productReviews[productId][index] = action.payload;
+            state.productReviews[productId][index] = action.payload as Review;
           }
         }
-        if (state.currentReview?.id === action.payload.id) {
+        if (
+          action.payload?.id &&
+          state.currentReview?.id === action.payload.id
+        ) {
           state.currentReview = action.payload;
         }
       })
@@ -202,4 +214,3 @@ const reviewsSlice = createSlice({
 export const { setCurrentReview, clearError, clearReviews } =
   reviewsSlice.actions;
 export default reviewsSlice.reducer;
-

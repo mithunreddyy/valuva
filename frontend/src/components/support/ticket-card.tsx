@@ -10,7 +10,6 @@ import {
   XCircle,
   AlertCircle,
 } from "lucide-react";
-import Link from "next/link";
 
 interface TicketCardProps {
   ticket: SupportTicket;

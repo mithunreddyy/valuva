@@ -11,7 +11,7 @@ interface CacheEntry<T> {
  * Production-ready caching with TTL support
  */
 export class CacheUtil {
-  private static memoryCache = new Map<string, CacheEntry<any>>();
+  private static memoryCache = new Map<string, CacheEntry<unknown>>();
   private static readonly DEFAULT_TTL = 3600; // 1 hour in seconds
 
   /**
@@ -50,7 +50,11 @@ export class CacheUtil {
   /**
    * Set value in cache
    */
-  static async set<T>(key: string, value: T, ttl: number = this.DEFAULT_TTL): Promise<void> {
+  static async set<T>(
+    key: string,
+    value: T,
+    ttl: number = this.DEFAULT_TTL
+  ): Promise<void> {
     const redis = getRedis();
 
     if (redis) {
@@ -155,5 +159,13 @@ export class CacheUtil {
     const value = await callback();
     await this.set(key, value, ttl);
     return value;
+  }
+
+  /**
+   * Generate a cache key from multiple parts
+   * Filters out null/undefined values and joins with colon separator
+   */
+  static generateKey(...parts: (string | number | undefined | null)[]): string {
+    return parts.filter((part) => part != null).join(":");
   }
 }

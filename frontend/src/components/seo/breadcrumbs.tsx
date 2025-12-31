@@ -17,7 +17,6 @@ interface BreadcrumbsProps {
 
 export function Breadcrumbs({ items, className = "" }: BreadcrumbsProps) {
   const pathname = usePathname();
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://valuva.in";
 
   // Auto-generate breadcrumbs from pathname if not provided
   const breadcrumbItems: BreadcrumbItem[] =

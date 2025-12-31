@@ -39,8 +39,8 @@ export class AnalyticsService {
       startDate.toISOString(),
       endDate.toISOString()
     );
-    const cached = CacheUtil.get<SalesMetrics>(cacheKey);
-    if (cached) return cached;
+    const cached = await CacheUtil.get<SalesMetrics>(cacheKey);
+    if (cached) return cached as SalesMetrics;
 
     const orderStatuses: OrderStatus[] = [
       OrderStatus.DELIVERED,
@@ -127,8 +127,8 @@ export class AnalyticsService {
       dateRange?.startDate.toISOString() || "all",
       dateRange?.endDate.toISOString() || "all"
     );
-    const cached = CacheUtil.get<TopProduct[]>(cacheKey);
-    if (cached) return cached;
+    const cached = await CacheUtil.get<TopProduct[]>(cacheKey);
+    if (cached) return cached as TopProduct[];
 
     const products = await this.repository.getTopProductsWithOrderItems(
       limit,
@@ -190,8 +190,8 @@ export class AnalyticsService {
       dateRange.endDate.toISOString(),
       groupBy
     );
-    const cached = CacheUtil.get<any[]>(cacheKey);
-    if (cached) return cached;
+    const cached = await CacheUtil.get<any[]>(cacheKey);
+    if (cached) return cached as any[];
 
     const orders = await this.repository.getOrdersByDateRange(
       dateRange.startDate,
@@ -256,8 +256,8 @@ export class AnalyticsService {
       dateRange.startDate.toISOString(),
       dateRange.endDate.toISOString()
     );
-    const cached = CacheUtil.get<any>(cacheKey);
-    if (cached) return cached;
+    const cached = await CacheUtil.get<any>(cacheKey);
+    if (cached) return cached as any;
 
     const { totalCustomers, repeatCustomers } =
       await this.repository.getCustomerCounts(dateRange);
@@ -298,8 +298,8 @@ export class AnalyticsService {
    */
   async getInventoryInsights() {
     const cacheKey = CacheUtil.generateKey("inventory-insights");
-    const cached = CacheUtil.get<any>(cacheKey);
-    if (cached) return cached;
+    const cached = await CacheUtil.get<any>(cacheKey);
+    if (cached) return cached as any;
 
     const { lowStock, outOfStock, totalProducts } =
       await this.repository.getInventoryStats();
@@ -330,8 +330,8 @@ export class AnalyticsService {
       dateRange.startDate.toISOString(),
       dateRange.endDate.toISOString()
     );
-    const cached = CacheUtil.get<any[]>(cacheKey);
-    if (cached) return cached;
+    const cached = await CacheUtil.get<any[]>(cacheKey);
+    if (cached) return cached as any[];
 
     const categories = await this.repository.getCategoryPerformanceData(
       dateRange

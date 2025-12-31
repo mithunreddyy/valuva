@@ -23,7 +23,7 @@ function generateUnsubscribeToken(email: string): string {
  * Production-ready token verification
  */
 function verifyUnsubscribeToken(
-  email: string,
+  _email: string,
   token: string,
   storedToken: string | null
 ): boolean {

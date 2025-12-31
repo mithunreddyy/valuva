@@ -36,7 +36,7 @@ export const addToCart = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      return await cartService.addToCart(variantId, quantity);
+      return await cartService.addToCart({ variantId, quantity });
     } catch (error: unknown) {
       return rejectWithValue(
         (error as Error).message || "Failed to add item to cart"
@@ -52,7 +52,7 @@ export const updateCartItem = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      return await cartService.updateCartItem(itemId, quantity);
+      return await cartService.updateCartItem(itemId, { quantity });
     } catch (error: unknown) {
       return rejectWithValue(
         (error as Error).message || "Failed to update cart item"

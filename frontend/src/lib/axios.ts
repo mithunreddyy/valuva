@@ -4,6 +4,8 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 import { analytics } from "./analytics";
+import { retryWithBackoff } from "./api-retry.util";
+import { offlineManager } from "./offline.util";
 import { getStorageItem, removeStorageItem, setStorageItem } from "./storage";
 
 /**
@@ -141,14 +143,48 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // Handle rate limiting
+    // Handle rate limiting with retry
     if (error.response?.status === 429) {
       const retryAfter = error.response.headers["retry-after"];
+      const retryAfterSeconds = retryAfter ? parseInt(retryAfter, 10) : 60;
+
+      // If offline, queue the request
+      if (!offlineManager.getOnlineStatus()) {
+        offlineManager.addToQueue({
+          url: `${API_URL_FINAL}/api/v1${originalRequest.url || ""}`,
+          method: originalRequest.method || "GET",
+          data: originalRequest.data,
+          headers: originalRequest.headers as Record<string, string>,
+        });
+        return Promise.reject(
+          new Error("Request queued for when you're back online")
+        );
+      }
+
+      // Retry with backoff for rate limits
+      if (!originalRequest._retry) {
+        originalRequest._retry = true;
+        return retryWithBackoff(() => apiClient(originalRequest), {
+          maxAttempts: 1,
+          initialDelay: retryAfterSeconds * 1000,
+        });
+      }
+
       const message = retryAfter
         ? `Too many requests. Please try again after ${retryAfter} seconds.`
         : "Too many requests. Please try again later.";
 
       return Promise.reject(new Error(message));
+    }
+
+    // Retry transient errors
+    if (
+      error.response?.status &&
+      [408, 500, 502, 503, 504].includes(error.response.status) &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      return retryWithBackoff(() => apiClient(originalRequest));
     }
 
     // Track API errors for analytics

@@ -1,5 +1,6 @@
-import { supportApi, SupportTicket, TicketReply } from "@/services/api/support";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { supportApi } from "@/services/api/support";
+import { CreateTicketReplyData, SupportTicket } from "@/types";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 /**
  * Support slice state interface
@@ -64,15 +65,13 @@ export const fetchTicketById = createAsyncThunk(
 export const addTicketReply = createAsyncThunk(
   "support/addTicketReply",
   async (
-    { ticketId, message }: { ticketId: string; message: string },
+    { ticketId, ...data }: { ticketId: string } & CreateTicketReplyData,
     { rejectWithValue }
   ) => {
     try {
-      return await supportApi.addReply(ticketId, message);
+      return await supportApi.addReply(ticketId, data);
     } catch (error: unknown) {
-      return rejectWithValue(
-        (error as Error).message || "Failed to add reply"
-      );
+      return rejectWithValue((error as Error).message || "Failed to add reply");
     }
   }
 );
@@ -129,4 +128,3 @@ const supportSlice = createSlice({
 
 export const { clearError, clearCurrentTicket } = supportSlice.actions;
 export default supportSlice.reducer;
-

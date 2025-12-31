@@ -54,7 +54,7 @@ export default function AdminTrackingPage() {
       setLocation("");
       setDescription("");
       setSelectedOrder("");
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to add tracking update",

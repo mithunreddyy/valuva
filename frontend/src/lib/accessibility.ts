@@ -79,7 +79,10 @@ export function trapFocus(container: HTMLElement) {
 /**
  * Announce to screen readers
  */
-export function announceToScreenReader(message: string, priority: "polite" | "assertive" = "polite") {
+export function announceToScreenReader(
+  message: string,
+  priority: "polite" | "assertive" = "polite"
+) {
   if (typeof document === "undefined") return;
 
   const announcement = document.createElement("div");
@@ -97,12 +100,80 @@ export function announceToScreenReader(message: string, priority: "polite" | "as
 }
 
 /**
- * Check color contrast ratio
+ * Convert hex color to RGB
  */
-export function getContrastRatio(color1: string, color2: string): number {
-  // Simplified contrast ratio calculation
-  // For production, use a proper color contrast library
-  return 4.5; // Placeholder - implement proper calculation
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null;
+}
+
+/**
+ * Convert RGB to relative luminance (WCAG formula)
+ */
+function getRelativeLuminance(r: number, g: number, b: number): number {
+  const [rs, gs, bs] = [r, g, b].map((val) => {
+    const v = val / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+}
+
+/**
+ * Calculate contrast ratio between two colors (WCAG 2.1)
+ * Returns a value between 1 and 21
+ * @param color1 - First color (hex format, e.g., "#000000" or "000000")
+ * @param color2 - Second color (hex format, e.g., "#ffffff" or "ffffff")
+ * @returns Contrast ratio (1-21), or null if colors are invalid
+ */
+export function getContrastRatio(
+  color1: string,
+  color2: string
+): number | null {
+  const rgb1 = hexToRgb(color1);
+  const rgb2 = hexToRgb(color2);
+
+  if (!rgb1 || !rgb2) {
+    return null;
+  }
+
+  const lum1 = getRelativeLuminance(rgb1.r, rgb1.g, rgb1.b);
+  const lum2 = getRelativeLuminance(rgb2.r, rgb2.g, rgb2.b);
+
+  const lighter = Math.max(lum1, lum2);
+  const darker = Math.min(lum1, lum2);
+
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/**
+ * Check if contrast ratio meets WCAG AA standards
+ * @param color1 - First color (hex format)
+ * @param color2 - Second color (hex format)
+ * @param level - WCAG level ("AA" or "AAA")
+ * @param size - Text size ("normal" or "large")
+ * @returns true if contrast meets standards
+ */
+export function meetsContrastRatio(
+  color1: string,
+  color2: string,
+  level: "AA" | "AAA" = "AA",
+  size: "normal" | "large" = "normal"
+): boolean {
+  const ratio = getContrastRatio(color1, color2);
+  if (!ratio) return false;
+
+  if (level === "AAA") {
+    return size === "large" ? ratio >= 4.5 : ratio >= 7;
+  }
+
+  // AA level
+  return size === "large" ? ratio >= 3 : ratio >= 4.5;
 }
 
 /**
@@ -139,7 +210,8 @@ export function handleListKeyboardNavigation(
       break;
     case KeyboardKeys.ArrowUp:
       e.preventDefault();
-      const prevIndex = currentIndex === 0 ? items.length - 1 : currentIndex - 1;
+      const prevIndex =
+        currentIndex === 0 ? items.length - 1 : currentIndex - 1;
       items[prevIndex]?.focus();
       onSelect(prevIndex);
       break;
@@ -155,4 +227,3 @@ export function handleListKeyboardNavigation(
       break;
   }
 }
-

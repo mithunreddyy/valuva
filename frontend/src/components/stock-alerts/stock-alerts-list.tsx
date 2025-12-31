@@ -1,12 +1,11 @@
 "use client";
 
-import { StockAlert } from "@/types";
-import { stockAlertsService } from "@/services";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { StockAlertCard } from "./stock-alert-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { stockAlertsService } from "@/services";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Package } from "lucide-react";
+import { StockAlertCard } from "./stock-alert-card";
 
 interface StockAlertsListProps {
   limit?: number;
@@ -38,7 +37,7 @@ export function StockAlertsList({ limit }: StockAlertsListProps) {
   if (error) {
     return (
       <EmptyState
-        icon={Package}
+        icon={<Package className="w-4 h-4" />}
         title="Unable to load alerts"
         description="Please try again later"
       />
@@ -50,7 +49,7 @@ export function StockAlertsList({ limit }: StockAlertsListProps) {
   if (alerts.length === 0) {
     return (
       <EmptyState
-        icon={Package}
+        icon={<Package className="w-4 h-4" />}
         title="No stock alerts"
         description="You don't have any active stock alerts"
       />
@@ -70,4 +69,3 @@ export function StockAlertsList({ limit }: StockAlertsListProps) {
     </div>
   );
 }
-

@@ -11,8 +11,8 @@ import { EmailUtil } from "../../utils/email.util";
 import { WelcomeEmail } from "../../utils/email-templates";
 import { JWTUtil } from "../../utils/jwt.util";
 import { PasswordUtil } from "../../utils/password.util";
+import { logger } from "../../utils/logger.util";
 import { AuthRepository } from "./auth.repository";
-import { env } from "../../config/env";
 
 export class AuthService {
   private repository: AuthRepository;
@@ -84,8 +84,8 @@ export class AuthService {
         to: user.email,
         subject: "Welcome to Valuva!",
         template: WelcomeEmail({
-          name: `${user.firstName} ${user.lastName}`,
-          dashboardUrl: `${env.FRONTEND_URL || "http://localhost:3000"}/dashboard`,
+          customerName: `${user.firstName} ${user.lastName}`,
+          dashboardUrl: `${process.env.FRONTEND_URL || "http://localhost:3000"}/dashboard`,
         }),
       });
     } catch (error) {
@@ -143,7 +143,7 @@ export class AuthService {
       throw new UnauthorizedError("Account is deactivated");
     }
 
-    const isPasswordValid = await PasswordUtil.compare(password, user.password);
+    const isPasswordValid = await PasswordUtil.compare(password, user.password || "");
     if (!isPasswordValid) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
     }

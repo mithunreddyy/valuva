@@ -1,4 +1,4 @@
-import webpush from "web-push";
+import * as webpush from "web-push";
 import { prisma } from "../../config/database";
 import { logger } from "../../utils/logger.util";
 
@@ -24,7 +24,7 @@ export class PushNotificationService {
     }
 
     webpush.setVapidDetails(
-      "mailto:" + (process.env.SMTP_FROM || "noreply@valuva.com"),
+      "mailto:" + (process.env.SMTP_FROM || "noreply@valuva.in"),
       this.vapidKeys.publicKey,
       this.vapidKeys.privateKey
     );

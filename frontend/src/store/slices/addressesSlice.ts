@@ -1,9 +1,10 @@
+import { addressesService } from "@/services/addresses.service";
+import type { Address, AddressFormData } from "@/types";
 import {
-  addressesService,
-  type AddressData,
-} from "@/services/addresses.service";
-import type { Address } from "@/types";
-import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 
 /**
  * Addresses slice state interface
@@ -62,7 +63,7 @@ export const fetchAddressById = createAsyncThunk(
  */
 export const createAddress = createAsyncThunk(
   "addresses/createAddress",
-  async (data: AddressData, { rejectWithValue }) => {
+  async (data: AddressFormData, { rejectWithValue }) => {
     try {
       return await addressesService.createAddress(data);
     } catch (error: unknown) {
@@ -79,7 +80,7 @@ export const createAddress = createAsyncThunk(
 export const updateAddress = createAsyncThunk(
   "addresses/updateAddress",
   async (
-    { id, data }: { id: string; data: Partial<AddressData> },
+    { id, data }: { id: string; data: Partial<AddressFormData> },
     { rejectWithValue }
   ) => {
     try {
@@ -237,4 +238,3 @@ const addressesSlice = createSlice({
 export const { setCurrentAddress, clearError, clearAddresses } =
   addressesSlice.actions;
 export default addressesSlice.reducer;
-

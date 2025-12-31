@@ -1,10 +1,6 @@
-import type { ProductFilters } from "@/services/products.service";
+import type { ProductFilters } from "@/types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-/**
- * Filters slice state interface
- * Manages product filter state for shop/search pages
- */
 interface FiltersState {
   filters: ProductFilters;
   appliedFilters: ProductFilters;
@@ -30,20 +26,24 @@ const filtersSlice = createSlice({
     /**
      * Set a filter value
      */
-    setFilter: (
-      state,
-      action: PayloadAction<{ key: keyof ProductFilters; value: any }>
+    setFilter: <K extends keyof ProductFilters>(
+      state: FiltersState,
+      action: PayloadAction<{
+        key: K;
+        value: ProductFilters[K];
+      }>
     ) => {
-      state.filters[action.payload.key] = action.payload.value;
+      state.filters[action.payload.key] = action.payload
+        .value as ProductFilters[K];
     },
-    
+
     /**
      * Set multiple filters at once
      */
     setFilters: (state, action: PayloadAction<Partial<ProductFilters>>) => {
       state.filters = { ...state.filters, ...action.payload };
     },
-    
+
     /**
      * Apply current filters (copy filters to appliedFilters)
      */
@@ -51,7 +51,7 @@ const filtersSlice = createSlice({
       state.appliedFilters = { ...state.filters };
       state.isFiltersApplied = true;
     },
-    
+
     /**
      * Reset filters to initial state
      */
@@ -66,7 +66,7 @@ const filtersSlice = createSlice({
       };
       state.isFiltersApplied = false;
     },
-    
+
     /**
      * Clear specific filter
      */
@@ -82,7 +82,7 @@ const filtersSlice = createSlice({
       );
       state.isFiltersApplied = hasFilters;
     },
-    
+
     /**
      * Set page number
      */
@@ -90,7 +90,7 @@ const filtersSlice = createSlice({
       state.filters.page = action.payload;
       state.appliedFilters.page = action.payload;
     },
-    
+
     /**
      * Set limit (items per page)
      */
@@ -100,7 +100,7 @@ const filtersSlice = createSlice({
       state.filters.page = 1; // Reset to first page when changing limit
       state.appliedFilters.page = 1;
     },
-    
+
     /**
      * Set sort option
      */
@@ -111,7 +111,7 @@ const filtersSlice = createSlice({
       state.filters.sort = action.payload;
       state.appliedFilters.sort = action.payload;
     },
-    
+
     /**
      * Set price range
      */
@@ -128,7 +128,7 @@ const filtersSlice = createSlice({
         state.appliedFilters.maxPrice = action.payload.max;
       }
     },
-    
+
     /**
      * Set category filter
      */
@@ -141,7 +141,7 @@ const filtersSlice = createSlice({
         delete state.appliedFilters.categoryId;
       }
     },
-    
+
     /**
      * Set subcategory filter
      */
@@ -154,7 +154,7 @@ const filtersSlice = createSlice({
         delete state.appliedFilters.subCategoryId;
       }
     },
-    
+
     /**
      * Set search query
      */
@@ -186,4 +186,3 @@ export const {
 } = filtersSlice.actions;
 
 export default filtersSlice.reducer;
-

@@ -1,5 +1,5 @@
-import { CreateOrderData, ordersService } from "@/services/orders.service";
-import { Order } from "@/types";
+import { ordersService } from "@/services/orders.service";
+import { CreateOrderData, Order } from "@/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 interface OrdersState {
@@ -38,7 +38,7 @@ export const createOrder = createAsyncThunk(
 export const fetchOrders = createAsyncThunk(
   "orders/fetchOrders",
   async (
-    { page, limit }: { page?: number; limit?: number },
+    { page, limit }: Partial<{ page: number; limit: number }>,
     { rejectWithValue }
   ) => {
     try {
@@ -68,29 +68,29 @@ const ordersSlice = createSlice({
   name: "orders",
   initialState,
   reducers: {
-    clearCurrentOrder: (state) => {
+    clearCurrentOrder: (state: OrdersState) => {
       state.currentOrder = null;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(createOrder.pending, (state) => {
-        state.isLoading = true;
+        state.isLoading = true as const;
         state.error = null;
       })
       .addCase(createOrder.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.isLoading = false as const;
         state.currentOrder = action.payload;
       })
       .addCase(createOrder.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isLoading = false as const;
         state.error = action.payload as string;
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.orders = action.payload.data;
-        state.total = action.payload.meta.total;
-        state.totalPages = action.payload.meta.totalPages;
-        state.currentPage = action.payload.meta.page;
+        state.total = action.payload.meta.total as number;
+        state.totalPages = action.payload.meta.totalPages as number;
+        state.currentPage = action.payload.meta.page as number;
       })
       .addCase(fetchOrderById.fulfilled, (state, action) => {
         state.currentOrder = action.payload;

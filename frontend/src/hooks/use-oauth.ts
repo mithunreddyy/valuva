@@ -1,9 +1,7 @@
 import { useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 
 export function useOAuth() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState<"google" | "apple" | null>(null);
 
   const signInWithGoogle = useCallback(() => {

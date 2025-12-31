@@ -32,4 +32,3 @@ export const supportApi = {
     return response.data.data;
   },
 };
-

@@ -7,11 +7,10 @@ import { adminApi } from "@/services/api/admin";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function AdminProductEditPage() {
   const params = useParams();
-  const router = useRouter();
   const productId = params.id as string;
   const isNew = productId === "new";
 

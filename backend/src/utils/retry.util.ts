@@ -1,16 +1,22 @@
 import { logger } from "./logger.util";
 
+/**
+ * Retry options configuration
+ */
 export interface RetryOptions {
   maxAttempts?: number;
   delay?: number;
   backoff?: "fixed" | "exponential";
   maxDelay?: number;
-  retryable?: (error: any) => boolean;
+  retryable?: (error: unknown) => boolean;
 }
 
 /**
  * Retry utility for handling transient failures
  * Implements exponential backoff for retries
+ * @param fn - Function to retry
+ * @param options - Retry options
+ * @returns Result of the function call
  */
 export async function retry<T>(
   fn: () => Promise<T>,
@@ -21,19 +27,22 @@ export async function retry<T>(
     delay = 1000,
     backoff = "exponential",
     maxDelay = 30000,
-    retryable = (error) => {
+    retryable = (error: unknown) => {
       // Retry on network errors, timeouts, and 5xx errors
-      if (error?.code === "ECONNRESET" || error?.code === "ETIMEDOUT") {
-        return true;
-      }
-      if (error?.response?.status >= 500) {
-        return true;
+      if (error && typeof error === "object" && "code" in error) {
+        const err = error as { code?: string; response?: { status?: number } };
+        if (err.code === "ECONNRESET" || err.code === "ETIMEDOUT") {
+          return true;
+        }
+        if (err.response && err.response.status && err.response.status >= 500) {
+          return true;
+        }
       }
       return false;
     },
   } = options;
 
-  let lastError: any;
+  let lastError: unknown;
   let currentDelay = delay;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -90,6 +99,9 @@ export async function retry<T>(
 /**
  * Retry with jitter (random delay variation)
  * Prevents thundering herd problem
+ * @param fn - Function to retry
+ * @param options - Retry options
+ * @returns Result of the function call
  */
 export async function retryWithJitter<T>(
   fn: () => Promise<T>,

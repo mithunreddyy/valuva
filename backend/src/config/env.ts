@@ -21,6 +21,8 @@ const envSchema = z.object({
     z.number().default(12)
   ),
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
+  FRONTEND_URL: z.string().optional(),
+
   RATE_LIMIT_WINDOW_MS: z.preprocess(
     (val) => (typeof val === "string" ? Number(val) : val),
     z.number().default(900000)
@@ -29,12 +31,6 @@ const envSchema = z.object({
     (val) => (typeof val === "string" ? Number(val) : val),
     z.number().default(100)
   ),
-
-  // Shopify Payment Gateway
-  SHOPIFY_API_URL: z.string().default("https://your-shop.myshopify.com"),
-  SHOPIFY_ACCESS_TOKEN: z.string(),
-  SHOPIFY_SHOP_DOMAIN: z.string(),
-  SHOPIFY_WEBHOOK_SECRET: z.string(),
 
   // Razorpay Payment Gateway
   RAZORPAY_KEY_ID: z.string().optional(),
@@ -52,7 +48,9 @@ const envSchema = z.object({
   CLOUDINARY_API_SECRET: z.string().optional(),
 
   // Shipping Carrier (optional - for production integration)
-  SHIPPING_CARRIER: z.enum(["shiprocket", "delhivery", "fedex", "ups", "none"]).default("none"),
+  SHIPPING_CARRIER: z
+    .enum(["shiprocket", "delhivery", "fedex", "ups", "none"])
+    .default("none"),
   SHIPROCKET_EMAIL: z.string().optional(),
   SHIPROCKET_PASSWORD: z.string().optional(),
   DELHIVERY_API_KEY: z.string().optional(),

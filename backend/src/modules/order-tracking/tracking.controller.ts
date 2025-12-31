@@ -62,7 +62,7 @@ export class OrderTrackingController {
   };
 
   getAllActiveOrders = async (
-    req: Request,
+    _req: Request,
     res: Response
   ): Promise<Response> => {
     const orders = await this.service.getAllActiveOrders();

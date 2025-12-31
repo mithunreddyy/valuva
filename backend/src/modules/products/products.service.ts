@@ -60,16 +60,16 @@ export class ProductsService {
     );
 
     const productsWithRatings = products.map((product) => {
+      const reviews = product.reviews || [];
       const avgRating =
-        product.reviews.length > 0
-          ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
-            product.reviews.length
+        reviews.length > 0
+          ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
           : 0;
 
       return {
         ...product,
         averageRating: Math.round(avgRating * 10) / 10,
-        reviewCount: product.reviews.length,
+        reviewCount: reviews.length,
       };
     });
 
@@ -148,16 +148,16 @@ export class ProductsService {
     }
 
     // Calculate average rating
+    const reviews = product.reviews || [];
     const avgRating =
-      product.reviews.length > 0
-        ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
-          product.reviews.length
+      reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
         : 0;
 
     const productWithRating = {
       ...product,
       averageRating: Math.round(avgRating * 10) / 10,
-      reviewCount: product.reviews.length,
+      reviewCount: reviews.length,
     };
 
     // Cache for 1 hour
@@ -180,16 +180,16 @@ export class ProductsService {
     }
 
     // Calculate average rating
+    const reviews = product.reviews || [];
     const avgRating =
-      product.reviews.length > 0
-        ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
-          product.reviews.length
+      reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
         : 0;
 
     const productWithRating = {
       ...product,
       averageRating: Math.round(avgRating * 10) / 10,
-      reviewCount: product.reviews.length,
+      reviewCount: reviews.length,
     };
 
     // Cache for 1 hour
@@ -214,15 +214,16 @@ export class ProductsService {
     );
 
     return related.map((p) => {
+      const reviews = p.reviews || [];
       const avgRating =
-        p.reviews.length > 0
-          ? p.reviews.reduce((sum, r) => sum + r.rating, 0) / p.reviews.length
+        reviews.length > 0
+          ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
           : 0;
 
       return {
         ...p,
         averageRating: Math.round(avgRating * 10) / 10,
-        reviewCount: p.reviews.length,
+        reviewCount: reviews.length,
       };
     });
   }

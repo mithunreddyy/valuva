@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { OAuthService, OAuthProfile } from "./oauth.service";
-import { logger } from "../../utils/logger.util";
 import { UnauthorizedError } from "../../utils/error.util";
+import { logger } from "../../utils/logger.util";
+import { OAuthProfile, OAuthService } from "./oauth.service";
 
 export class OAuthController {
   private oauthService: OAuthService;
@@ -37,13 +37,16 @@ export class OAuthController {
       // Production-ready: Fail if FRONTEND_URL is not configured
       const frontendUrl = process.env.FRONTEND_URL;
       if (!frontendUrl && process.env.NODE_ENV === "production") {
-        logger.error("FRONTEND_URL environment variable is required in production");
+        logger.error(
+          "FRONTEND_URL environment variable is required in production"
+        );
         return res.status(500).json({
           success: false,
           message: "Server configuration error",
         });
       }
-      const frontendUrlFinal = frontendUrl || "http://localhost:3000";
+      const frontendUrlFinal =
+        frontendUrl || process.env.FRONTEND_URL || "http://localhost:3000";
       const redirectUrl = new URL(`${frontendUrlFinal}/auth/callback`);
       redirectUrl.searchParams.set("accessToken", result.accessToken);
       redirectUrl.searchParams.set("refreshToken", result.refreshToken);
@@ -64,13 +67,16 @@ export class OAuthController {
 
       const frontendUrl = process.env.FRONTEND_URL;
       if (!frontendUrl && process.env.NODE_ENV === "production") {
-        logger.error("FRONTEND_URL environment variable is required in production");
+        logger.error(
+          "FRONTEND_URL environment variable is required in production"
+        );
         return res.status(500).json({
           success: false,
           message: "Server configuration error",
         });
       }
-      const frontendUrlFinal = frontendUrl || "http://localhost:3000";
+      const frontendUrlFinal =
+        frontendUrl || process.env.FRONTEND_URL || "http://localhost:3000";
       const redirectUrl = new URL(`${frontendUrlFinal}/auth/callback`);
       redirectUrl.searchParams.set("success", "false");
       redirectUrl.searchParams.set(
@@ -81,4 +87,3 @@ export class OAuthController {
     }
   };
 }
-

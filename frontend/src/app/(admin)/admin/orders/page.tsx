@@ -47,7 +47,7 @@ export default function AdminOrdersPage() {
         title: "Success",
         description: "Order status updated successfully",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to update order status",

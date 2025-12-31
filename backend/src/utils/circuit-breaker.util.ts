@@ -161,10 +161,6 @@ export class CircuitBreaker {
 
 // Global circuit breakers for external services
 export const circuitBreakers = {
-  shopify: new CircuitBreaker("shopify", {
-    failureThreshold: 5,
-    resetTimeout: 60000,
-  }),
   email: new CircuitBreaker("email", {
     failureThreshold: 3,
     resetTimeout: 30000,

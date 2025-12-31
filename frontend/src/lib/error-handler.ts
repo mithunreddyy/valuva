@@ -16,11 +16,11 @@ export function getErrorMessage(error: unknown): string {
   if (error instanceof AxiosError) {
     // Check for response error with message
     if (error.response?.data) {
-      const data = error.response.data as any;
-      if (data.message) {
+      const data = error.response.data as Record<string, unknown>;
+      if (typeof data.message === "string") {
         return data.message;
       }
-      if (data.error) {
+      if (typeof data.error === "string") {
         return data.error;
       }
     }
@@ -147,7 +147,24 @@ export function logError(error: unknown, context?: string): void {
     console.error("Error occurred:", errorInfo);
   }
 
-  // In production, you might want to send to error tracking service
-  // Example: Sentry.captureException(error, { extra: errorInfo });
+  // In production, send to error tracking service
+  if (
+    typeof window !== "undefined" &&
+    (
+      window as unknown as {
+        Sentry?: {
+          captureException: (error: unknown, context: unknown) => void;
+        };
+      }
+    ).Sentry
+  ) {
+    const Sentry = (
+      window as unknown as {
+        Sentry: {
+          captureException: (error: unknown, context: unknown) => void;
+        };
+      }
+    ).Sentry;
+    Sentry.captureException(error, { extra: errorInfo });
+  }
 }
-

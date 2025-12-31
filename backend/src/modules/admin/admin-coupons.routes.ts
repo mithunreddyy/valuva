@@ -3,7 +3,7 @@ import { Router } from "express";
 import { asyncHandler } from "../../middleware/async.middleware";
 import { authenticate } from "../../middleware/auth.middleware";
 import { authorize } from "../../middleware/rbac.middleware";
-import { validate } from "../../middleware/validation.middleware";
+import { validate } from "../../middleware/validate.middleware";
 import {
   createCouponSchema,
   deleteCouponSchema,

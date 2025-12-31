@@ -55,7 +55,7 @@ export default function AdminOrderDetailPage() {
         title: "Success",
         description: "Order status updated successfully",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to update order status",
@@ -88,7 +88,7 @@ export default function AdminOrderDetailPage() {
       setTrackingStatus("");
       setTrackingLocation("");
       setTrackingDescription("");
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to add tracking update",

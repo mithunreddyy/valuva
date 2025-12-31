@@ -1,4 +1,5 @@
 import { newsletterApi } from "@/services/api/newsletter";
+import { NewsletterSubscriptionData } from "@/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 /**
@@ -19,9 +20,9 @@ const initialState: NewsletterState = {
 
 export const subscribeNewsletter = createAsyncThunk(
   "newsletter/subscribe",
-  async (email: string, { rejectWithValue }) => {
+  async ({ email }: NewsletterSubscriptionData, { rejectWithValue }) => {
     try {
-      await newsletterApi.subscribe(email);
+      await newsletterApi.subscribe({ email });
       return email;
     } catch (error: unknown) {
       return rejectWithValue(
@@ -34,7 +35,7 @@ export const subscribeNewsletter = createAsyncThunk(
 export const unsubscribeNewsletter = createAsyncThunk(
   "newsletter/unsubscribe",
   async (
-    { email, token }: { email: string; token?: string },
+    { email, token }: NewsletterSubscriptionData & Partial<{ token: string }>,
     { rejectWithValue }
   ) => {
     try {
@@ -80,4 +81,3 @@ const newsletterSlice = createSlice({
 
 export const { clearError, resetSubscription } = newsletterSlice.actions;
 export default newsletterSlice.reducer;
-

@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+// import { Prisma } from "@prisma/client"; // Unused import
 import { NotFoundError } from "../../utils/error.util";
 import { AdminCouponsRepository } from "./admin-coupons.repository";
 

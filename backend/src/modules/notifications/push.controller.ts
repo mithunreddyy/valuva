@@ -70,7 +70,7 @@ export class PushNotificationController {
    * Get VAPID public key
    */
   getVapidKey = asyncHandler(
-    async (req: Request, res: Response): Promise<Response> => {
+    async (_req: Request, res: Response): Promise<Response> => {
       const publicKey = process.env.VAPID_PUBLIC_KEY || "";
 
       if (!publicKey) {

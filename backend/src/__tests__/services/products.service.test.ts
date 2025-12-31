@@ -4,6 +4,16 @@ import { ProductsService } from "../../modules/products/products.service";
 // Mock the repository
 jest.mock("../../modules/products/products.repository");
 
+// Mock CacheUtil
+jest.mock("../../utils/cache.util", () => ({
+  CacheUtil: {
+    get: jest.fn().mockResolvedValue(null),
+    set: jest.fn().mockResolvedValue(undefined),
+    delete: jest.fn().mockResolvedValue(undefined),
+    clear: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+
 describe("ProductsService", () => {
   let service: ProductsService;
   let mockRepository: jest.Mocked<ProductsRepository>;

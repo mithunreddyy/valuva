@@ -6,10 +6,10 @@ import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 
 export const metadata: Metadata = generateSEOMetadata({
-  title: "Valuva - Premium Minimal Fashion",
+  title: "Valuva",
   description:
     "Minimal luxury clothing with timeless design. Crafted for the modern minimalist.",
-  url: process.env.NEXT_PUBLIC_APP_URL || "https://valuva.com",
+  url: process.env.NEXT_PUBLIC_APP_URL || "https://valuva.in",
   type: "website",
 });
 

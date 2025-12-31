@@ -1,12 +1,20 @@
 import { createApp } from "./app";
 import { prisma } from "./config/database";
 import { env } from "./config/env";
-import { initRedis, closeRedis, getRedis } from "./config/redis";
+import { closeRedis, getRedis, initRedis } from "./config/redis";
 import { initSentry } from "./config/sentry";
-import { initEmailQueue, closeEmailQueue } from "./jobs/email-queue.job";
-import { initStockAlertQueue, closeStockAlertQueue } from "./jobs/stock-alerts.job";
+import { closeEmailQueue, initEmailQueue } from "./jobs/email-queue.job";
 import { initScheduler, stopScheduler } from "./jobs/scheduler";
+import {
+  closeStockAlertQueue,
+  initStockAlertQueue,
+} from "./jobs/stock-alerts.job";
+import { featureFlags } from "./utils/feature-flags.util";
 import { logger } from "./utils/logger.util";
+import {
+  closeWebhookQueue,
+  initWebhookQueue,
+} from "./utils/webhook-retry.util";
 
 // Initialize Sentry before anything else
 initSentry();
@@ -15,12 +23,16 @@ const app = createApp();
 
 const startServer = async () => {
   try {
+    // Initialize feature flags
+    await featureFlags.initialize();
+
     // Initialize Redis
     initRedis();
 
     // Initialize background job queues
     initStockAlertQueue();
     initEmailQueue();
+    initWebhookQueue();
 
     // Initialize scheduled jobs
     initScheduler();
@@ -49,21 +61,22 @@ const startServer = async () => {
 
 const gracefulShutdown = async () => {
   logger.info("Initiating graceful shutdown");
-  
+
   // Stop scheduled jobs
   stopScheduler();
-  
+
   // Close background job queues
   await closeStockAlertQueue();
   await closeEmailQueue();
-  
+  await closeWebhookQueue();
+
   // Close Redis connection
   await closeRedis();
-  
+
   // Disconnect from database
   await prisma.$disconnect();
   logger.info("Database disconnected");
-  
+
   process.exit(0);
 };
 
